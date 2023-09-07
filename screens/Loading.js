@@ -2,10 +2,17 @@
 import React, { useState, useEffect } from 'react';
 // importo de react native el view, text, image, stylesheets, touchableOpacity
 import { View, Text, Image, StyleSheet, Keyboard } from 'react-native';
-
-const logged = false;
+// importo useSelector
+import { useSelector } from 'react-redux';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 export default function Loading({ navigation }) {
+    const [fontsLoaded] = useFonts({
+        "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
+        "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
+    });
+    const logged = useSelector((state) => state.logged);
     const [keyboardShow, setKeyboardShow] = useState();
     const footer = {
         position: 'absolute',
@@ -40,8 +47,18 @@ export default function Loading({ navigation }) {
             if (!logged) {
                 navigation.replace('Login');
             } else navigation.replace('Inicio');
-        }, 7000);
+        }, 700);
     }, []);
+
+    useEffect(() => {
+        async function prepare() {
+            await SplashScreen.preventAutoHideAsync();
+        }
+        prepare();
+    }, []);
+
+  if (!fontsLoaded) return undefined;
+    else SplashScreen.hideAsync();
 
     return (
         <View style={styles.container}>
@@ -49,7 +66,7 @@ export default function Loading({ navigation }) {
             <Image style={styles.logo} source={require('../assets/on-modo-grande.png')} />
             {/* Footer */}
             <View style={footer}>
-                <Text style={styles.text}>Desarrollado por Yellow Patito  Propulsado por OnModo</Text>
+                <Text style={styles.text}>Desarrollado por Yellow Patito Propulsado por OnModo</Text>
                 <Image style={styles.logoSm} source={require('../assets/on-modo-grande.png')} />
             </View>
         </View>
@@ -73,11 +90,12 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 14,
         // height: 50,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingVertical: 0,
         color: '#000000',
         textAlign: 'center',
         marginBottom: 10,
+        fontFamily: 'GothamRoundedMedium'
     },
     logoSm: {
         width: 80,

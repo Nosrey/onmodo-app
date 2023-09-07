@@ -8,12 +8,22 @@ export default function PasswordRecovery({ navigation }) {
     const [keyboardShow, setKeyboardShow] = useState();
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
+        "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
     const [correoInput, setCorreoInput] = useState('');
+    const [inputError, setInputError] = useState(false); // Estado para mostrar/ocultar el error de input [true/false]
 
     function handleCorreoInput(value) {
         setCorreoInput(value);
     }
+
+    useEffect(() => {
+        if (correoInput.includes('@') && correoInput.includes('.com')) {
+            setInputError(false);
+        } else {
+            setInputError(true);
+        }
+    }, [correoInput]);
 
     useEffect(() => {
         async function prepare() {
@@ -57,11 +67,26 @@ export default function PasswordRecovery({ navigation }) {
     const buttonFooterStyle = {
         width: '100%',
         height: 50,
-        backgroundColor: (correoInput.includes('@') && correoInput.includes('.com')) ? '#7BC100' : '#A0B875',
+        backgroundColor: !inputError ? '#7BC100' : '#A0B875',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
     };
+
+    function handleSendButton () {
+        if (!inputError) {
+            navigation.navigate('PasswordCreate');
+        }
+    }
+
+    const emailError = {
+        color: '#FF2E11',
+        fontSize: 12,
+        // hago que no se muestre
+        display: (inputError && correoInput.length) ? 'flex' : 'none',
+        fontFamily: "GothamRoundedMedium",
+    }
+
 
     return (
         <View style={styles.container}>
@@ -87,10 +112,11 @@ export default function PasswordRecovery({ navigation }) {
 
             {/* Boton para ingresar */}
             <View style={footerContainer}>
-                <TouchableOpacity style={buttonFooterStyle}>
+                <TouchableOpacity style={buttonFooterStyle} onPress={handleSendButton}>
                     <Text style={styles.buttonText}>Enviar</Text>
                 </TouchableOpacity>
             </View>
+            <Text style={emailError}>Debes ingresar un Email</Text>
 
         </View>
     );
@@ -108,13 +134,12 @@ const styles = StyleSheet.create({
         marginTop: 8,
         fontSize: 20,
         // hago que la fuente sea gothan rounded
-        fontFamily: 'GothamRoundedMedium',
+        fontFamily: 'GothamRoundedBold',
         // establezo el line-height en 24px
         lineHeight: 24,
         // centro el texto
         textAlign: 'center',
         // aplico bold al texto
-        fontWeight: 'bold',
     },
     container: {
         flex: 1,
@@ -134,6 +159,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginTop: 25,
         fontSize: 14,
+        fontFamily: "GothamRoundedMedium"
     },
     input: {
         width: '100%',
@@ -144,6 +170,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         fontSize: 14,
+        fontFamily: "GothamRoundedMedium"
     },
     passwordInputContainer: {
         flexDirection: 'row',
@@ -182,6 +209,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     message: {
+        fontFamily: "GothamRoundedMedium",
         fontSize: 12,
+        textAlign: 'center',
     }
 });
