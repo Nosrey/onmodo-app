@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } from 'react-native';
-// importo useFonts
+import logo from '../assets/on-modo-grande.png';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-// importo on-modo-grande.png de assets
-import logo from '../assets/on-modo-grande.png';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
 
-export default function Login({ navigation }) {
+export default function PasswordRecovery({ navigation }) {
     const [keyboardShow, setKeyboardShow] = useState();
-    const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña
-    const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
-    const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
     });
+    const [correoInput, setCorreoInput] = useState('');
+
+    function handleCorreoInput(value) {
+        setCorreoInput(value);
+    }
 
     useEffect(() => {
         async function prepare() {
@@ -46,26 +45,6 @@ export default function Login({ navigation }) {
     if (!fontsLoaded) return undefined;
     else SplashScreen.hideAsync();
 
-    function handlePasswordInputChange(value) {
-        setPasswordInput(value);
-    }
-
-    function handleLegajoInputChange(value) {
-        setLegajoInput(value);
-    }
-
-
-
-
-    const buttonFooterStyle = {
-        width: '100%',
-        height: 50,
-        backgroundColor: ((passwordInput === '') || (isNaN(legajoInput) && legajoInput.length)) ? '#A0B875' : '#7BC100',
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    };
-
     const footerContainer = {
         // hago que el elemento este al fondo de la pagina o pantalla
         position: 'absolute',
@@ -75,6 +54,14 @@ export default function Login({ navigation }) {
         alignSelf: 'center',
     }
 
+    const buttonFooterStyle = {
+        width: '100%',
+        height: 50,
+        backgroundColor: (correoInput.includes('@') && correoInput.includes('.com')) ? '#7BC100' : '#A0B875',
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    };
 
     return (
         <View style={styles.container}>
@@ -82,53 +69,29 @@ export default function Login({ navigation }) {
             <View>
                 {/* creo una imagen para logo */}
                 <Image source={logo} style={styles.logoHeader} />
-                <Text style={styles.title}>Ingresa a tu cuenta</Text>
+                <Text style={styles.title}>Restablecer contraseña</Text>
+                <Text style={styles.message}>Ingresa tu correo para restablecer la contraseña de tu cuenta. Te enviaremos un mail con los nuevos datos.</Text>
             </View>
 
-            {/* Formularios */}
-            <View style={styles.forms}>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Legajo o DNI</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={legajoInput}
-                        onChangeText={handleLegajoInputChange}
-                        placeholder="Ingresa tu legajo o DNI"
-                        placeholderTextColor="#959595"
-                    />
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Contraseña</Text>
-                    <View style={styles.passwordInputContainer}>
-                        <TextInput
-                            style={styles.passwordInput}
-                            placeholder="Ingresa tu contraseña"
-                            value={passwordInput}
-                            onChangeText={handlePasswordInputChange}
-                            placeholderTextColor="#959595"
-                            secureTextEntry={!showPassword}
-                        />
-                        <TouchableOpacity
-                            onPress={() => setShowPassword(!showPassword)}
-                            style={styles.passwordToggleIcon}
-                        >
-                            <Icon
-                                name={showPassword ? 'eye' : 'eye-slash'}
-                                size={20}
-                                color="#555"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+            {/* formulario */}
+            <View style={styles.inputContainer}>
+                <Text style={styles.label}>Correo electrónico</Text>
+                <TextInput
+                    style={styles.input}
+                    value={correoInput}
+                    onChangeText={handleCorreoInput}
+                    placeholder="Correo electrónico"
+                    placeholderTextColor="#959595"
+                />
             </View>
 
             {/* Boton para ingresar */}
             <View style={footerContainer}>
                 <TouchableOpacity style={buttonFooterStyle}>
-                    <Text style={styles.buttonText}>Ingresar</Text>
+                    <Text style={styles.buttonText}>Enviar</Text>
                 </TouchableOpacity>
-                <Text style={styles.footerText} onPress={() => navigation.navigate('PasswordRecovery')}>Olvidé mi contraseña</Text>
             </View>
+
         </View>
     );
 }
@@ -142,7 +105,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     title: {
-        marginTop: 4,
+        marginTop: 8,
         fontSize: 20,
         // hago que la fuente sea gothan rounded
         fontFamily: 'GothamRoundedMedium',
@@ -155,7 +118,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 12,
+        padding: 14,
         // padding top en 24px
         paddingTop: 24,
         backgroundColor: '#fff',
@@ -169,6 +132,7 @@ const styles = StyleSheet.create({
     label: {
         color: '#000000',
         marginBottom: 5,
+        marginTop: 25,
         fontSize: 14,
     },
     input: {
@@ -217,4 +181,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         marginTop: 10,
     },
+    message: {
+        fontSize: 12,
+    }
 });

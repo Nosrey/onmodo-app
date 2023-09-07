@@ -1,11 +1,62 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ButtonBar from '../components/ButtonBar';
+// importo useSelector, useDispatch
+import { useSelector, useDispatch } from 'react-redux';
 
-export default function Inicio() {
+export default function Inicio({ navigation }) {
+    const counter = useSelector((state) => state.counter);
+    const dispatch = useDispatch();
+
+    // creo un estado para guardar el valor del input
+    const [inputValue, setInputValue] = useState('');
+    // creo un array donde pondré los distintos buttons             
+    const buttons = [
+        {
+            title: 'Formularios',
+            onPress: () => console.log('Formularios'),
+
+        },
+        {
+            title: 'Formularios cargados',
+            onPress: () => console.log('Formularios cargados'),
+        },
+        {
+            title: 'Documentacion',
+            onPress: () => console.log('Documentacion'),
+        },
+    ];
+    // creo un estado llamadon buttonsFoundos para guardar los buttons que coincidan con el valor del input
+    const [buttonsFound, setButtonsFound] = useState(buttons);
+
+    // creo una función que se ejecutará cada vez que cambie el valor del input
+    const handleInputChange = (value) => {
+        // guardo el valor del input en el estado inputValue
+        setInputValue(value);
+        let inputLocal = value;
+        // convierto el inputLocal en minusculas
+        inputLocal = inputLocal.toLowerCase();
+        // creo un array donde guardaré los buttons que coincidan con el valor del input al filtrar
+        setButtonsFound(buttons.filter((item) => {
+            let itemTitle = item.title.toLowerCase();
+            if (itemTitle.includes(inputLocal)) return item
+        }))
+    }
+
+
+
     return (
         <View style={styles.container}>
+            <View>
+                <View>
+                    <Text>{counter}</Text>
+                </View>
+                <View>
+                    <Button title="Incrementar" onPress={() => dispatch({ type: 'counter/increment' })} />
+                    <Button title="Decrementar" onPress={() => dispatch({ type: 'counter/decrement' })} />
+                </View>
+            </View>
             <View>
                 <View style={styles.title}>
                     <Text style={styles.title}>| Inicio</Text>
@@ -14,30 +65,26 @@ export default function Inicio() {
 
                 <View style={styles.inputContainer}>
                     <Icon name="search" size={20} color="#C3C3C3" style={styles.searchIcon} />
+                    {/* creo un textinput pero con un input controlado usando el estado */}
                     <TextInput
                         style={styles.input}
                         placeholder="¿Qué estás buscando?"
                         placeholderTextColor="#555"
+                        value={inputValue}
+                        onChangeText={(value) => handleInputChange(value)}
                     />
                 </View>
             </View>
 
             <View style={styles.containerBox}>
-                <TouchableOpacity style={styles.box}>
-                    <Text style={styles.boxTitle}>
-                        Formularios
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.box}>
-                    <Text style={styles.boxTitle}>
-                        Formularios cargados
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.box}>
-                    <Text style={styles.boxTitle}>
-                        Documentacion
-                    </Text>
-                </TouchableOpacity>
+                {/* creo estos buttons en base a los que tengo en el array buttonsFound */}
+                {buttonsFound.map((boton, i) => (
+                    <TouchableOpacity key={i} style={styles.box} onPress={boton.onPress}>
+                        <Text style={styles.boxTitle}>
+                            {boton.title}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
             </View>
 
             <ButtonBar />
@@ -54,18 +101,18 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between'
     },
-    containerBox:{
-        flexDirection:'row',
-        justifyContent:'space-around',
-        flexWrap:'wrap',
-        marginTop:20,
+    containerBox: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        flexWrap: 'wrap',
+        marginTop: 20,
         flex: 1,
     },
     box: {
         width: 150,
         height: 100,
         borderRadius: 10,
-        marginTop:20,
+        marginTop: 20,
         backgroundColor: '#E7E7E7',
         justifyContent: 'center',
     },
@@ -118,7 +165,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     searchIcon: {
-        padding: 10,
+        padding: 15,
     },
 
 });
