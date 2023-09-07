@@ -1,9 +1,25 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIon from 'react-native-vector-icons/Ionicons';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 export default function ButtonBar() {
+    const [fontsLoaded] = useFonts({
+        "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
+        "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
+    });
+
+    useEffect(() => {
+        async function prepare() {
+            await SplashScreen.preventAutoHideAsync();
+        }
+        prepare();
+    }, []);
+
+    if (!fontsLoaded) return undefined;
+    else SplashScreen.hideAsync();
     return (
         <View style={styles.button}>
             <View style={styles.iconHome}>
@@ -41,6 +57,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 18,
+        fontFamily: 'GothamRoundedMedium'
     },
     iconHome: {
         flexDirection: 'row',

@@ -6,14 +6,22 @@ import * as SplashScreen from 'expo-splash-screen';
 // importo on-modo-grande.png de assets
 import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
+// traigo useSelector
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function Login({ navigation }) {
+    const logged = useSelector((state) => state.logged);
+    const dispatch = useDispatch();
+
     const [keyboardShow, setKeyboardShow] = useState();
-    const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña
-    const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
+    const [inputError, setInputError] = useState(false); // Estado para mostrar/ocultar el error de input [true/false]
+    const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false
+    const [passwordInput, setPasswordInput] = useState('gXF4JdBi'); // Estado para guardar el valor del input de contraseña
+    const [legajoInput, setLegajoInput] = useState('10013'); // Estado para guardar el valor del input de legajo
     const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
+        "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
 
     useEffect(() => {
@@ -22,6 +30,16 @@ export default function Login({ navigation }) {
         }
         prepare();
     }, []);
+
+    // agrego un useEffect que revisa esta condicion y si se cumple alguna, pone el estado de inputError en true ((!passwordInput.length) || (!legajoInput.length) || (isNaN(legajoInput)))
+    useEffect(() => {
+        if ((!passwordInput.length) || (!legajoInput.length) || (isNaN(legajoInput))) {
+            setInputError(true);
+        } else {
+            setInputError(false);
+        }
+    }, [passwordInput, legajoInput]);
+
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
@@ -48,19 +66,90 @@ export default function Login({ navigation }) {
 
     function handlePasswordInputChange(value) {
         setPasswordInput(value);
+        setLoginError(false)
     }
 
     function handleLegajoInputChange(value) {
         setLegajoInput(value);
+        setLoginError(false);
     }
 
-
-
+    // function handleLogin() {
+    //     if (!inputError) {
+    //     navigation.navigate('PasswordCreate')
+    //     } else {
+    //         setLoginError(true);
+    //     }
+    // }
+    // hago un fetch a la api https://api.onmodoapp.com/api/login donde en el body envio con metodo post el legajo y la contraseña como strings asi { legajo: string, password:string}
+    // si la respuesta es 200, navego a la pantalla Inicio
+    function handleLogin() {
+        if (!inputError) {
+            fetch('https://api.onmodoapp.com/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    // convierto el legajoInput en string
+                    legajo: legajoInput.toString(),
+                    password: passwordInput.toString(),
+                }),
+            })
+                .then((response) => response.json())
+                .then((json) => {
+                    if (json.success == true) {
+                        // hago un dispatch que vuelva logged en true
+                        dispatch({ type: 'counter/setLogged', payload: true });
+                        // hago unos 3 dispatch que setean token, id y rol de json.response
+                        dispatch({ type: 'counter/setToken', payload: json.response.token });
+                        dispatch({ type: 'counter/setId', payload: json.response.id });
+                        dispatch({ type: 'counter/setRol', payload: json.response.rol });
+                        // ahora hago un fetch a https://api.onmodoapp.com/api/business/${idUser} donde idUser es el id del usuario logueado que esta en json.response.id y tras eso hago dispatch para fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor
+                        fetch(`https://api.onmodoapp.com/api/business/${json.response.id}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then((response2) => response2.json())
+                            .then((json2) => {
+                                if (json2.success == true) {
+                                    // el fullname en console.log
+                                    // hago unos dispatch que setean fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor de json.response
+                                    dispatch({ type: 'counter/setFullName', payload: json2.response[0].fullName });
+                                    dispatch({ type: 'counter/setLegajo', payload: json2.response[0].legajo });
+                                    dispatch({ type: 'counter/setNumber', payload: json2.response[0].number });
+                                    dispatch({ type: 'counter/setPuesto', payload: json2.response[0].puesto });
+                                    dispatch({ type: 'counter/setProvincia', payload: json2.response[0].provincia });
+                                    dispatch({ type: 'counter/setLocalidad', payload: json2.response[0].localidad });
+                                    dispatch({ type: 'counter/setContratoComedor', payload: json2.response[0].contratoComedor });
+                                    // elimino el stack de navegacion
+                                    navigation.reset({
+                                        index: 0,
+                                        routes: [{ name: 'Inicio' }],
+                                    });
+                                }
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });                            
+                    } else {
+                        setLoginError(true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            setLoginError(true);
+        }
+    }
 
     const buttonFooterStyle = {
         width: '100%',
         height: 50,
-        backgroundColor: ((passwordInput === '') || (isNaN(legajoInput) && legajoInput.length)) ? '#A0B875' : '#7BC100',
+        backgroundColor: (inputError) ? '#A0B875' : '#7BC100',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
@@ -75,6 +164,13 @@ export default function Login({ navigation }) {
         alignSelf: 'center',
     }
 
+    const passwordError = {
+        color: '#FF2E11',
+        fontSize: 12,
+        // hago que no se muestre
+        display: (loginError) ? 'flex' : 'none',
+        fontFamily: "GothamRoundedMedium",
+    }
 
     return (
         <View style={styles.container}>
@@ -120,11 +216,12 @@ export default function Login({ navigation }) {
                         </TouchableOpacity>
                     </View>
                 </View>
+                <Text style={passwordError}>Los datos ingresados no son correctos</Text>
             </View>
 
             {/* Boton para ingresar */}
             <View style={footerContainer}>
-                <TouchableOpacity style={buttonFooterStyle}>
+                <TouchableOpacity style={buttonFooterStyle} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Ingresar</Text>
                 </TouchableOpacity>
                 <Text style={styles.footerText} onPress={() => navigation.navigate('PasswordRecovery')}>Olvidé mi contraseña</Text>
@@ -145,13 +242,12 @@ const styles = StyleSheet.create({
         marginTop: 4,
         fontSize: 20,
         // hago que la fuente sea gothan rounded
-        fontFamily: 'GothamRoundedMedium',
+        fontFamily: 'GothamRoundedBold',
         // establezo el line-height en 24px
         lineHeight: 24,
         // centro el texto
         textAlign: 'center',
         // aplico bold al texto
-        fontWeight: 'bold',
     },
     container: {
         flex: 1,
@@ -167,6 +263,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     label: {
+        fontFamily: "GothamRoundedMedium",
         color: '#000000',
         marginBottom: 5,
         fontSize: 14,
@@ -180,6 +277,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         fontSize: 14,
+        fontFamily: "GothamRoundedMedium",
     },
     passwordInputContainer: {
         flexDirection: 'row',
@@ -207,10 +305,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
+        fontFamily: 'GothamRoundedMedium',
         color: '#fff',
         fontSize: 16,
     },
     footerText: {
+        fontFamily: "GothamRoundedMedium",
         // centro el texto
         textAlign: 'center',
         // pongo color de texto #000000;
@@ -218,3 +318,4 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
 });
+
