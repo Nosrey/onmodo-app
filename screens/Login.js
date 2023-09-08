@@ -8,6 +8,7 @@ import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
 // traigo useSelector
 import { useSelector, useDispatch } from 'react-redux';
+import Header from '../components/Header';
 
 export default function Login({ navigation }) {
     const logged = useSelector((state) => state.logged);
@@ -172,14 +173,14 @@ export default function Login({ navigation }) {
         fontFamily: "GothamRoundedMedium",
     }
 
+    let cajaText = [
+        {title: "Ingresa a tu cuenta", style: "titleLogin"},
+    ]
+
     return (
         <View style={styles.container}>
             {/* Header */}
-            <View>
-                {/* creo una imagen para logo */}
-                <Image source={logo} style={styles.logoHeader} />
-                <Text style={styles.title}>Ingresa a tu cuenta</Text>
-            </View>
+            <Header cajaText={cajaText} unElemento={true}/>
 
             {/* Formularios */}
             <View style={styles.forms}>

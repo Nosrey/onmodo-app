@@ -6,6 +6,7 @@ import PasswordRecovery from './screens/PasswordRecovery';
 import PasswordCreate from './screens/PasswordCreate';
 import Loading from './screens/Loading';
 import Profile from './screens/Profile';
+import FormulariosCargados from './screens/FormulariosCargados';
 import { NavigationContainer } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // importo de react redux provider, useSelector, useDispatch
@@ -120,25 +121,13 @@ export default function App() {
             component={Profile}
             options={{ title: 'Profile' }}
           />
+          <Stack.Screen
+            name="FormulariosCargados"
+            component={FormulariosCargados}
+            options={{ title: 'Formularios Cargados' }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
   );
 }
-
-{/* <NavigationContainer>
-<Stack.Navigator>
-  <Stack.Screen
-    name="Inicio"
-    component={Inicio}
-    options={{ title: 'Inicio' }}
-  />
-  <Stack.Screen
-    name="Login"
-    component={Login}
-    options={{ title: 'Login' }}
-  />
-</Stack.Navigator>
-</NavigationContainer> */}
-
-

@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
+import Header from '../components/Header';
 
 export default function PasswordCreate({ navigation }) {
     const [showPassword, setShowPassword] = useState(false);
@@ -107,14 +108,14 @@ export default function PasswordCreate({ navigation }) {
         fontFamily: "GothamRoundedMedium",
     }
 
+    let cajaText = [
+        {title: "Crear contraseña e ingresar", style: 'titleCreate'}
+    ]
+
     return (
         <View style={styles.container}>
-            {/* Header */}
-            <View>
-                {/* creo una imagen para logo */}
-                <Image source={logo} style={styles.logoHeader} />
-                <Text style={styles.title}>Crear contraseña e ingresara</Text>
-            </View>
+
+            <Header cajaText={cajaText} unElemento={true} />
 
             {/* Formularios */}
             <View style={styles.forms}>
