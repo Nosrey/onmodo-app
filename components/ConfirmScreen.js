@@ -1,13 +1,16 @@
 // creo un componente para que se muestre un popup donde confirmare una accion con dos botones de si o no
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 export default function ConfirmScreen({ navigation, params }) {
     // obtengo y creo los valores title, message, action, data de params
-    const { title, message, action, data, viewWindow, setViewWindow } = params;
+    const { title, message, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput} = params;
+
+    const [inputCounter, setInputCounter] = useState(0);
 
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
@@ -27,11 +30,13 @@ export default function ConfirmScreen({ navigation, params }) {
     const handleYesButton = () => {
         // ejecuto la accion recibida
         action(data);
+        if (setInternalInput) setInternalInput('')
         setViewWindow(false)
     }
 
     const handleNoButton = () => {
         // vuelvo a la pantalla anterior
+        if (setInternalInput) setInternalInput('')
         setViewWindow(false)
     }
 
@@ -39,16 +44,70 @@ export default function ConfirmScreen({ navigation, params }) {
         display: viewWindow ? "flex" : "none",
     }
 
+    const accept = {
+        color: '#fff',
+        backgroundColor: (typeable) ? "#A0B875" : "#7BC100",
+        borderRadius: 10,
+    }
+
+    const container = {
+        flex: 1,
+        padding: 6,
+        // padding top en 24px
+        paddingTop: 15,
+        backgroundColor: '#fff',
+        // ventana sin borde redondeada
+        borderRadius: 30,
+        // ligera sombra alrededor color negro
+        padding: 20,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        alignItems: 'center',
+        alignSelf: 'center',
+        // lo pongo en absolute y centrado
+        position: 'absolute',
+        bottom: (typeable) ? "40%" : "50%",
+        zIndex: 1,
+    }
+
+    const handleInternalInput = (value) => {
+        // reviso si la longitud de value es menor a 1000, si es menor entonces seteo el valor de internalInput con value y si es mayor a 1000 entonces elimino el ultimo caracter de value y seteo el valor de internalInput con value
+        if (value.length <= 1000) {
+            setInternalInput(value);
+        } else {
+            setInternalInput(value.slice(0, -1));
+        }
+        setInputCounter(value.length);
+    }
+    
+
+
     return (
-        <View style={[styles.container, visible]}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.message}>{message}</Text>
+        <View style={[container, visible]}>
+            <Text style={[styles.title, {marginBottom: (message.length) ? 0 : 10}]}>{title}</Text>
+            <Text style={[styles.message, {display: (message.length) ? 'flex' : 'none'}]}>{message}</Text>
+            <View style={[styles.inputContainer, {display: (typeable) ? 'flex' : 'none'}]}>
+                <View style={styles.passwordInputContainer}>
+                    <TextInput
+                        style={styles.userInput}
+                        placeholder="  Motivos de la edición"
+                        placeholderTextColor="#C3C3C3"
+                        multiline={true}
+                        onChangeText={(value) => handleInternalInput(value)}
+                        value={internalInput}
+                    />
+                    <Text style={styles.letterCounter}>{inputCounter+"/1000"}</Text>
+                </View>
+            </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={handleNoButton}>
-                    <Text style={[styles.buttonText, styles.cancel]}>Cancelar</Text>
+                    <Text style={[styles.buttonText, styles.cancel]}>{botonNo}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={handleYesButton}>
-                    <Text style={[styles.buttonText, styles.accept]}>Cerrar sesión</Text>
+                    <Text style={[styles.buttonText, accept]}>{botonYes}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -57,6 +116,20 @@ export default function ConfirmScreen({ navigation, params }) {
 
 
 const styles = StyleSheet.create({
+    letterCounter: {
+        color: '#C3C3C3',
+        fontFamily: 'GothamRoundedMedium',
+        fontSize: 12,
+        alignSelf: 'flex-end',
+        marginRight: 10,
+
+    },
+    message: {
+        fontSize: 12,
+        fontFamily: "GothamRoundedMedium",
+        textAlign: 'center',
+        marginVertical: 10
+    },
     form: {
 
     },
@@ -70,12 +143,6 @@ const styles = StyleSheet.create({
     },
     cancel: {
         color: '#7BC100',
-    },
-    accept: {
-        color: '#fff',
-        backgroundColor: "#7BC100",
-
-        borderRadius: 10,
     },
     logoHeader: {
         resizeMode: 'center',
@@ -94,31 +161,8 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         // aplico bold al texto
     },
-    container: {
-        flex: 1,
-        padding: 6,
-        // padding top en 24px
-        paddingTop: 24,
-        backgroundColor: '#fff',
-        // ventana sin borde redondeada
-        borderRadius: 30,
-        // ligera sombra alrededor color negro
-        padding: 20,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        alignItems: 'center',
-        alignSelf: 'center',
-        // lo pongo en absolute y centrado
-        position: 'absolute',
-        bottom: "50%",
-        zIndex: 1,
-        
-
-    },
     inputContainer: {
+        width: '100%',
         marginBottom: 10,
     },
     label: {
@@ -140,18 +184,29 @@ const styles = StyleSheet.create({
         fontFamily: "GothamRoundedMedium"
     },
     passwordInputContainer: {
-        flexDirection: 'row',
+        paddingVertical: 10,
+        display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         borderColor: '#C3C3C3',
+        width: "100%",
         borderWidth: 1,
         borderRadius: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: 1,
+        marginTop: 5,
+        
     },
     userInput: {
-        flex: 1,
-        height: 40,
+        textAlignVertical: 'top',
+        padding: 10,
+        paddingVertical: 0,
+        height: 50,
+        width: "100%",
+        maxWidth: "100%",
+        // hago que si alcanza el limite de la palabra se corte hacia abajo
+        overflow: 'scroll',
         color: '#C3C3C3',
-        fontSize: 16,
+        fontSize: 12,
         fontFamily: "GothamRoundedMedium"
     },
     passwordToggleIcon: {
@@ -166,7 +221,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
-        paddingHorizontal: 15,
+        paddingHorizontal: 25,
         paddingVertical: 10,
         fontSize: 12,
         fontFamily: "GothamRoundedMedium",

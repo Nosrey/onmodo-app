@@ -26,7 +26,11 @@ export default function ButtonBar({ navigation }) {
         let rutaActual = navigation.getState().routes.length - 1;
         let route = navigation.getState().routes[rutaActual].name;
         if (route != 'Inicio') {
-            navigation.navigate('Inicio');
+            // reseteo el stack y voy a inicio
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Inicio' }],
+            });            
         }
     }
 

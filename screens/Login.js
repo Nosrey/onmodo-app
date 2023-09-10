@@ -13,12 +13,13 @@ import Header from '../components/Header';
 export default function Login({ navigation }) {
     const logged = useSelector((state) => state.logged);
     const dispatch = useDispatch();
-
     const [keyboardShow, setKeyboardShow] = useState();
     const [inputError, setInputError] = useState(false); // Estado para mostrar/ocultar el error de input [true/false]
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false
-    const [passwordInput, setPasswordInput] = useState('gXF4JdBi'); // Estado para guardar el valor del input de contraseña
-    const [legajoInput, setLegajoInput] = useState('10013'); // Estado para guardar el valor del input de legajo
+    const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña
+    const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
+    // const [passwordInput, setPasswordInput] = useState('2eKgjc19'); // Estado para guardar el valor del input de contraseña
+    // const [legajoInput, setLegajoInput] = useState('10012'); // Estado para guardar el valor del input de legajo
     const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
@@ -85,7 +86,9 @@ export default function Login({ navigation }) {
     // hago un fetch a la api https://api.onmodoapp.com/api/login donde en el body envio con metodo post el legajo y la contraseña como strings asi { legajo: string, password:string}
     // si la respuesta es 200, navego a la pantalla Inicio
     function handleLogin() {
-        if (!inputError) {
+        if (!inputError && !logged) {
+            console.log('activando login')
+            dispatch({ type: 'counter/setLogged', payload: true });
             fetch('https://api.onmodoapp.com/api/login', {
                 method: 'POST',
                 headers: {
@@ -101,7 +104,7 @@ export default function Login({ navigation }) {
                 .then((json) => {
                     if (json.success == true) {
                         // hago un dispatch que vuelva logged en true
-                        dispatch({ type: 'counter/setLogged', payload: true });
+                        
                         // hago unos 3 dispatch que setean token, id y rol de json.response
                         dispatch({ type: 'counter/setToken', payload: json.response.token });
                         dispatch({ type: 'counter/setId', payload: json.response.id });
@@ -125,6 +128,16 @@ export default function Login({ navigation }) {
                                     dispatch({ type: 'counter/setProvincia', payload: json2.response[0].provincia });
                                     dispatch({ type: 'counter/setLocalidad', payload: json2.response[0].localidad });
                                     dispatch({ type: 'counter/setContratoComedor', payload: json2.response[0].contratoComedor });
+                                    // reviso json2.response[0] y a todos los elementos que sean un array los guardo en otro array llamado formularios que sera un let
+                                    let formularios = [];
+                                    // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
+                                    for (const [key, value] of Object.entries(json2.response[0])) {
+                                        if (Array.isArray(value)) {
+                                            formularios.push({title: key, entries: value});
+                                        }
+                                    }
+                                    // hago un dispatch que setee formularios con el valor de formularios
+                                    dispatch({ type: 'counter/setFormularios', payload: formularios });
                                     // elimino el stack de navegacion
                                     navigation.reset({
                                         index: 0,
@@ -133,6 +146,7 @@ export default function Login({ navigation }) {
                                 }
                             })
                             .catch((error) => {
+                                dispatch({ type: 'counter/setLogged', payload: false });
                                 console.error(error);
                             });                            
                     } else {
@@ -140,10 +154,18 @@ export default function Login({ navigation }) {
                     }
                 })
                 .catch((error) => {
+                    dispatch({ type: 'counter/setLogged', payload: false });
                     console.error(error);
                 });
         } else {
-            setLoginError(true);
+            if (!logged && inputError) setLoginError(true);
+            else {
+                // espero 4 segundos y luego dispatcho logged
+                setTimeout(() => {
+                    dispatch({ type: 'counter/setLogged', payload: false });
+                    console.log('ya puedes intentar de nuevo')
+                }, 3000);
+            }
         }
     }
 

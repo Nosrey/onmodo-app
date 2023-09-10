@@ -7,6 +7,7 @@ import PasswordCreate from './screens/PasswordCreate';
 import Loading from './screens/Loading';
 import Profile from './screens/Profile';
 import FormulariosCargados from './screens/FormulariosCargados';
+import FormDetails from './screens/FormDetails';
 import { NavigationContainer } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // importo de react redux provider, useSelector, useDispatch
@@ -28,6 +29,8 @@ const initialState = {
   provincia: '',
   localidad: '',
   contratoComedor: '',
+  formularios: [],
+  cardToCheck: {},
 }
 
 const counterSlice = createSlice({
@@ -76,11 +79,22 @@ const counterSlice = createSlice({
       state.contratoComedor = action.payload;
     }
     ,
+    setFormularios(state, action) {
+      state.formularios = action.payload;
+    }
+    ,
+    setCardToCheck(state, action) {
+      state.cardToCheck = action.payload;
+    }
   },
 });
 
 const store = configureStore({
   reducer: counterSlice.reducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 const Stack = createNativeStackNavigator();
@@ -125,6 +139,11 @@ export default function App() {
             name="FormulariosCargados"
             component={FormulariosCargados}
             options={{ title: 'Formularios Cargados' }}
+          />
+          <Stack.Screen
+            name="FormDetails"
+            component={FormDetails}
+            options={{ title: 'Form Details' }}
           />
         </Stack.Navigator>
       </NavigationContainer>
