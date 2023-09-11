@@ -22,10 +22,16 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "softwareKeyboardLayoutMode":"pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.nosrey.onmodo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3bfeca44-1506-4f8e-a91b-d7aa3a4dcfed"
+      }
     }
   }
 }

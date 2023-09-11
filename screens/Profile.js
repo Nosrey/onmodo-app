@@ -148,6 +148,8 @@ export default function Profile({ navigation }) {
         setViewWindow: setViewCloseSesion,
         action: handleCloseSesion,
         data: '',
+        botonNo: "Cancelar",
+        botonYes: "Cerrar sesión",
     }
     
 
