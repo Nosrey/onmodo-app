@@ -47,7 +47,7 @@ export default function Loading({ navigation }) {
             if (!logged) {
                 navigation.replace('Login');
             } else navigation.replace('Inicio');
-        }, 700);
+        }, 7000);
     }, []);
 
     useEffect(() => {

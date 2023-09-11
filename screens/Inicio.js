@@ -7,6 +7,8 @@ import ButtonBar from '../components/ButtonBar';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import Header from '../components/Header';
+import Buscador from '../components/Buscador';
 
 export default function Inicio({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -14,21 +16,13 @@ export default function Inicio({ navigation }) {
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
     const logged = useSelector((state) => state.logged);
+
+    if (logged == false) {
+        navigation.replace('Login');
+    }
     // traigo igualmente token, id y rol
     const fullName = useSelector((state) => state.fullName);
     const rol = useSelector((state) => state.rol);
-
-    // const counter = useSelector((state) => state.counter);
-    // const dispatch = useDispatch(); para usar el dispatch
-    // <View>
-    //     <View>
-    //         <Text>{counter}</Text>
-    //     </View>
-    //     <View>
-    //         <Button title="Incrementar" onPress={() => dispatch({ type: 'counter/increment' })} />
-    //         <Button title="Decrementar" onPress={() => dispatch({ type: 'counter/decrement' })} />
-    //     </View>
-    // </View>
 
     // creo un estado para guardar el valor del input
     const [inputValue, setInputValue] = useState('');
@@ -45,7 +39,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Formularios cargados',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('FormulariosCargados')
             },
             {
                 title: 'Documentación',
@@ -64,7 +58,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Formularios cargados',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('FormulariosCargados')
             },
             {
                 title: 'Documentación',
@@ -99,7 +93,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Formularios cargados',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('FormulariosCargados')
             },
             {
                 title: 'Documentación',
@@ -171,28 +165,15 @@ export default function Inicio({ navigation }) {
         }))
     }
 
+    let cajaTextoHeader = [
+        {title: "| Inicio", style: "title"},
+        {title: "Nivel " + rol, style: "title"}
+    ];
+
     return (
         <View style={styles.container}>
             <View>
-                <View>
-                    <Image source={logo} style={styles.logoHeader} />
-                    <View style={styles.headerTextContainer}>
-                        <Text style={styles.title}>| Inicio</Text>
-                        <Text style={styles.titleRol}>{"Nivel " + rol}</Text>
-                    </View>
-                </View>
-
-                {/* <View style={styles.inputContainer}> */}
-                {/* <Icon name="search" size={20} color="#C3C3C3" style={styles.searchIcon} /> */}
-                {/* creo un textinput pero con un input controlado usando el estado */}
-                {/* <TextInput */}
-                {/* style={styles.input} */}
-                {/* placeholder="¿Qué estás buscando?" */}
-                {/* placeholderTextColor="#555" */}
-                {/* value={inputValue} */}
-                {/* onChangeText={(value) => handleInputChange(value)} */}
-                {/* /> */}
-                {/* </View> */}
+                <Header cajaText={cajaTextoHeader} />          
             </View>
 
             <ScrollView>
@@ -208,7 +189,7 @@ export default function Inicio({ navigation }) {
                 </View>
             </ScrollView>
 
-            <ButtonBar />
+            <ButtonBar navigation={navigation} />
 
         </View>
     );

@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } 
 import logo from '../assets/on-modo-grande.png';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import Header from '../components/Header';
 
 export default function PasswordRecovery({ navigation }) {
     const [keyboardShow, setKeyboardShow] = useState();
@@ -73,7 +74,7 @@ export default function PasswordRecovery({ navigation }) {
         alignItems: 'center',
     };
 
-    function handleSendButton () {
+    function handleSendButton() {
         if (!inputError) {
             navigation.navigate('PasswordCreate');
         }
@@ -87,16 +88,17 @@ export default function PasswordRecovery({ navigation }) {
         fontFamily: "GothamRoundedMedium",
     }
 
+    let cajaTexto = [
+        { title: "Restablecer contraseña", style: 'titleRecovery' },
+    ]
+
 
     return (
         <View style={styles.container}>
             {/* Header */}
-            <View>
-                {/* creo una imagen para logo */}
-                <Image source={logo} style={styles.logoHeader} />
-                <Text style={styles.title}>Restablecer contraseña</Text>
-                <Text style={styles.message}>Ingresa tu correo para restablecer la contraseña de tu cuenta. Te enviaremos un mail con los nuevos datos.</Text>
-            </View>
+
+            <Header cajaText={cajaTexto} unElemento={true} />
+            <Text style={styles.message}>Ingresa tu correo para restablecer la contraseña de tu cuenta. Te enviaremos un mail con los nuevos datos.</Text>
 
             {/* formulario */}
             <View style={styles.inputContainer}>

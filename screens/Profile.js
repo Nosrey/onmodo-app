@@ -12,6 +12,10 @@ import profileImg from '../assets/profileImg.jpeg';
 // traigo useDispatch de react-redux
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonBar from '../components/ButtonBar';
+import Header from '../components/Header';
+// importo confirmScreen
+import ConfirmScreen from '../components/ConfirmScreen';
+
 
 export default function Profile({ navigation }) {
     const dispatch = useDispatch();
@@ -24,25 +28,16 @@ export default function Profile({ navigation }) {
     const provincia = useSelector(state => state.provincia);
     const localidad = useSelector(state => state.localidad);
     const contratoComedor = useSelector(state => state.contratoComedor);
+    const [editable, setEditable] = useState(false); // Estado para habilitar/deshabilitar la edición de los inputs [true/false]
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showPassword2, setShowPassword2] = useState(false);
-    const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña
-    const [passwordInput2, setPasswordInput2] = useState(''); // Estado para guardar el valor del input de contraseña
     const [inputError, setInputError] = useState(false); // Estado para mostrar/ocultar el error de input [true/false]
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false]
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
     });
     const [keyboardShow, setKeyboardShow] = useState();
+    const [viewCloseSesion, setViewCloseSesion] = useState(false);
 
-    useEffect(() => {
-        if ((!passwordInput.length) || (!passwordInput2.length) || (passwordInput != passwordInput2)) {
-            setInputError(true);
-        } else {
-            setInputError(false);
-        }
-    }, [passwordInput, passwordInput2]);
 
     useEffect(() => {
         async function prepare() {
@@ -96,7 +91,10 @@ export default function Profile({ navigation }) {
             index: 0,
             routes: [{ name: 'Login' }],
         });
-
+    }
+    
+    function handleEditButton() {
+        setEditable(!editable);
     }
 
 
@@ -123,23 +121,45 @@ export default function Profile({ navigation }) {
         alignSelf: 'center',
     }
 
-    const passwordError = {
-        color: '#FF2E11',
-        fontSize: 12,
-        // hago que no se muestre
-        display: (loginError) ? 'flex' : 'none',
-        fontFamily: "GothamRoundedMedium",
+    const editarTextBtn = {
+        color: (editable) ? 'white' : '#A0B875',
     }
+
+    const editarBtn = {
+        backgroundColor: (editable) ? '#7BC100' : 'white',
+        // borde de 2px color #7BC100
+        borderWidth: 2,
+        borderColor: '#7BC100',
+    }
+
+    const tlfInput = {
+        flex: 1,
+        height: 40,
+        color: (editable) ? 'black' :'#C3C3C3',
+        fontSize: 16,
+        fontFamily: "GothamRoundedMedium"
+        // cambio el color del placeholder de este textInput a #C3C3C3
+    }
+
+    let params = {
+        title: '¿Quieres cerrar sesión?',
+        message: '',
+        viewWindow: viewCloseSesion,
+        setViewWindow: setViewCloseSesion,
+        action: handleCloseSesion,
+        data: '',
+    }
+    
+
+    let cajaText = [
+        {title: '| Mi cuenta', style: "titleProfile"},
+    ]
 
     return (
         <View style={styles.container}>
+            <ConfirmScreen navigation={navigation} params={params}/>
             <ScrollView>
-                {/* Header */}
-                <View>
-                    {/* creo una imagen para logo */}
-                    <Image source={logo} style={styles.logoHeader} />
-                    <Text style={styles.title}>| Mi cuenta</Text>
-                </View>
+                <Header cajaText={cajaText}/>
 
                 <Image source={profileImg} style={styles.profileImg} />
 
@@ -152,6 +172,7 @@ export default function Profile({ navigation }) {
                                 editable={false}
                                 style={styles.userInput}
                                 placeholder={fullName}
+                                placeholderTextColor="#C3C3C3"
                             />
                         </View>
                     </View>
@@ -162,6 +183,7 @@ export default function Profile({ navigation }) {
                                 editable={false}
                                 style={styles.userInput}
                                 placeholder={legajo}
+                                placeholderTextColor="#C3C3C3"
                             />
                         </View>
                     </View>
@@ -169,9 +191,10 @@ export default function Profile({ navigation }) {
                         <Text style={styles.label}>Número de contacto</Text>
                         <View style={styles.passwordInputContainer}>
                             <TextInput
-                                editable={false}
-                                style={styles.userInput}
+                                editable={(editable) ? true : false}
+                                style={tlfInput}
                                 placeholder={number}
+                                placeholderTextColor={(editable) ? 'black' : "#C3C3C3"}
                             />
                         </View>
                     </View>
@@ -231,6 +254,7 @@ export default function Profile({ navigation }) {
                                 editable={false}
                                 style={styles.userInput}
                                 placeholder={contratoComedor}
+                                placeholderTextColor="#C3C3C3"
                             />
                         </View>
                     </View>
@@ -239,8 +263,8 @@ export default function Profile({ navigation }) {
 
 
                 <View style={footerContainer}>
-                    <TouchableOpacity style={[buttonFooterStyle, styles.editarBtn]}>
-                        <Text style={[styles.buttonText, styles.editarTextBtn]}>Editar</Text>
+                    <TouchableOpacity style={[buttonFooterStyle, editarBtn]} onPress={handleEditButton}>
+                        <Text style={[styles.buttonText, editarTextBtn]}>Editar</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={buttonFooterStyle}>
                         <Text style={styles.buttonText}>Guardar</Text>
@@ -249,11 +273,11 @@ export default function Profile({ navigation }) {
                 {/* pongo una linea horizontal */}
                 <View style={{ borderBottomColor: '#A9A9A9', borderBottomWidth: 1, marginVertical: 20 }} />
                 <View style={styles.footer}>
-                    <Text style={styles.footerText} onPress={handleCloseSesion}>Cerrar sesión</Text>
+                    <Text style={styles.footerText} onPress={() => setViewCloseSesion(true)}>Cerrar sesión</Text>
                 </View>
             </ScrollView>
 
-            <ButtonBar />
+            <ButtonBar navigation={navigation}/>
         </View>
     );
 }
@@ -322,6 +346,8 @@ const styles = StyleSheet.create({
         color: '#C3C3C3',
         fontSize: 16,
         fontFamily: "GothamRoundedMedium"
+        // cambio el color del placeholder de este textInput a #C3C3C3
+        
     },
     passwordToggleIcon: {
         padding: 10,
@@ -358,13 +384,4 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 10,
     },
-    editarBtn: {
-        backgroundColor: 'white',
-        // borde de 2px color #7BC100
-        borderWidth: 2,
-        borderColor: '#7BC100',
-    },
-    editarTextBtn: {
-        color: '#A0B875',
-    }
 });
