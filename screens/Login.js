@@ -13,13 +13,14 @@ import Header from '../components/Header';
 export default function Login({ navigation }) {
     const logged = useSelector((state) => state.logged);
     const dispatch = useDispatch();
+    const [errorMessage, setErrorMessage] = useState(''); // Estado para mostrar/ocultar el error de input [true/false
     const [keyboardShow, setKeyboardShow] = useState();
     const [inputError, setInputError] = useState(false); // Estado para mostrar/ocultar el error de input [true/false]
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false
-    const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña
-    const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
-    // const [passwordInput, setPasswordInput] = useState('2eKgjc19'); // Estado para guardar el valor del input de contraseña
-    // const [legajoInput, setLegajoInput] = useState('10012'); // Estado para guardar el valor del input de legajo
+    // const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña2eKgjc19
+    // const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
+    const [passwordInput, setPasswordInput] = useState('2eKgjc19'); // Estado para guardar el valor del input de contraseña
+    const [legajoInput, setLegajoInput] = useState('10012'); // Estado para guardar el valor del input de legajo
     const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
@@ -87,8 +88,8 @@ export default function Login({ navigation }) {
     // si la respuesta es 200, navego a la pantalla Inicio
     function handleLogin() {
         if (!inputError && !logged) {
-            console.log('activando login')
             dispatch({ type: 'counter/setLogged', payload: true });
+            setErrorMessage('')
             fetch('https://api.onmodoapp.com/api/login', {
                 method: 'POST',
                 headers: {
@@ -119,7 +120,6 @@ export default function Login({ navigation }) {
                             .then((response2) => response2.json())
                             .then((json2) => {
                                 if (json2.success == true) {
-                                    // el fullname en console.log
                                     // hago unos dispatch que setean fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor de json.response
                                     dispatch({ type: 'counter/setFullName', payload: json2.response[0].fullName });
                                     dispatch({ type: 'counter/setLegajo', payload: json2.response[0].legajo });
@@ -150,7 +150,9 @@ export default function Login({ navigation }) {
                                 console.error(error);
                             });                            
                     } else {
+                        setErrorMessage("La contraseña o el legajo es incorrecto");
                         setLoginError(true);
+                        dispatch({ type: 'counter/setLogged', payload: false });
                     }
                 })
                 .catch((error) => {
@@ -158,21 +160,15 @@ export default function Login({ navigation }) {
                     console.error(error);
                 });
         } else {
-            if (!logged && inputError) setLoginError(true);
-            else {
-                // espero 4 segundos y luego dispatcho logged
-                setTimeout(() => {
-                    dispatch({ type: 'counter/setLogged', payload: false });
-                    console.log('ya puedes intentar de nuevo')
-                }, 3000);
-            }
+            if (isNaN(legajoInput)) setErrorMessage('Los datos ingresados no son validos, el legajo debe ser un número')
+            setLoginError(true);
         }
     }
 
     const buttonFooterStyle = {
         width: '100%',
         height: 50,
-        backgroundColor: (inputError) ? '#A0B875' : '#7BC100',
+        backgroundColor: (inputError || logged) ? '#A0B875' : '#7BC100',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
@@ -239,7 +235,7 @@ export default function Login({ navigation }) {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <Text style={passwordError}>Los datos ingresados no son correctos</Text>
+                <Text style={passwordError}>{errorMessage}</Text>
             </View>
 
             {/* Boton para ingresar */}
