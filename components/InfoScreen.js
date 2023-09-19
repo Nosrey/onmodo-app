@@ -9,7 +9,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 
 export default function InfoScreen({ navigation, params }) {
     // obtengo y creo los valores title, message, action, data de params
-    const { title1, title2, message1, message1p2, message2, message2p2, message2p3, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput } = params;
+    const { title1, title2, message1, message1p2, message2, message2p2, message2p3, message2p4, message2p5, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput } = params;
 
     const [inputCounter, setInputCounter] = useState(0);
 
@@ -72,7 +72,7 @@ export default function InfoScreen({ navigation, params }) {
         alignSelf: 'center',
         // lo pongo en absolute y centrado
         position: 'absolute',
-        bottom: "20%",
+        bottom: (message2p5) ? "20%" : "10%",
         zIndex: 2,
     }
 
@@ -88,12 +88,14 @@ export default function InfoScreen({ navigation, params }) {
             </View>
 
             <Text style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 5, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{title1}</Text>    
-            <Text style={[styles.message]}>{message1}</Text>
-            <Text style={[styles.message]}>{message1p2}</Text>
-            <Text style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 25, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{title2}</Text>
-            <Text style={[styles.message]}>{message2}</Text>
-            <Text style={[styles.message]}>{message2p2}</Text>
-            <Text style={[styles.message,{marginBottom: 20}]}>{message2p3}</Text>
+            <Text style={[styles.message, {display: (message1) ? "flex" : null}]}>{message1}</Text>
+            <Text style={[styles.message, {display: (message1p2) ? "flex" : null}]}>{message1p2}</Text>
+            <Text style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{title2}</Text>
+            <Text style={[styles.message, {display: (message2) ? "flex" : null}]}>{message2}</Text>
+            <Text style={[styles.message, {display: (message2p2) ? "flex" : null}]}>{message2p2}</Text>
+            <Text style={[styles.message,{display: (message2p3) ? "flex" : null}]}>{message2p3}</Text>
+            <Text style={[styles.message,{display: (message2p4) ? "flex" : null}]}>{message2p4}</Text>
+            <Text style={[styles.message,{marginBottom: 20, display: (message2p5) ? "flex" : null}]}>{message2p5}</Text>
         </View>
     )
 }
