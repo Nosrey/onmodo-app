@@ -9,7 +9,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 
 export default function InfoScreen({ navigation, params }) {
     // obtengo y creo los valores title, message, action, data de params
-    const { title1, title2, message1, message1p2, message2, message2p2, message2p3, message2p4, message2p5, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput } = params;
+    const { mensajes, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput } = params;
 
     const [inputCounter, setInputCounter] = useState(0);
 
@@ -61,7 +61,7 @@ export default function InfoScreen({ navigation, params }) {
         borderRadius: 30,
         // ligera sombra alrededor color negro
         padding: 20,
-        paddingTop: 50,
+        paddingTop: 30,
         paddingHorizontal: 35,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 2 },
@@ -72,7 +72,7 @@ export default function InfoScreen({ navigation, params }) {
         alignSelf: 'center',
         // lo pongo en absolute y centrado
         position: 'absolute',
-        bottom: (message2p5) ? "20%" : "10%",
+        bottom: (mensajes?.length > 4) ? "20%" : "10%",
         zIndex: 2,
     }
 
@@ -87,15 +87,19 @@ export default function InfoScreen({ navigation, params }) {
                 </TouchableOpacity>
             </View>
 
-            <Text style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 5, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{title1}</Text>    
-            <Text style={[styles.message, {display: (message1) ? "flex" : null}]}>{message1}</Text>
-            <Text style={[styles.message, {display: (message1p2) ? "flex" : null}]}>{message1p2}</Text>
-            <Text style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{title2}</Text>
-            <Text style={[styles.message, {display: (message2) ? "flex" : null}]}>{message2}</Text>
-            <Text style={[styles.message, {display: (message2p2) ? "flex" : null}]}>{message2p2}</Text>
-            <Text style={[styles.message,{display: (message2p3) ? "flex" : null}]}>{message2p3}</Text>
-            <Text style={[styles.message,{display: (message2p4) ? "flex" : null}]}>{message2p4}</Text>
-            <Text style={[styles.message,{marginBottom: 20, display: (message2p5) ? "flex" : null}]}>{message2p5}</Text>
+            {mensajes?.map((msg, index) => {
+                if (msg.tipo === "title")
+                    return (
+                        <Text key={index} style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{msg.text}</Text>
+                    )
+                else if (msg.tipo === "text")
+                    return (
+                        <Text key={index} style={[styles.message, {
+                            // hago que el texto este justificado
+                            textAlign: 'justify',
+                        }]}>{msg.text}</Text>
+                    )
+            })}
         </View>
     )
 }
@@ -104,8 +108,8 @@ export default function InfoScreen({ navigation, params }) {
 const styles = StyleSheet.create({
     closeBtn: {
         position: 'absolute',
-        top: -40,
-        right: -25,
+        top: -20,
+        right: -15,
     },
     letterCounter: {
         color: '#C3C3C3',

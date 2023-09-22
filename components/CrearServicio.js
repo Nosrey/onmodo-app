@@ -1,6 +1,7 @@
 // creo un componente para que se muestre un popup donde confirmare una accion con dos botones de si o no
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { useSelector, useDispatch } from 'react-redux';
 import DatePicker from './DatePicker';
 import TimePicker from './TimePicker';
@@ -8,7 +9,7 @@ import TimePicker from './TimePicker';
 import { AntDesign } from '@expo/vector-icons';
 
 export default function CrearServicio({ navigation, params }) {
-    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode } = params
+    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina } = params
     const [row, setRow] = useState([])
     const [inputsValueRow, setInputsValueRow] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
 
@@ -16,29 +17,30 @@ export default function CrearServicio({ navigation, params }) {
 
     // un useEffect que se ejecute una sola vez y establezca row
     useEffect(() => {
-        setRow(cardToCheck.inputs.find((input) => input.tipo === "row").options)
+        setRow(cardToCheck.inputs[index].options)
     }, [])
 
     useEffect(() => {
         if (row.length > 0) {
+            
             if (!editionMode) {
                 let array = [];
                 for (let i = 0; i < row.length; i++) {
                     array.push({ name: row[i].name, value: '' })
                 }
                 setInputsValueRow(array);
-            } else if (editionMode && reglones.length > 0) {
+            } else if (editionMode) {
                 let array = [];
-                for (let i = 0; i < reglones[reglonPicked].values.length; i++) {
-                    array.push({ name: reglones[reglonPicked].values[i].name, value: reglones[reglonPicked].values[i].value })
+                for (let i = 0; i < reglones[index][reglonPicked].values.length; i++) {
+                    array.push({ name: reglones[index][reglonPicked].values[i].name, value: reglones[index][reglonPicked].values[i].value })
                 }
                 setInputsValueRow(array);
             }
         }
-    }, [row, visible, reglones])
+    }, [row, visible, reglones, editionMode])
 
     const visibleStyle = {
-        display: visible ? "flex" : "none",
+        display: visible[index] ? "flex" : "none",
     }
 
     function setInputsGlobal(index, enteredValue) {
@@ -49,29 +51,44 @@ export default function CrearServicio({ navigation, params }) {
 
     function handleSaveButton() {
         if (!editionMode) {
-
-            let objeto = {
-                values: inputsValueRow,
+            let copiaReglones = [...reglones];
+            if (copiaReglones[index]) {
+                copiaReglones[index].push({ values: inputsValueRow })
+            } else {
+                copiaReglones[index] = [{ values: inputsValueRow }]
             }
-            setReglones([...reglones, objeto])
+            setReglones(copiaReglones)
         } else {
-            let objeto = {
+            let copiaReglones = [...reglones];
+            copiaReglones[index][reglonPicked] = {
                 values: inputsValueRow,
             }
-            let array = [...reglones];
-            array[reglonPicked] = objeto;
-            setReglones(array)
+            console.log('guardado: ', copiaReglones)
+            setReglones(copiaReglones)
             setEditionMode(false)
         }
-        setVisible(false)
+        let visibleCopia = [...visible];
+        visibleCopia[index] = false;
+        setVisible(visibleCopia)
+        setCortina(false)
     }
 
     return (
-        <View style={[styles.container, visibleStyle]} onPress={() => setVisible(false)}>
+        <View style={[styles.container, visibleStyle]} onPress={() => {
+            let visibleCopia = [...visible];
+            visibleCopia[index] = false;
+            setVisible(visibleCopia)
+        }}>
             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',         marginBottom: 10}}>
                 <Text style={styles.titleForm}>Agregar:</Text>
                 <TouchableOpacity>
-                    <AntDesign name="closecircle" size={30} color="black" style={styles.closeBtn} onPress={() => {setVisible(false), setEditionMode(false)}} />
+                    <AntDesign name="closecircle" size={30} color="black" style={styles.closeBtn} onPress={() => {
+                        let visibleCopia = [...visible];
+                        visibleCopia[index] = false;
+                        setVisible(visibleCopia);
+                        setCortina(false)
+                        setEditionMode(false)
+                    }} />
                 </TouchableOpacity>
             </View>
             <ScrollView style={{paddingHorizontal: 10}}>
@@ -80,7 +97,7 @@ export default function CrearServicio({ navigation, params }) {
                     if (input.tipo === "date") {
                         return (                    
                             <View key={index}>
-                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} />
+                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow}/>
                             </View>
                         )
                     } else if (input.tipo === "text") {
@@ -104,7 +121,7 @@ export default function CrearServicio({ navigation, params }) {
                     } else if (input.tipo === "time") {
                         return (
                             <View key={index}>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} />
+                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow}/>
                             </View>
                         )
                     }  else if (input.tipo === "timeHeader") {
@@ -113,14 +130,14 @@ export default function CrearServicio({ navigation, params }) {
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10 }}>Mantenimiento</Text>
                                 <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, marginBottom: 25 }} />
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true}/>
+                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow}/>
                             </View>
                         )
                     }  else if (input.tipo === "timeTop") {
                         return (
                             <View key={index}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true}/>
+                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow}/>
                             </View>
                         )
                     }
@@ -143,6 +160,26 @@ export default function CrearServicio({ navigation, params }) {
                             </View>
                         )
                     }
+                    else if (input.tipo === "select") return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValueRow[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValueRow];
+                                    array[index].value = itemValue;
+                                    setInputsValueRow(array);
+                                }}
+                            >
+                                {input.options.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                        </View>
+                    )
                 })}
 
 

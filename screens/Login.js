@@ -9,8 +9,10 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono d
 // traigo useSelector
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
+import Notification from '../components/Notification';
 
 export default function Login({ navigation }) {
+    const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion
     const logged = useSelector((state) => state.logged);
     const dispatch = useDispatch();
     const [errorMessage, setErrorMessage] = useState(''); // Estado para mostrar/ocultar el error de input [true/false
@@ -105,7 +107,7 @@ export default function Login({ navigation }) {
                 .then((json) => {
                     if (json.success == true) {
                         // hago un dispatch que vuelva logged en true
-                        
+
                         // hago unos 3 dispatch que setean token, id y rol de json.response
                         dispatch({ type: 'counter/setToken', payload: json.response.token });
                         dispatch({ type: 'counter/setId', payload: json.response.id });
@@ -133,12 +135,13 @@ export default function Login({ navigation }) {
                                     // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
                                     for (const [key, value] of Object.entries(json2.response[0])) {
                                         if (Array.isArray(value)) {
-                                            formularios.push({title: key, entries: value});
+                                            formularios.push({ title: key, entries: value });
                                         }
                                     }
                                     // hago un dispatch que setee formularios con el valor de formularios
                                     dispatch({ type: 'counter/setFormularios', payload: formularios });
                                     // elimino el stack de navegacion
+                                    setNotif({ view: true, message: '¡Actualizado correctamente!', color: 'verde' });
                                     navigation.reset({
                                         index: 0,
                                         routes: [{ name: 'Inicio' }],
@@ -146,9 +149,10 @@ export default function Login({ navigation }) {
                                 }
                             })
                             .catch((error) => {
+                                setNotif({ view: true, message: 'Ups, algo salio mal', color: 'naranja' });
                                 dispatch({ type: 'counter/setLogged', payload: false });
                                 console.error(error);
-                            });                            
+                            });
                     } else {
                         setErrorMessage("La contraseña o el legajo es incorrecto");
                         setLoginError(true);
@@ -156,6 +160,7 @@ export default function Login({ navigation }) {
                     }
                 })
                 .catch((error) => {
+                    setNotif({ view: true, message: 'Ups, algo salio mal', color: 'naranja' });
                     dispatch({ type: 'counter/setLogged', payload: false });
                     console.error(error);
                 });
@@ -192,13 +197,14 @@ export default function Login({ navigation }) {
     }
 
     let cajaText = [
-        {title: "Ingresa a tu cuenta", style: "titleLogin"},
+        { title: "Ingresa a tu cuenta", style: "titleLogin" },
     ]
 
     return (
         <View style={styles.container}>
+            <Notification params={notif} notif={notif} setNotif={setNotif} />
             {/* Header */}
-            <Header cajaText={cajaText} unElemento={true}/>
+            <Header cajaText={cajaText} unElemento={true} />
 
             {/* Formularios */}
             <View style={styles.forms}>

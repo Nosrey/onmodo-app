@@ -8,7 +8,7 @@ import TimePicker from './TimePicker';
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 
-export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina}) {
+export default function FormType2({ setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif}) {
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
 
@@ -31,20 +31,15 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         setInputsValues(array);
     }
 
-    function handleDeleteButton(index, index2) {
+    function handleDeleteButton(index) {
         setReglonPicked(index)
-        setIndexPicked(index2)
-        setViewDelete(true) 
+        setViewDelete(true)
     }
 
-    function handleEditButton(index, index2) {
+    function handleEditButton(index) {
         setReglonPicked(index)
-        setIndexPicked(index2)
         setEditionMode(true)
-        setCortina(true)
-        let copiaVisibleForm = visibleForm;
-        copiaVisibleForm[index2] = true;
-        setVisibleForm(copiaVisibleForm);
+        setVisibleForm(true)
     }
 
     function handleInfoButton() {
@@ -56,25 +51,18 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         else {
             setSaving(true); // si saving es false, lo pongo en true
             let copiaInputsValue = []
-            for (let i = 0; i < cardToCheck.inputs?.length; i++) {
-                if (cardToCheck.inputs[i]?.tipo === "row") {
-                    let reglonFinal = [];
-                    for (let j = 0; j < reglones[i]?.length; j++) {
-                        reglonFinal.push(reglones[i][j].values)
-                    }
-                    copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglonFinal })
-                    console.log('reglonFinal:', reglonFinal)
-        
-                } else if (cardToCheck.inputs[i]?.tipo !== "subTitle") {
+            for (let i = 0; i < inputsValues?.length; i++) {
+                if (inputsValues[i]?.name === "Servicios") {
+                    copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglones[0]?.values })
+                } else {
                     copiaInputsValue.push({ name: inputsValues[i]?.name, value: inputsValues[i]?.value })
                 }
             }
+
             let objeto = {
                 idUser: id,
                 inputs: copiaInputsValue,
             }
-
-            console.log('objeto: ', objeto)
 
             
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body
@@ -116,101 +104,70 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={handleInfoButton} style={{ display: (cardToCheck.verMas?.length ? 'flex' : 'none') }}>
+            
+            <TouchableOpacity onPress={handleInfoButton}>
                 <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 20, marginTop: 10 }}>
                     {/* traigo de AntDesign infocirlceo de color rgb(25, 118, 210) en hex */}
                     <AntDesign name="infocirlceo" size={20} color="#1976D2" style={{ marginRight: 5 }} />
 
                     <Text style={{
-            // fuente color azul rgb(25, 118, 210) pero en hex
+                        // fuente color azul rgb(25, 118, 210) pero en hex
                         color: '#1976D2',
                     }}>VER MÁS</Text>
                 </View>
             </TouchableOpacity>
+            <DatePicker inputReceived={cardToCheck.inputs[0]} index={0} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
 
-            
-            {cardToCheck.inputs?.map((input, index) => {
-                if (input.tipo === "date") {
-                    return (
-                        <DatePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
-                    )
-                }
-                else if (input.tipo === "row") return (
-                    <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
-                        <Text style={styles.normalText}>{input.name + ':'}</Text>
+            <Text style={styles.normalText}>{cardToCheck.inputs[1].name + ':'}</Text>
+            <View style={styles.reglon}>
+                <View style={styles.fila}>
+                    {reglones.length ? (
+                        reglones.map((reglon, index) => {
+                            return (
+                                <View key={index}>
+                                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ fontFamily: 'GothamRoundedMedium', width: "80%" }}>{"#" + (index + 1) + " " + ((reglon.values[0]?.value) ? reglon.values[0]?.value : '(sin servicio)') + " por " + ((reglon.values[9]?.value) ? reglon.values[9]?.value : '(sin responsable)')}</Text>
 
-                        <View style={styles.reglon}>
-                            <View style={styles.fila}>
-                                {reglones.length ? (
-                                    reglones[index]?.map((reglon, index2) => { 
-                                        return (
-                                            <View key={index2}>
-                                                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                    <Text style={{ fontFamily: 'GothamRoundedMedium', width: "80%" }}>{"Elemento #" + (index2 + 1) }</Text>
+                                        <TouchableOpacity style={{ display: 'flex', alignItems: 'left', justifyContent: 'center', width: "10%", }}>
+                                            <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton(index) }} />
+                                        </TouchableOpacity>
 
-                                                    <TouchableOpacity style={{ display: 'flex', alignItems: 'left', justifyContent: 'center', width: "10%", }}>
-                                                        <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton(index2, index) }} />
-                                                    </TouchableOpacity>
+                                        <TouchableOpacity style={{ display: 'flex', alignItems: 'right', justifyContent: 'center', width: "10%", }}>
+                                            <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(index) }} />
+                                        </TouchableOpacity>
 
-                                                    <TouchableOpacity style={{ display: 'flex', alignItems: 'right', justifyContent: 'center', width: "10%", }}>
-                                                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(index2, index) }} />
-                                                    </TouchableOpacity>
+                                    </View>
+                                    <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginVertical: 10 }} />
+                                </View>
 
-                                                </View>
-                                                <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginVertical: 10 }} />
-                                            </View>
+                            )
+                        })) : null}
+                    <TouchableOpacity style={styles.buttonFooterStyle} onPress={() => setVisibleForm(true)}>
+                        <AntDesign name="plussquareo" size={30} color="#7BC100" style={{ alignSelf: 'center' }} />
+                        <Text style={[styles.buttonText]}>Agregar</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
 
-                                        )
-                                    })) : null}
-                                <TouchableOpacity style={styles.buttonFooterStyle} onPress={() => {
-                                    let copiaVisibleForm = visibleForm;
-                                    copiaVisibleForm[index] = true;
-                                    setVisibleForm(copiaVisibleForm);
-                                    setCortina(true)
-                                }}>
-                                    <AntDesign name="plussquareo" size={30} color="#7BC100" style={{ alignSelf: 'center' }} />
-                                    <Text style={[styles.buttonText]}>Agregar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                )
-                else if (input.tipo === "text") {
-                    return (
-                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
-                            <View style={styles.passwordInputContainer}>
-                                <TextInput
-                                    style={styles.userInput}
-                                    placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
-                                    value={inputsValues[index]?.value}
-                                    onChangeText={(value) => {
-                                        let array = [...inputsValues];
-                                        array[index].value = value;
-                                        setInputsValues(array);
-                                    }}
-                                />
-                            </View>
-                        </View>
-                        )
-                }
-                else if (input.tipo === "time") {
-                    return (
-                        <TimePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
-                    )
-                }
-                else if (input.tipo = "subTitle") {
-                    return (
-                        <Text key={index} style={[styles.normalText, {fontSize: 18, marginBottom: 10, marginTop: 15}]}>{input.name}</Text>
-                    )
-                }
-            })}
+            <View key={2} style={{ marginTop: 5, marginBottom: 20 }} >
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{cardToCheck.inputs[2].name}</Text>
+                <View style={styles.passwordInputContainer}>
+                    <TextInput
+                        style={styles.userInput}
+                        placeholder={cardToCheck.inputs[2].name}
+                        value={inputsValues[2]?.value}
+                        onChangeText={(value) => {
+                            let array = [...inputsValues];
+                            array[2].value = value;
+                            setInputsValues(array);
+                        }}
+                    />
+                </View>
+            </View>
 
+            <DatePicker inputReceived={cardToCheck.inputs[3]} index={3} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
 
-
-
-{/* 
-            <DatePicker inputReceived={cardToCheck.inputs[3]} index={3} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} /> */}
+            <TimePicker inputReceived={cardToCheck.inputs[4]} index={4} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
             
             <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
             <TouchableOpacity style={styles.buttonForm} onPress={handleSaveButton}>

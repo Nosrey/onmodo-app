@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import { AntDesign } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 
-export default function FormType3({setViewInfo }) {
+export default function FormType3({setViewInfo, navigation, setNotif }) {
 
     const [globalInputs, setGlobalInputs] = useState([]); // este es el array que tendra todos los inputs que se creen en el formulario
     const [inputsValues, setInputsValues] = useState([])
+    const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
 
     const [month, setMonth] = useState(
         // asigno el mes actual, por ejemplo si el mes es 9 entonces se asigna Septiembre
@@ -38,6 +39,7 @@ export default function FormType3({setViewInfo }) {
     const height20 = height * 0.2
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
+    const id = useSelector((state) => state.id);
 
     function handleInputChange(value, index, day, name) {
         let array = [...inputsValues];
@@ -231,6 +233,114 @@ export default function FormType3({setViewInfo }) {
         setViewInfo(true)
     }
 
+    function handleSaveButton() {
+        if (saving) return; // si saving es true, no hago nada
+        else {
+            setSaving(true); // si saving es false, lo pongo en true
+            let copiaGlobal = []
+            for (let i = 0; i < globalInputs.length; i++) {
+                let copiaMeses = JSON.stringify(globalInputs[i].meses)
+                copiaMeses = JSON.parse(copiaMeses)
+                let copiaName = JSON.stringify(globalInputs[i].name)
+                copiaName = JSON.parse(copiaName)
+                copiaGlobal.push({ name: copiaName, meses: copiaMeses })
+            }
+
+            let copiaGlobalFiltrada = []
+            // reviso el array de copiaGlobal y descarto los objetos donde el mes este completamente en false
+            for (let i = 0; i < copiaGlobal.length; i++) {
+                for (let j = 0; j < copiaGlobal[i].meses.length; j++) {
+                    let contador = 0
+                    for (let k = 0; k < copiaGlobal[i].meses[j].array.length; k++) {
+                        // reviso  si alguno de los elementos esta en true
+                        if (copiaGlobal[i].meses[j].array[k].array.includes(true)) {
+                            contador++
+                        }
+                    }
+                    if (contador === 1) {   
+                        copiaGlobalFiltrada.push(copiaGlobal[i])                 
+                    }
+                }
+            }
+
+            // recorro copiaGlobalFiltrada y descarto los meses vacios
+            for (let i = 0; i < copiaGlobalFiltrada.length; i++) {
+                let copiaMeses = []
+                for (let j = 0; j < copiaGlobalFiltrada[i].meses.length; j++) {
+                    let contador = 0
+                    for (let k = 0; k < copiaGlobalFiltrada[i].meses[j].array.length; k++) {
+                        // reviso  si alguno de los elementos esta en true
+                        if (copiaGlobalFiltrada[i].meses[j].array[k].array.includes(true)) {
+                            contador++
+                        }
+                    }
+                    if (contador === 1) {
+                        copiaMeses.push(copiaGlobalFiltrada[i].meses[j])
+                    }
+                }
+
+                copiaGlobal = [{ name: copiaGlobalFiltrada[i].name, meses: copiaMeses }]
+
+            }
+
+            let objetoFinal = {
+                idUser: id,
+                inputs: copiaGlobal,
+                observaciones: observacionesInput,
+            }
+
+            console.log('objetoFinal.inputs[0].meses[0].array', objetoFinal.inputs[0].meses[0].array)
+
+
+
+            // hago fetch a la url de cardToCheck.url y le paso los inputsValues en bod
+            fetch(cardToCheck.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: objetoFinal,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);    
+                    setNotif({view: true, message: "¡Formulario creado exitosamente!", color: "verde"})
+                   
+                    let array = []
+                    for (let i = 2023; i <= 2040; i++) {
+                        let arrayMonths = []
+                        for (let j = 0; j < 12; j++) {
+                            arrayMonths.push({
+                                name: j.toString(),
+                                array: [
+                                    { name: "Uso", array: Array.from({ length: 31 }, (_, i) => false) },
+                                    { name: "Filtracion", array: Array.from({ length: 31 }, (_, i) => false) },
+                                    { name: "Limpieza superficial", array: Array.from({ length: 31 }, (_, i) => false) },
+                                    { name: "Cambio de Aceite", array: Array.from({ length: 31 }, (_, i) => false) },
+                                    { name: "Limpieza profunda", array: Array.from({ length: 31 }, (_, i) => false) },
+                                ]
+                            })
+                        }
+            
+                        array.push({ name: i.toString(), meses: arrayMonths })
+                    }
+                    setGlobalInputs(array)
+                    setObservacionesInput('')
+
+                    setSaving(false);
+
+                    // si la respuesta es exitosa, muestro un mensaje de exito
+                    // y vuelvo a la pantalla anterior
+                })
+                .catch((error) => {
+                    setSaving(false);
+                    setNotif({view: true, message: "¡Ups! Ocurrió un error", color: "naranja"})
+                    console.error('Error:', error);
+                });
+        }
+    }
+
+
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={handleInfoButton}>
@@ -369,7 +479,7 @@ export default function FormType3({setViewInfo }) {
 
             {/* para guardar los datos */}
             <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
-            <TouchableOpacity style={styles.buttonForm} onPress={() => console.log('Guardar')}>
+            <TouchableOpacity style={styles.buttonForm} onPress={handleSaveButton}>
                 <Text style={styles.buttonFormText}>
                     Guardar
                 </Text>

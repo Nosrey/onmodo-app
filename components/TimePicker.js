@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import { useSelector, useDispatch } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function TimePicker({ inputReceived, index, setInputsGlobal, gris }) {
+export default function TimePicker({ inputReceived, index, setInputsGlobal, gris, inputsValues }) {
     const [time, setTime] = useState({ hora: new Date(), texto: 'Sin Hora' });
     const [show, setShow] = useState();
 
     const horaATexto = (hora) => {
         // recibira una hora en este formato 2023-09-12T23:30:52.044Z y debo retornarla en un formato legible en un formato asi: 4:30 pm
-        let horas = time.hora.getHours()
-        let minutos = time.hora.getMinutes()
+        let horas = inputsValues[index]?.value.getHours()
+        let minutos = inputsValues[index]?.value.getMinutes()
         // si uno de los elementos esta solo le agrego un cero al inicio, si por ejemplo hay un 1 entonces sera 01, si hay un 10 entonces no hago nada
         if (horas < 10) {
             horas = '0' + horas
@@ -23,10 +23,9 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
 
     const onChange = (event, selectedDate) => {
         if (event.type === 'set') {
-            const currentHour = selectedDate || time.hora;
+            const currentHour = selectedDate || inputsValues[index]?.value;
             setShow(false)
-            setTime({ hora: currentHour, texto: horaATexto(currentHour) })
-            setInputsGlobal(index, (currentHour.getHours() < 10 ? '0' + currentHour.getHours() : currentHour.getHours()) + ':' + (currentHour.getMinutes() < 10 ? '0' + currentHour.getMinutes() : currentHour.getMinutes()))
+            setInputsGlobal(index, currentHour)
         } else {
             setShow(false)
         }
@@ -54,17 +53,17 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
                 {inputReceived.name + ':'}
             </Text>
             <Text style={[styles.normalText, { fontSize: 14 }]}>
-                {(time.texto !== 'Sin Hora') ? (time.hora.getHours() < 10 ? '0' + time.hora.getHours() : time.hora.getHours()) + ':' + (time.hora.getMinutes() < 10 ? '0' + time.hora.getMinutes() : time.hora.getMinutes()) : time.texto}
+                {(inputsValues[index]?.value) ? (inputsValues[index]?.value.getHours() < 10 ? '0' + inputsValues[index]?.value.getHours() : inputsValues[index]?.value.getHours()) + ':' + (inputsValues[index]?.value.getMinutes() < 10 ? '0' + inputsValues[index]?.value.getMinutes() : inputsValues[index]?.value.getMinutes()) : 'Sin Hora'}
             </Text>
             <View style={styles.buttonFooterStyle}>
                 <TouchableOpacity key={index} onPress={showMode}>
                     <Text style={styles.buttonText}>
-                        {(time.texto === 'Sin Hora') ? 'Agregar Hora' : 'Cambiar Hora'}
+                        {(!inputsValues[index]?.value) ? 'Agregar Hora' : 'Cambiar Hora'}
                     </Text>
                 </TouchableOpacity>
                 {(show === true) && (
                     <DateTimePicker
-                        value={time.hora}
+                        value={inputsValues[index]?.value || new Date()}
                         mode={'time'}
                         textColor={"#ffffff"}
                         display='spinner'

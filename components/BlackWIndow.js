@@ -8,6 +8,8 @@ export default function BlackWindow({ visible, setVisible }) {
     const size = {
         width: screenWidth,
         height: screenHeight,
+
+
         display: visible ? "flex" : "none",
     }
 

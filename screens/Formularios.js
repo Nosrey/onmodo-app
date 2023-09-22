@@ -26,14 +26,53 @@ export default function Formularios({ navigation }) {
         {
             title: "Control de Cloro Activo Residual",
             rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/controlcloro",
+            inputs: [
+                {
+                    name: "Control", tipo: "row", options: [
+                        { name: "Fecha", tipo: "date" },
+                        { name: "Punto de toma de agua evaluado", tipo: "text" },
+                        { name: "Punto de Corte", tipo: "select", options: ['Menor 0,2 (Valor ppm)', '0,2 - 0,5 (Valor ppm)', '0,5 - 0,8 (Valor ppm)', 'Mayor a 0,8 (Valor ppm)'] },
+                        { name: "Acciones de correción", tipo: "select", options: ["Dar aviso escrito al cliente.", "Lavado y desinfección de reservorios de agua."] },
+                    ]
+                }
+            ]
         },
         {
             "title": "Control de Equipos de Frío",
             "rolNeeded": 1
         },
         {
-            "title": "Control de Vidrios",
-            "rolNeeded": 1
+            title: "Control de Vidrios",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/controlvidrios",
+            
+            inputs: [
+
+                // { name: "Registro de envases de vidrio y roturas", tipo: "title" },
+                { name: "Registro de envases de vidrio y roturas", tipo: "subTitle"},
+                {
+                    name: "Recepción", tipo: "row", options: [
+                        { name: "Fecha de Recepción", tipo: "date" },
+                        { name: "Proveedor", tipo: "text" },
+                        { name: 'Alimento contenido en vidrio', tipo: 'text' },
+                        { name: 'Responsable de control', tipo: 'text' },
+                    ]
+                },
+                {
+                    name: 'Daños', tipo: 'row', options: [
+                        { name: 'Fecha', tipo: 'date' },
+                        // envase de vidrio roto text
+                        { name: 'Envase de vidrio roto', tipo: 'text' },
+                        // 'Acción correctiva sobre el alimento' text
+                        { name: 'Acción correctiva sobre el alimento', tipo: 'text' },
+                        // responsable text
+                        { name: 'Responsable', tipo: 'text' },
+                    ]
+                },
+            ]
         },
         {
             "title": "Checkeo de uso de EPP",
@@ -83,17 +122,27 @@ export default function Formularios({ navigation }) {
             title: "Servicio en línea",
             rolNeeded: 1,
             formType: 2,
+            url: "https://api.onmodoapp.com/api/servicioenlinea",
+            verMas: [
+                {text: "SERVICIO LÍNEA CALIENTE", tipo: "title"},
+                {text: "Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC, por un tiempo máximo de 2 horas.", tipo: "text"},
+                {text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text"},
+                {text: "SERVICIO LÍNEA FRIA", tipo: "title"},
+                {text: "Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºCpor un máximo de 2 horas.", tipo: "text"},
+                {text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text"},
+                {text: "Contratos certificados con IRAM BPM: mantener a menos de 4ºC.", tipo: "text"},
+            ],
             inputs: [
                 { name: "Fecha", tipo: "date" },
                 {
-                    name: "Servicios", tipo: "row", options: [
+                    name: "Servicios", tipo: "row", rolIndex: 0, options: [
                         { name: "Servicio", tipo: "text" },
                         { name: "Preparación", tipo: "text" },
                         { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio" }, { name: "Temp", tipo: "textFooter" },
                         { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 1" }, { name: "Temp", tipo: "textFooter" },
                         { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 2" }, { name: "Temp", tipo: "textFooter" },
                         { name: "Acciones correctivas", tipo: "text" },
-                        { name: "Responsable", tipo: "text"}
+                        { name: "Responsable", tipo: "text" }
                     ]
                 },
                 { name: "Verificado por", tipo: "text" },
@@ -103,6 +152,7 @@ export default function Formularios({ navigation }) {
         },
         {
             title: "Recuperación de productos",
+            url: "https://api.onmodoapp.com/api/recuperacionproducto",
             rolNeeded: 1,
             title2: "Registro para el comedor",
             inputs: [
@@ -120,8 +170,19 @@ export default function Formularios({ navigation }) {
         },
         {
             title: "Uso y cambio de aceite en freidora",
+            url: "https://api.onmodoapp.com/api/usocambioaceite",
             rolNeeded: 1,
             formType: 3,
+            verMas: [
+                { text: "Instrucciones", tipo: "title" },
+                { text: "Tildar las actividades realizadas diariamente.", tipo: "text" },
+                { text: "Precauciones", tipo: "title" },
+                { text: "No sobrecalentar las grasas y aceites por encima de los 180 °C.", tipo: "text" },
+                { text: "Filtrar las grasas y aceites luego de su uso.", tipo: "text" },
+                { text: "Verificar la calidad de las grasas y aceites en forma regular.", tipo: "text" },
+                { text: "Desechar las grasas y aceites con cambios evidentes de color, olor y sabor.", tipo: "text" },
+                { text: "No utilizar el aceite más de 5 veces (el Registro permite llevar cuenta del uso de la freidora).", tipo: "text" },
+            ],
             inputs: [
                 { name: "Uso" },
                 { name: "Filtracion" },
@@ -159,6 +220,8 @@ export default function Formularios({ navigation }) {
             title2: item.title2,
             inputs: item.inputs,
             formType: item.formType,
+            url: item.url,
+            verMas: item.verMas,
             onPress: () => {
                 // creo un useDispatch para establecer cardToCheck    
                 dispatch({ type: 'counter/setCardToCheck', payload: item });
@@ -291,6 +354,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         fontFamily: "GothamRoundedMedium",
         fontSize: 12,
+        paddingHorizontal: 10,
 
     },
     title: {

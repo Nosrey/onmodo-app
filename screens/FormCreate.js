@@ -12,16 +12,21 @@ import FormType3 from '../components/FormType3';
 import ButtonBar from '../components/ButtonBar';
 import ConfirmScreen from '../components/ConfirmScreen';
 import InfoScreen from '../components/InfoScreen';
+import Notification from '../components/Notification';
 
 export default function FormCreate({ navigation }) {
     // traigo del redux el state cardToCheck
 
-    const [visibleForm, setVisibleForm] = useState(false); // visibleForm es un booleano que indica si se muestra o no el formulario de crear servicio
+    const [visibleForm, setVisibleForm] = useState([]); // visibleForm es un booleano que indica si se muestra o no el formulario de crear servicio
     const [viewDelete, setViewDelete] = useState(false);
     const [reglonPicked, setReglonPicked] = useState(null)
+    const [indexPicked, setIndexPicked] = useState(null)
     const [editionMode, setEditionMode] = useState(false);
     const [viewInfo, setViewInfo] = useState(false);
     const [viewInfo2, setViewInfo2] = useState(false);
+    const [viewCortinaNegra, setViewCortinaNegra] = useState(false);
+    const [notif, setNotif] = useState({view: false, message: '', color: 'naranja'}); // notif es un booleano que indica si se muestra o no la notificacion de guardado exitoso
+    const [inputsValuesFormType2, setInputsValuesFormType2] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
 
     const [reglones, setReglones] = useState([]); 
 
@@ -36,7 +41,7 @@ export default function FormCreate({ navigation }) {
 
     function deteleReglon() {
         let array = [...reglones];
-        array.splice(reglonPicked, 1)
+        array[indexPicked].splice(reglonPicked, 1)
         // actualizo el array de reglones
         setReglones(array)
     }
@@ -45,16 +50,6 @@ export default function FormCreate({ navigation }) {
 
     }]
 
-    let params = {
-        visible: visibleForm,
-        setVisible: setVisibleForm,
-        setReglones: setReglones,
-        reglones: reglones,
-        editionMode: editionMode,
-        setEditionMode: setEditionMode,
-        reglonPicked: reglonPicked,
-    }
-
     let paramsDelete = {
         title: '¿Desea eliminar este elemento?',
         message: 'Si así lo decides, se eliminará de manera permanante y no lo podrás recuperar.',
@@ -62,18 +57,13 @@ export default function FormCreate({ navigation }) {
         setViewWindow: setViewDelete,
         action: deteleReglon,
         data: reglonPicked,
+        data2: indexPicked,
         botonNo: "Cancelar",
         botonYes: "Eliminar",
     }
 
     let paramsInfo = {
-        title1: 'SERVICIO LÍNEA CALIENTE',
-        message1: 'Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC, por un tiempo máximo de 2 horas.',
-        message1p2: 'Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.',
-        title2: 'SERVICIO LÍNEA FRIA',
-        message2: 'Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºCpor un máximo de 2 horas.', 
-        message2p2: 'Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.', 
-        message2p3: 'Contratos certificados con IRAM BPM: mantener a menos de 4ºC.',
+        mensajes: cardToCheck.verMas,
         viewWindow: viewInfo,
         setViewWindow: setViewInfo,
         action: '',
@@ -82,52 +72,70 @@ export default function FormCreate({ navigation }) {
         botonYes: "Eliminar",
     }
 
-    let paramsInfo2 = {
-        title1: 'Instrucciones',
-        message1: 'Tildar las actividades realizadas diariamente.',
-        message1p2: '',
-        title2: 'Precauciones',
-        message2: 'No sobrecalentar las grasas y aceites por encima de los 180 °C.', 
-        message2p2: 'Filtrar las grasas y aceites luego de su uso.', 
-        message2p3: 'Verificar la calidad de las grasas y aceites en forma regular.',
-        message2p4: 'Desechar las grasas y aceites con cambios evidentes de color, olor y sabor.',
-        message2p5: 'No utilizar el aceite más de 5 veces (el Registro permite llevar cuenta del uso de la freidora).',
-        viewWindow: viewInfo2,
-        setViewWindow: setViewInfo2,
-        action: '',
-        data: '',
-        botonNo: "Cancelar",
-        botonYes: "Eliminar",
-    }
+    // let paramsInfo2 = {
+    //     title1: 'Instrucciones',
+    //     message1: 'Tildar las actividades realizadas diariamente.',
+    //     message1p2: '',
+    //     title2: 'Precauciones',
+    //     message2: 'No sobrecalentar las grasas y aceites por encima de los 180 °C.', 
+    //     message2p2: 'Filtrar las grasas y aceites luego de su uso.', 
+    //     message2p3: 'Verificar la calidad de las grasas y aceites en forma regular.',
+    //     message2p4: 'Desechar las grasas y aceites con cambios evidentes de color, olor y sabor.',
+    //     message2p5: 'No utilizar el aceite más de 5 veces (el Registro permite llevar cuenta del uso de la freidora).',
+    //     viewWindow: viewInfo2,
+    //     setViewWindow: setViewInfo2,
+    //     action: '',
+    //     data: '',
+    //     botonNo: "Cancelar",
+    //     botonYes: "Eliminar",
+    // }
 
 
     return (
         <View style={styles.container}>
+            <Notification params={notif} notif={notif} setNotif={setNotif}/>
             <Header cajaText={cajaText} unElemento={true} />
             <BlackWindow visible={viewDelete} setVisible={setViewDelete} />
             <ConfirmScreen navigation={navigation} params={paramsDelete}/>
 
             <BlackWindow visible={viewInfo} setVisible={setViewInfo} />
-            <InfoScreen navigation={navigation} params={paramsInfo}/> 
+            <InfoScreen navigation={navigation} params={paramsInfo} msg/>        
 
-            <BlackWindow visible={viewInfo2} setVisible={setViewInfo2} />
-            <InfoScreen navigation={navigation} params={paramsInfo2}/>        
+            <BlackWindow visible={viewCortinaNegra} setVisible={() => {
+                setEditionMode(false)
+            }} />
 
-            {cardToCheck.formType === 2 ? (
-                <BlackWindow visible={visibleForm} setVisible={() => {setVisibleForm(false); setEditionMode(false)}} />
-            ) : null}
-            {cardToCheck.formType === 2 ? (
-                <CrearServicio params={params} />
-            ) : null}
+
+
+            {cardToCheck.inputs?.map((input, index) => {
+                if (input.tipo === "row") {
+                    return (
+                        <CrearServicio key={index} params={{
+                            index: index,
+                            visible: visibleForm,
+                            setVisible: setVisibleForm,
+                            cortina: viewCortinaNegra,
+                            setCortina: setViewCortinaNegra,
+                            setReglones: setReglones,
+                            reglones: reglones,
+                            editionMode: editionMode,
+                            setEditionMode: setEditionMode,
+                            reglonPicked: reglonPicked,
+                        }} />
+                    )
+                }
+            })
+            }                  
+
             <ScrollView>
                 <Text style={styles.titleForm}>{cardToCheck.title}</Text>
                 {cardToCheck.formType === 1 ? (
-                    <FormType1 />
+                    <FormType1 navigation={navigation} setNotif={setNotif}/>
                 ) : cardToCheck.formType === 2 ? (
-                    <FormType2 visibleForm={visibleForm} setVisibleForm={setVisibleForm} reglones={reglones} setReglones={setReglones} setViewDelete={setViewDelete} reglonPicked={reglonPicked} setReglonPicked={setReglonPicked} editionMode={editionMode} setEditionMode={setEditionMode}  viewInfo={viewInfo} setViewInfo={setViewInfo}/>
+                    <FormType2 setCortina={setViewCortinaNegra} cortina={viewCortinaNegra} indexPicked={indexPicked} setIndexPicked={setIndexPicked} setNotif={setNotif} navigation={navigation} visibleForm={visibleForm} setVisibleForm={setVisibleForm} reglones={reglones} setReglones={setReglones} setViewDelete={setViewDelete} reglonPicked={reglonPicked} setReglonPicked={setReglonPicked} editionMode={editionMode} setEditionMode={setEditionMode}  viewInfo={viewInfo} setViewInfo={setViewInfo} inputsValues={inputsValuesFormType2} setInputsValues={setInputsValuesFormType2}/>
                 ) : null}
                 {cardToCheck.formType === 3 ? (
-                    <FormType3 setViewInfo={setViewInfo2}/>
+                    <FormType3 setNotif={setNotif} navigation={navigation} setViewInfo={setViewInfo}/>
                 ) : null}
             </ScrollView>
             <ButtonBar navigation={navigation} />
