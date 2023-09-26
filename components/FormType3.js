@@ -5,17 +5,12 @@ import { Picker } from '@react-native-picker/picker';
 import { AntDesign } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 
-export default function FormType3({setViewInfo, navigation, setNotif }) {
+export default function FormType3({ setViewInfo, navigation, setNotif }) {
 
     const [globalInputs, setGlobalInputs] = useState([]); // este es el array que tendra todos los inputs que se creen en el formulario
     const [inputsValues, setInputsValues] = useState([])
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
 
-    const [month, setMonth] = useState(
-        // asigno el mes actual, por ejemplo si el mes es 9 entonces se asigna Septiembre
-        new Date().toLocaleString('default', { month: 'long' })
-    ); // aca se guarda el mes seleccionado en el picker
-    const [year, setYear] = useState(new Date().getFullYear()); // aca se guarda el año seleccionado en el picker
     const [observacionesInput, setObservacionesInput] = useState(''); // aca se guarda el texto que se ingresa en el input de observaciones
 
     const { width, height } = Dimensions.get('window');
@@ -61,15 +56,15 @@ export default function FormType3({setViewInfo, navigation, setNotif }) {
         }
     }
 
-    function handleColorCheckBox(index, day) {
-        // tambien creo una variable donde guardare el index mas cercano a day pero que sea igual o menor a day
-        let total = 0;
+    function handleColorCheckBox(index, indexAfectada, indexAfectadora, indexManejador, indexSubManejador, day) {
         let maxIndex = 0
         let contador = 0
+        // console.log(indexManejador - 2023)
+        // console.log(inputsValues[index]?.value[indexManejador - 2023]?.[indexSubManejador]?.[indexAfectadora])
+        if (inputsValues[index]?.value[indexManejador - 2023]?.[indexSubManejador]?.[indexAfectadora]) {
 
-        if (inputsValues[3] && inputsValues[3].array) {
             for (let i = 0; i <= day; i++) {
-                if (inputsValues[3].array[i]) {
+                if (inputsValues[index]?.value[indexManejador - 2023]?.[indexSubManejador]?.[indexAfectadora]?.[i]) {
                     maxIndex = i
                 }
             }
@@ -77,11 +72,10 @@ export default function FormType3({setViewInfo, navigation, setNotif }) {
 
         // obtengo el total de elementos en true
         for (let i = maxIndex; i <= day; i++) {
-            if (inputsValues[index].array[i]) {
+            if (inputsValues[index]?.value[indexManejador - 2023]?.[indexSubManejador]?.[indexAfectada]?.[i]) {
                 contador++
             }
         }
-
 
         switch (contador) {
             case 0:
@@ -99,134 +93,153 @@ export default function FormType3({setViewInfo, navigation, setNotif }) {
         }
     }
 
-    // creo un useEffect que se ejecuta solo la primera vez que se renderiza el componente
-    useEffect(() => {
-        let array = []
-        for (let i = 2023; i <= 2040; i++) {
-            let arrayMonths = []
-            for (let j = 0; j < 12; j++) {
-                arrayMonths.push({
-                    name: j.toString(),
-                    array: [
-                        { name: "Uso", array: Array.from({ length: 31 }, (_, i) => false) },
-                        { name: "Filtracion", array: Array.from({ length: 31 }, (_, i) => false) },
-                        { name: "Limpieza superficial", array: Array.from({ length: 31 }, (_, i) => false) },
-                        { name: "Cambio de Aceite", array: Array.from({ length: 31 }, (_, i) => false) },
-                        { name: "Limpieza profunda", array: Array.from({ length: 31 }, (_, i) => false) },
-                    ]
-                })
-            }
 
-            array.push({ name: i.toString(), meses: arrayMonths })
+    // useEffect(() => {
+    //     if (globalInputs.length) {
+    //         let yearIndex = cardToCheck.inputs.findIndex((element) => element.manejador === true)
+    //         let year = inputsValues[yearIndex].value
+    //         let monthIndex = cardToCheck.inputs.findIndex((element) => element.subManejador === true)
+    //         let meses = inputsValues[monthIndex].value
+
+    //         setInputsValues(globalInputs[year - 2023].meses[meses].array)
+
+    //     }
+    // }, [globalInputs, inputsValues])
+
+    useEffect(() => {
+        let array = inputsValues
+        for (let i = 0; i < cardToCheck.inputs.length; i++) {
+            if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Mes")) {
+                array[i] = { name: cardToCheck.inputs[i].name, value: new Date().toLocaleString('default', { month: 'long' }) }
+            }
+            else if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Año")) {
+                array[i] = { name: cardToCheck.inputs[i].name, value: new Date().getFullYear() }
+            }
+            else if (cardToCheck.inputs[i].tipo === "select") {
+                array[i] = { name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] }
+            }
         }
-        setGlobalInputs(array)
+
+        setInputsValues(array)
     }, [])
 
-    useEffect(() => {
-        if (globalInputs.length) {
-            let meses = 0
+    function updateData(index) {
+        if (cardToCheck.inputs[index].subManejador === true || cardToCheck.inputs[index].manejador === true) {
+            let yearIndex = cardToCheck.inputs.findIndex((element) => element.manejador === true)
+            let year = inputsValues[yearIndex].value
 
-            switch (month) {
-                case 'enero':
-                    meses = 0
-                    break;
-                case 'febrero':
-                    meses = 1
-                    break;
-                case 'marzo':
-                    meses = 2
-                    break;
-                case 'abril':
-                    meses = 3
-                    break;
-                case 'mayo':
-                    meses = 4
-                    break;
-                case 'junio':
-                    meses = 5
-                    break;
-                case 'julio':
-                    meses = 6
-                    break;
-                case 'agosto':
-                    meses = 7
-                    break;
-                case 'septiembre':
-                    meses = 8
-                    break;
-                case 'octubre':
-                    meses = 9
-                    break;
-                case 'noviembre':
-                    meses = 10
-                    break;
-                case 'diciembre':
-                    meses = 11
-                    break;
-                default:
-                    break;
+            // encuentro el index del objeto cardToCheck.inputs[index].options que sea igual a itemValue
+            let mesIndex = cardToCheck.inputs.findIndex((element) => manejador.subManejador === true)
+            let meses = inputsValues[mesIndex].value
+
+            let arrayGlobal = [...globalInputs]
+            arrayGlobal[year - 2023].meses[meses].array = inputsValues
+            setGlobalInputs(arrayGlobal)
+        }
+    }
+
+    function handleCheckValue(day, index, index2) {
+        let indexManejador = cardToCheck.inputs.findIndex((element) => element.manejador === true)
+        let indexSubManejador = cardToCheck.inputs.findIndex((element) => element.subManejador === true)
+
+        if ((indexManejador !== -1) && (indexSubManejador !== -1)) {
+            let manejadorValue = inputsValues[indexManejador]?.value
+            let subManejadorValue = null
+            if (cardToCheck.inputs[indexSubManejador].name === "Mes") {
+                subManejadorValue = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element.toLowerCase() === inputsValues[indexSubManejador]?.value.toLowerCase())
+            }
+            else {
+                subManejadorValue = inputsValues[indexSubManejador]?.value
+            }
+            let final = inputsValues[index]?.value && inputsValues[index]?.value[manejadorValue - 2023]?.[subManejadorValue]?.[index2]?.[day]
+            return (final || false)
+
+        } else {
+            return inputsValues[index]?.value[0][0][index2][day]
+        }
+    }
+
+
+    function handleCheckChange(value, day, index, index2) {
+        let indexManejador = cardToCheck.inputs.findIndex((element) => element.manejador === true);
+        let indexSubManejador = cardToCheck.inputs.findIndex((element) => element.subManejador === true);
+
+        let array = [...inputsValues];
+
+        if (inputsValues && indexManejador !== -1 && indexSubManejador !== -1) {
+            let manejadorValue = inputsValues[indexManejador]?.value;
+            let subManejadorValue = null;
+            if (cardToCheck.inputs[indexSubManejador].name === "Mes") {
+                subManejadorValue = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element.toLowerCase() === inputsValues[indexSubManejador]?.value.toLowerCase())
+            } else {
+                subManejadorValue = inputsValues[indexSubManejador]?.value;
             }
 
-            setInputsValues(globalInputs[year - 2023].meses[meses].array)
+            // creo esa direccion
+            if (!array[index]?.value) {
+                array[index] = { name: cardToCheck.inputs[index]?.name, value: [] }
+            }
+            if (!array[index]?.value[manejadorValue - 2023]) {
+                array[index].value[manejadorValue - 2023] = []
+            }
+            if (!array[index]?.value[manejadorValue - 2023][subManejadorValue]) {
+                array[index].value[manejadorValue - 2023][subManejadorValue] = []
+            }
+            if (!array[index]?.value[manejadorValue - 2023][subManejadorValue][index2]) {
+                array[index].value[manejadorValue - 2023][subManejadorValue][index2] = []
+            }
+            array[index].value[manejadorValue - 2023][subManejadorValue][index2][day] = value;
+            setInputsValues(array);
 
+        } else {
+            // creo esa direccion
+            if (!array[index]?.value) {
+                array[index] = { name: cardToCheck.inputs[index]?.name, value: [] }
+            }
+            if (!array[index]?.value[0]) {
+                array[index].value[0] = []
+            }
+            if (!array[index]?.value[0][0]) {
+                array[index].value[0][0] = []
+            }
+            if (!array[index]?.value[0][0][index2]) {
+                array[index].value[0][0][index2] = []
+            }
+            array[index].value[0][0][index2][day] = value;
+            setInputsValues(array);
         }
-    }, [globalInputs, month, year])
-
-    function updateData() {
-        switch (month) {
-            case 'enero':
-                meses = 0
-                break;
-            case 'febrero':
-                meses = 1
-                break;
-            case 'marzo':
-                meses = 2
-                break;
-            case 'abril':
-                meses = 3
-                break;
-            case 'mayo':
-                meses = 4
-                break;
-            case 'junio':
-                meses = 5
-                break;
-            case 'julio':
-                meses = 6
-                break;
-            case 'agosto':
-                meses = 7
-                break;
-            case 'septiembre':
-                meses = 8
-                break;
-            case 'octubre':
-                meses = 9
-                break;
-            case 'noviembre':
-                meses = 10
-                break;
-            case 'diciembre':
-                meses = 11
-                break;
-            default:
-                break;
-        }
-
-        let arrayGlobal = [...globalInputs]
-        arrayGlobal[year - 2023].meses[meses].array = inputsValues
-        setGlobalInputs(arrayGlobal)
     }
 
-    function handleMonthChange(itemValue) {
-        updateData()
-        setMonth(itemValue)
-    }
+    function handleCheckColor(day, index, index2) {
+        let afectadora = cardToCheck.inputs[index].afectadora
+        let afectada = cardToCheck.inputs[index].afectada
 
-    function handleYearChange(itemValue) {
-        updateData()
-        setYear(itemValue)
+        let indexManejador = cardToCheck.inputs.findIndex((element) => element.manejador === true)
+        let indexSubManejador = cardToCheck.inputs.findIndex((element) => element.subManejador === true)
+
+        let yearIndex = inputsValues[indexManejador]?.value
+        let monthIndex = null
+
+        if (cardToCheck.inputs[indexSubManejador]?.name === "Mes") {
+            monthIndex = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element.toLowerCase() === inputsValues[indexSubManejador]?.value.toLowerCase())
+        } else {
+            monthIndex = inputsValues[indexSubManejador]?.value
+        }
+
+
+
+        if (afectada && afectadora) {
+            let indexAfectada = cardToCheck.inputs[index].options.findIndex((element) => element === afectada)
+            let indexAfectadora = cardToCheck.inputs[index].options.findIndex((element) => element === afectadora)
+
+            if ((index2 === indexAfectada) && (inputsValues[index]?.value[yearIndex - 2023]?.[monthIndex]?.[indexAfectada]?.[day] === true)) {                
+                return handleColorCheckBox(index, indexAfectada, indexAfectadora, yearIndex, monthIndex, day)
+            } else {
+                return 'black'
+            }
+        }
+        else return 'gray'
+        
     }
 
     function handleInfoButton() {
@@ -237,60 +250,43 @@ export default function FormType3({setViewInfo, navigation, setNotif }) {
         if (saving) return; // si saving es true, no hago nada
         else {
             setSaving(true); // si saving es false, lo pongo en true
-            let copiaGlobal = []
-            for (let i = 0; i < globalInputs.length; i++) {
-                let copiaMeses = JSON.stringify(globalInputs[i].meses)
-                copiaMeses = JSON.parse(copiaMeses)
-                let copiaName = JSON.stringify(globalInputs[i].name)
-                copiaName = JSON.parse(copiaName)
-                copiaGlobal.push({ name: copiaName, meses: copiaMeses })
-            }
-
-            let copiaGlobalFiltrada = []
-            // reviso el array de copiaGlobal y descarto los objetos donde el mes este completamente en false
-            for (let i = 0; i < copiaGlobal.length; i++) {
-                for (let j = 0; j < copiaGlobal[i].meses.length; j++) {
-                    let contador = 0
-                    for (let k = 0; k < copiaGlobal[i].meses[j].array.length; k++) {
-                        // reviso  si alguno de los elementos esta en true
-                        if (copiaGlobal[i].meses[j].array[k].array.includes(true)) {
-                            contador++
-                        }
-                    }
-                    if (contador === 1) {   
-                        copiaGlobalFiltrada.push(copiaGlobal[i])                 
-                    }
-                }
-            }
-
-            // recorro copiaGlobalFiltrada y descarto los meses vacios
-            for (let i = 0; i < copiaGlobalFiltrada.length; i++) {
-                let copiaMeses = []
-                for (let j = 0; j < copiaGlobalFiltrada[i].meses.length; j++) {
-                    let contador = 0
-                    for (let k = 0; k < copiaGlobalFiltrada[i].meses[j].array.length; k++) {
-                        // reviso  si alguno de los elementos esta en true
-                        if (copiaGlobalFiltrada[i].meses[j].array[k].array.includes(true)) {
-                            contador++
-                        }
-                    }
-                    if (contador === 1) {
-                        copiaMeses.push(copiaGlobalFiltrada[i].meses[j])
-                    }
-                }
-
-                copiaGlobal = [{ name: copiaGlobalFiltrada[i].name, meses: copiaMeses }]
-
-            }
 
             let objetoFinal = {
                 idUser: id,
-                inputs: copiaGlobal,
-                observaciones: observacionesInput,
             }
+            if (cardToCheck.exception1 === true) {
+                let indexCheckBox = cardToCheck.inputs.findIndex((element) => element.tipo === "checkBox")
+                let arrayFinal = []
+                for (let i = 0; i < inputsValues[indexCheckBox]?.value.length; i++) {
+                    let mesesFinal = []
+                    for (let j = 0; j < inputsValues[indexCheckBox]?.value[i]?.length; j++) {
+                        let entrar = false
+                        let arrayOptions = []
+                        for (let k = 0; k < inputsValues[indexCheckBox]?.value[i]?.[j]?.length; k++) {
+                            let arrayDays = []
+                            let entrar2 = false
+                            for (let l = 0; l < 31; l++) {
+                                if (inputsValues[indexCheckBox]?.value[i]?.[j]?.[k]?.[l] === true) {
+                                    entrar = true
+                                    entrar2 = true
+                                    arrayDays.push(true)
+                                } else {
+                                    arrayDays.push(false)
+                                }
+                            }
+                            if (entrar2) arrayOptions.push({ name: cardToCheck.inputs[indexCheckBox].options[k], array: arrayDays })
+                        }
+                        if (entrar) mesesFinal.push({ name: (j).toString(), array: arrayOptions })
+                    }
+                    arrayFinal.push({ name: (i + 2023).toString(), meses: mesesFinal })
+                }
 
-            console.log('objetoFinal.inputs[0].meses[0].array', objetoFinal.inputs[0].meses[0].array)
-
+                objetoFinal.inputs = arrayFinal
+                let indexObservaciones = cardToCheck.inputs.findIndex((element) => element.name === "Observaciones")
+                objetoFinal.observaciones = inputsValues[indexObservaciones]?.value
+            } else {
+                objetoFinal.inputs = inputsValues
+            }
 
 
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en bod
@@ -303,29 +299,23 @@ export default function FormType3({setViewInfo, navigation, setNotif }) {
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Success:', data);    
-                    setNotif({view: true, message: "¡Formulario creado exitosamente!", color: "verde"})
-                   
+                    console.log('Success:', data);
+                    setNotif({ view: true, message: "¡Formulario creado exitosamente!", color: "verde" })
+                    
                     let array = []
-                    for (let i = 2023; i <= 2040; i++) {
-                        let arrayMonths = []
-                        for (let j = 0; j < 12; j++) {
-                            arrayMonths.push({
-                                name: j.toString(),
-                                array: [
-                                    { name: "Uso", array: Array.from({ length: 31 }, (_, i) => false) },
-                                    { name: "Filtracion", array: Array.from({ length: 31 }, (_, i) => false) },
-                                    { name: "Limpieza superficial", array: Array.from({ length: 31 }, (_, i) => false) },
-                                    { name: "Cambio de Aceite", array: Array.from({ length: 31 }, (_, i) => false) },
-                                    { name: "Limpieza profunda", array: Array.from({ length: 31 }, (_, i) => false) },
-                                ]
-                            })
+                    for (let i = 0; i < cardToCheck.inputs.length; i++) {
+                        if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Mes")) {
+                            array[i] = { value: new Date().toLocaleString('default', { month: 'long' }) }
                         }
-            
-                        array.push({ name: i.toString(), meses: arrayMonths })
+                        else if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Año")) {
+                            array[i] = { value: new Date().getFullYear() }
+                        }
+                        else if (cardToCheck.inputs[i].tipo === "select") {
+                            array[i] = { name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] }
+                        }
                     }
-                    setGlobalInputs(array)
-                    setObservacionesInput('')
+
+                    setInputsValues(array)
 
                     setSaving(false);
 
@@ -334,7 +324,7 @@ export default function FormType3({setViewInfo, navigation, setNotif }) {
                 })
                 .catch((error) => {
                     setSaving(false);
-                    setNotif({view: true, message: "¡Ups! Ocurrió un error", color: "naranja"})
+                    setNotif({ view: true, message: "¡Ups! Ocurrió un error", color: "naranja" })
                     console.error('Error:', error);
                 });
         }
@@ -355,126 +345,157 @@ export default function FormType3({setViewInfo, navigation, setNotif }) {
                 </View>
             </TouchableOpacity>
 
-            {/* para escoger el mes y el año a revisar */}
-            <View>
-                <View>
-                    <Text style={styles.normalText}>Mes: </Text>
-                    <Picker
-                        selectedValue={month}
-                        onValueChange={(itemValue) => handleMonthChange(itemValue)}
-                        style={styles.userInput}>
-                        <Picker.Item label="Enero" value="enero" />
-                        <Picker.Item label="Febrero" value="febrero" />
-                        <Picker.Item label="Marzo" value="marzo" />
-                        <Picker.Item label="Abril" value="abril" />
-                        <Picker.Item label="Mayo" value="mayo" />
-                        <Picker.Item label="Junio" value="junio" />
-                        <Picker.Item label="Julio" value="julio" />
-                        <Picker.Item label="Agosto" value="agosto" />
-                        <Picker.Item label="Septiembre" value="septiembre" />
-                        <Picker.Item label="Octubre" value="octubre" />
-                        <Picker.Item label="Noviembre" value="noviembre" />
-                        <Picker.Item label="Diciembre" value="diciembre" />
-                    </Picker>
-                </View>
-                <View>
-                    <Text style={[styles.normalText, { marginTop: 20 }]}>Año:</Text>
-                    <Picker
-                        selectedValue={year}
-                        onValueChange={(itemValue) => handleYearChange(itemValue)}
-                        style={styles.userInput}
-                    >
-                        {Array.from({ length: 18 }, (_, i) => 2023 + i).map((year) => (
-                            <Picker.Item key={year} label={year.toString()} value={year} />
-                        ))}
-                    </Picker>
-                </View>
-            </View>
-
-            <View style={{ marginVertical: 40 }}>
-                <TouchableOpacity onPress={() => console.log(inputsValues)}>
-                    <Text>Prueba</Text>
-                </TouchableOpacity>
-                {/* creo una tabla, primero creare una fila que sera la cabecera de la tabla y tendra los numeros del 1 al 31 */}
-                <ScrollView horizontal={true}>
-                    <View style={{ flexDirection: 'column', width: "100%" }}>
-                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', height: height5 }}>
-                            <Text style={[styles.normalText,
-                            {
-                                fontSize: 12,
-                                textAlign: 'center',
-                                textAlignVertical: 'center',
-                                width: width50,
-                                borderLeftWidth: 1,
-                                borderBottomWidth: 1,
-                                borderTopWidth: 1,
-                                borderColor: '#C3C3C3',
-                            }]}>Día</Text>
-                            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                                <Text key={day} style={[styles.normalText, styles.casilla, { textAlign: 'center', textAlignVertical: 'center', width: width10, borderTopWidth: 1, paddingBottom: 0, borderRightWidth: day === 31 ? 1 : 0 }]}>{day}</Text>
-                            ))}
+            {cardToCheck.inputs?.map((input, index) => {
+                if (input.tipo === "picker") {
+                    return (
+                        <View key={index}>
+                            <Text style={styles.normalText}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value}
+                                onValueChange={(itemValue) => {
+                                    let array = [...inputsValues];
+                                    array[index] = { value: itemValue };
+                                    setInputsValues(array);
+                                }}
+                                style={styles.userInput}>
+                                {input.options.map((option) => (
+                                    <Picker.Item key={option} label={option} value={option.toLowerCase()} />
+                                ))}
+                            </Picker>
                         </View>
-                        {/* hago otra fila pero que en lugar de Dia diga Uso y en lugar de numeros que tenga inputs de tipo select */}
-                        {cardToCheck.inputs?.length > 0 ? (
-                            cardToCheck.inputs.map((input, index) => (
-                                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', height: height5 }} key={input.name}>
-                                    <Text style={[styles.normalText,
-                                    {
-                                        fontSize: 12,
-                                        textAlign: 'center',
-                                        width: width50,
-                                        borderLeftWidth: 1,
-                                        borderBottomWidth: 1,
-                                        borderColor: '#C3C3C3',
-                                        textAlignVertical: 'center'
-                                    }]}>{input.name}</Text>
-                                    {Array.from({ length: 31 }, (_, day) => (
-                                        <View key={(day + input.name).toString()} style={[styles.normalText,
+                    )
+                }
+                else if (input.tipo === "textGrande") {
+                    return (
+                        <View key={index} style={{ marginVertical: 20 }}>
+                            <Text style={[styles.normalText, { marginVertical: 5 }]}>{input.name}</Text>
+                            <TextInput
+                                style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
+                                multiline={true}
+                                numberOfLines={4}
+                                onChangeText={(value) => {
+                                    let array = [...inputsValues];
+                                    array[index] = { name: input.name, value: value };
+                                    setInputsValues(array);
+                                }}
+                                value={inputsValues[index]?.value}
+                            />
+                        </View>
+                    )
+                }
+                else if (input.tipo === "text") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
+                            <View style={styles.passwordInputContainer}>
+                                <TextInput
+                                    style={styles.userInput}
+                                    placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
+                                    value={inputsValues[index]?.value}
+                                    onChangeText={(value) => {
+                                        let array = [...inputsValues];
+                                        array[index].value = value;
+                                        setInputsValues(array);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "checkBox") {
+                    return (
+                        <View key={index} style={{ marginVertical: 40 }}>
+                            {/* creo una tabla, primero creare una fila que sera la cabecera de la tabla y tendra los numeros del 1 al 31 */}
+                            <ScrollView horizontal={true}>
+
+                                <View style={{ flexDirection: 'column', width: "100%" }}>
+                                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', height: height5 }}>
+                                        <Text style={[styles.normalText,
                                         {
+                                            fontSize: 12,
                                             textAlign: 'center',
-                                            width: width10,
+                                            textAlignVertical: 'center',
+                                            width: width50,
                                             borderLeftWidth: 1,
                                             borderBottomWidth: 1,
+                                            borderTopWidth: 1,
                                             borderColor: '#C3C3C3',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            borderRightWidth: (day === 30) ? 1 : 0,
+                                        }]}>Día</Text>
+                                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                                            <Text key={day} style={[styles.normalText, styles.casilla, { textAlign: 'center', textAlignVertical: 'center', width: width10, borderTopWidth: 1, paddingBottom: 0, borderRightWidth: day === 31 ? 1 : 0 }]}>{day}</Text>
+                                        ))}
+                                    </View>
+
+                                    {input.options?.map((option, index2) => {
+                                        return (
+                                            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', height: height5 }} key={option}>
+                                                <Text style={[styles.normalText,
+                                                {
+                                                    fontSize: 12,
+                                                    textAlign: 'center',
+                                                    width: width50,
+                                                    borderLeftWidth: 1,
+                                                    borderBottomWidth: 1,
+                                                    borderColor: '#C3C3C3',
+                                                    textAlignVertical: 'center'
+                                                }]}>{option}</Text>
+                                                {Array.from({ length: 31 }, (_, day) => (
+                                                    <View key={(day + option).toString()} style={[styles.normalText,
+                                                    {
+                                                        textAlign: 'center',
+                                                        width: width10,
+                                                        borderLeftWidth: 1,
+                                                        borderBottomWidth: 1,
+                                                        borderColor: '#C3C3C3',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        borderRightWidth: (day === 30) ? 1 : 0,
 
 
-                                        }]}>
-                                            {/* <View key={day} style={[ {borderLeftWidth: 1, borderBottomWidth: 1, borderColor: '#C3C3C3', ]}> */}
-
-
-                                            <Checkbox
-                                                style={{}}
-                                                color={((inputsValues[index]?.array[day] === true) && (inputsValues[index].name === "Uso")) ? handleColorCheckBox(index, day) : 'gray'}
-                                                value={inputsValues[index] ? inputsValues[index].array[day] : false}
-                                                onValueChange={(value) => handleInputChange(value, index, day, input.name)}
-                                            />
-                                        </View>
-                                    ))}
+                                                    }]}>
+                                                        <Checkbox
+                                                            style={{}}
+                                                            color={handleCheckColor(day, index, index2)}
+                                                            value={handleCheckValue(day, index, index2)}
+                                                            onValueChange={(value) => handleCheckChange(value, day, index, index2)}
+                                                        />
+                                                    </View>
+                                                ))}
+                                            </View>
+                                        )
+                                    })}
                                 </View>
+                            </ScrollView>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "select") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                editable={input.disabled ? false : true}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValues];
+                                    array[index].value = itemValue;
+                                    setInputsValues(array);
+                                }}
+                            >
+                                {input.options.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                        </View>
+                    )
+                }
 
-                            ))
-                        ) : null}
+            })}
 
-
-                    </View>
-                </ScrollView>
-            </View>
-
-            {/* para las observaciones */}
-            <View style={{ marginVertical: 20 }}>
-                <Text style={[styles.normalText, {marginVertical: 5}]}>Observaciones:</Text>
-                <TextInput
-                    style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10}]}
-                    multiline={true}
-                    numberOfLines={4}
-                    onChangeText={(text) => setObservacionesInput(text)}
-                    value={observacionesInput}
-                />
-            </View>
 
 
             {/* para guardar los datos */}
@@ -574,7 +595,8 @@ const styles = StyleSheet.create({
         height: 40,
         color: '#C3C3C3',
         fontSize: 16,
-        fontFamily: "GothamRoundedMedium"
+        fontFamily: "GothamRoundedMedium",
+        marginBottom: 15,
         // cambio el color del placeholder de este textInput a #C3C3C3
 
     },

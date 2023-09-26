@@ -40,19 +40,65 @@ export default function Formularios({ navigation }) {
             ]
         },
         {
-            "title": "Control de Equipos de Frío",
-            "rolNeeded": 1
+            title: "Control de Equipos de Frío",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/controlequipofrio",
+            verMas: [
+                { text: "Límite de control", tipo: "title" },
+                { text: "Temperaturas de cámaras:", tipo: "text" },
+                { text: "menor a 5ºC.", tipo: "text" },
+                { text: "Temperatura de ante-cámaras y heladeras para descongelamiento o de tránsito (menor a 4 horas) o expositora:", tipo: "text" },
+                { text: "menor a 10ºC.", tipo: "text" },
+                { text: "Temperaturas de freezer:", tipo: "text" },
+                { text: "Menor a -18ºC.", tipo: "text" },
+                { text: "Contratos certificados con IRAM BPM:", tipo: "text" },
+                { text: "Temperatura de equipos de frío refrigerados menor a 4ºC.", tipo: "text" },
+                { text: "Según los turnos de producciónse debe controlar la temperatura de cámaras y heladeras, distando entre un control y el otro entre 8 y 10 horas(mínimo 2 veces).", tipo: "text" },
+                { text: "Un alimento correspondiente a cada cámara, seleccionado al azar, debe ser registrado. Alimentos críticos: postres, productos cocidos, vegetales desinfectados.", tipo: "text" },
+
+                { text: "Acciones de corrección", tipo: "title" },
+                { text: "Equipos refrigerados:", tipo: "text" },
+
+                { text: "1. Sila T° de los equipos supera el límite, controlar la temperatura de alimentos en distintas zonas del equipo. Re chequear la temperatura de los alimentos habiendo mantenido cerrada la puerta de cámara.", tipo: "text" },
+                { text: "2. Luego de la hora, si los alimentos se encuentran dentro del límite, ninguna otra acción es requerida, si la lectura del termómetro del equipo es correcta", tipo: "text" },
+                { text: "3. Luego de la hora, si los alimentos se encuentran a más del límite, chequear alimentos en distintas zonas del equipo:", tipo: "text" },
+                { text: "        ° Si la temperatura de los alimentos supera los 7°Cen cámara o los 10°C en heladera de tránsito (IRAMBPM mayor a 4ºC): trasladarlos a otro equipo.", tipo: "text" },
+                { text: "        ° Si la temperatura de los alimentos supera los 13°C (IRAM BPM mayor a 7ºC): deben ser DESECHADOS.", tipo: "text" },
+                { text: "Equipos congelados:", tipo: "text" },
+                { text: "1. Si el freezer se encuentra con temperaturas superiores a -12°C, chequear la dureza al tacto y signos de descongelamiento.", tipo: "text" },
+                { text: "2. Si hay signos de descongelamiento, los alimentos deben descongelarse en cámara y ser tratados como producto fresco, con una vida útil de 24 hs. una vez descongelado. Deben rotularse: -fecha de inicio del descongelamiento y hora –fecha final de descongelamiento y hora.", tipo: "text" },
+                { text: "3. Si los alimentos no pierden dureza al tacto y no presentan signos de descongelamiento,se vuelvena monitorear los mismos alimentos a la hora.", tipo: "text" },
+                { text: "4. Si los alimentos NO reflejan cambios en la dureza superficial y el equiposigue indicando una T° mayor a -12°C, trasladar los alimentos a otro equipo o utilizar la mercadería como producto fresco.", tipo: "text" },
+                { text: "5. Si el equipo ahora indica entre -12°C y -18°C, ninguna otra acción es requerida.", tipo: "text" },
+            ],
+            inputs: [
+                { name: "Fecha", tipo: "date" },
+                { name: "Turno", tipo: "select", options: ['Turno Mañana', 'Turno Tarde', 'Turno Noche'] },
+                {
+                    name: "Servicios", tipo: "row", rolIndex: 0, options: [
+                        { name: "Equipo", tipo: "text" },
+                        { name: "Nro y Nombre", tipo: "text" },
+                        { name: "Hora", tipo: "time" },
+                        { name: "Temperatura Equipo", tipo: "text" },
+                        { name: "Alimento", tipo: "text" },
+                        { name: "Temperatura Alimento", tipo: "text" },
+                        { name: "Acción de correción", tipo: "text" },
+                        { name: "Responsable", tipo: "text" },
+                    ]
+                },
+            ]
         },
         {
             title: "Control de Vidrios",
             rolNeeded: 1,
             formType: 2,
             url: "https://api.onmodoapp.com/api/controlvidrios",
-            
+
             inputs: [
 
                 // { name: "Registro de envases de vidrio y roturas", tipo: "title" },
-                { name: "Registro de envases de vidrio y roturas", tipo: "subTitle"},
+                { name: "Registro de envases de vidrio y roturas", tipo: "subTitle" },
                 {
                     name: "Recepción", tipo: "row", options: [
                         { name: "Fecha de Recepción", tipo: "date" },
@@ -75,8 +121,38 @@ export default function Formularios({ navigation }) {
             ]
         },
         {
-            "title": "Checkeo de uso de EPP",
-            "rolNeeded": 2
+            title: "Checkeo de uso de EPP",
+            rolNeeded: 2,
+            formType: 3,
+            url: "https://api.onmodoapp.com/api/chequeoepp",
+            verMas: [
+                { text: "Instrucciones", tipo: "title" },
+                { text: "Tildar el uso de EPP de cada empleado según los que corresponden con su puesto de trabajo.", tipo: "text" },
+                { text: "El incumplimiento en el uso de EPP genera la observación proactiva al empleado y su posterior registro STOP.", tipo: "text" },
+            ],
+            inputs: [
+                { name: "Mes", tipo: "picker", options: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"], subManejador: true },
+                // hago otro picker pero con los años de 2023 a 2040 en array
+                { name: "Año", tipo: "picker", options: ["2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035", "2036", "2037", "2038", "2039", "2040"], manejador: true },
+                { name: "Empleado", tipo: "select", options: ['Andres', 'Eric', 'Fernando', 'Daniela', 'Ivonne'] },
+                { name: "Sector", tipo: "text" },
+                { name: "Puesto", disabled: true, tipo: "select", options: [' '] },
+                {
+                    name: "chequeo de uso E.P.P", tipo: "checkBox", options: [
+                        "Ropa de trabajo",
+                        "Calzado de Seguridad",
+                        "Guantes",
+                        "Protección Ocular",
+                        "Protección Facial",
+                        "Protección Auditiva",
+                        "Protección Respiratoria",
+                        "Protección de Tronco",
+                        "Otro",
+                    ], colores: true
+                },
+                { name: "Observaciones", tipo: "textGrande" },
+            ]
+
         },
         {
             "title": "Armado y Fraccionamiento",
@@ -87,8 +163,23 @@ export default function Formularios({ navigation }) {
             "rolNeeded": 2
         },
         {
-            "title": "Decomiso de materias primas",
-            "rolNeeded": 1
+            title: "Decomiso de materias primas",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/registrodecomiso",
+            exception2: true,
+            inputs: [
+                {
+                    name: "Registros de decomisos de materias primas", tipo: "row", options:
+                        [
+                            { name: "Fecha", tipo: "date" },
+                            { name: "Turno", tipo: "select", options: ['Turno Mañana', 'Turno Tarde', 'Turno Noche'] },
+                            { name: "Producto decomisado", tipo: "text" },
+                            { name: "Cantidad", tipo: "text" },
+                            { name: "Causa", tipo: "select", options: ['Recall', 'Desvíos de proceso', 'Fuera fecha de vida util', 'Fuera de aptitud', 'Otras Causas'] }
+                        ]
+                },
+            ]
         },
         {
             "title": "Carga-Recepción de materia prima",
@@ -124,13 +215,13 @@ export default function Formularios({ navigation }) {
             formType: 2,
             url: "https://api.onmodoapp.com/api/servicioenlinea",
             verMas: [
-                {text: "SERVICIO LÍNEA CALIENTE", tipo: "title"},
-                {text: "Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC, por un tiempo máximo de 2 horas.", tipo: "text"},
-                {text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text"},
-                {text: "SERVICIO LÍNEA FRIA", tipo: "title"},
-                {text: "Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºCpor un máximo de 2 horas.", tipo: "text"},
-                {text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text"},
-                {text: "Contratos certificados con IRAM BPM: mantener a menos de 4ºC.", tipo: "text"},
+                { text: "SERVICIO LÍNEA CALIENTE", tipo: "title" },
+                { text: "Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC, por un tiempo máximo de 2 horas.", tipo: "text" },
+                { text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text" },
+                { text: "SERVICIO LÍNEA FRIA", tipo: "title" },
+                { text: "Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºCpor un máximo de 2 horas.", tipo: "text" },
+                { text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text" },
+                { text: "Contratos certificados con IRAM BPM: mantener a menos de 4ºC.", tipo: "text" },
             ],
             inputs: [
                 { name: "Fecha", tipo: "date" },
@@ -173,6 +264,7 @@ export default function Formularios({ navigation }) {
             url: "https://api.onmodoapp.com/api/usocambioaceite",
             rolNeeded: 1,
             formType: 3,
+            exception1: true,
             verMas: [
                 { text: "Instrucciones", tipo: "title" },
                 { text: "Tildar las actividades realizadas diariamente.", tipo: "text" },
@@ -182,21 +274,17 @@ export default function Formularios({ navigation }) {
                 { text: "Verificar la calidad de las grasas y aceites en forma regular.", tipo: "text" },
                 { text: "Desechar las grasas y aceites con cambios evidentes de color, olor y sabor.", tipo: "text" },
                 { text: "No utilizar el aceite más de 5 veces (el Registro permite llevar cuenta del uso de la freidora).", tipo: "text" },
-            ],
+                ],
             inputs: [
-                { name: "Uso" },
-                { name: "Filtracion" },
-                { name: "Limpieza superficial" },
-                { name: "Cambio de Aceite" },
-                { name: "Limpieza profunda" },
-            ]
-        },
+                { name: "Mes", tipo: "picker", options: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"], subManejador: true },
+                // hago otro picker pero con los años de 2023 a 2040 en array
+                { name: "Año", tipo: "picker", options: ["2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035", "2036", "2037", "2038", "2039", "2040"], manejador: true },
+                { name: "Control del aceite en freidora", tipo: "checkBox", options: ["Uso", "Filtracion", "Limpieza superficial", "Cambio de Aceite", "Limpieza profunda"], colores: true, afectada: "Uso", afectadora: "Cambio de Aceite" },
+                    { name: "Observaciones", tipo: "text" },
+                ]
+            },
         {
             "title": "Entrega de bidones de aceite usado",
-            "rolNeeded": 1
-        },
-        {
-            "title": "Decomiso de materias primas",
             "rolNeeded": 1
         },
         {
@@ -222,6 +310,7 @@ export default function Formularios({ navigation }) {
             formType: item.formType,
             url: item.url,
             verMas: item.verMas,
+            exception1: item.exception1,
             onPress: () => {
                 // creo un useDispatch para establecer cardToCheck    
                 dispatch({ type: 'counter/setCardToCheck', payload: item });
