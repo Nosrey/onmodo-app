@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { getTitle } from '../functions/globalFunctions';
 import Header from '../components/Header';
@@ -97,6 +97,12 @@ export default FormDetails = ({ navigation }) => {
     function handleDeleteButton () {
         setViewDelete(true)
     }
+    
+    useEffect(() => {
+        navigation?.setOptions({
+          title: getTitle(cardToCheck.title),
+        });
+      }, []);
 
     const renderItem = ({ item }) => (
         <View>

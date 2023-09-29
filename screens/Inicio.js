@@ -32,10 +32,9 @@ export default function Inicio({ navigation }) {
 
     if (rol == '1') {
         cards = [
-            {
+             {
                 title: 'Formularios',
-                onPress: () => console.log('cambiando de pagina')
-
+                onPress: () => navigation.navigate('Formularios')
             },
             {
                 title: 'Formularios cargados',
@@ -52,9 +51,9 @@ export default function Inicio({ navigation }) {
         ];
     } else if (rol == '2') {
         cards = [
-            {
+             {
                 title: 'Formularios',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Formularios')
             },
             {
                 title: 'Formularios cargados',
@@ -87,9 +86,9 @@ export default function Inicio({ navigation }) {
                 title: 'Estadísticas',
                 onPress: () => console.log('cambiando de pagina')
             },
-            {
+             {
                 title: 'Formularios',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Formularios')
             },
             {
                 title: 'Formularios cargados',

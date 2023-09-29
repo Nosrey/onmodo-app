@@ -30,7 +30,6 @@ export default function Profile({ navigation }) {
     const contratoComedor = useSelector(state => state.contratoComedor);
     const [editable, setEditable] = useState(false); // Estado para habilitar/deshabilitar la edición de los inputs [true/false]
 
-    const [inputError, setInputError] = useState(false); // Estado para mostrar/ocultar el error de input [true/false]
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false]
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
@@ -102,7 +101,7 @@ export default function Profile({ navigation }) {
         width: '48%',
         marginHorizontal: '1%',
         height: 50,
-        backgroundColor: (inputError) ? '#A0B875' : '#7BC100',
+        backgroundColor: '#7BC100',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
