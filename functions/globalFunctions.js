@@ -19,6 +19,16 @@ function getTitle(title) {
         return 'Verificacion Balanza';
     } else if (title === 'verificaciontermometros') {
         return 'Verificacion Termómetros';
+    } else if (title === 'usocambioaceite') {
+        return 'Uso y Cambio de Aceite en Freidora';
+    } else if (title === 'servicioenlinea') {
+        return 'Servicios en Línea';
+    } else if (title === 'recuperacionproducto') {
+        return 'Recuperación de Productos';
+    } else if (title === 'controlcloro') {
+        return 'Control de Cloro Activo Residual';
+    } else if (title === 'controlvidrio') {
+        return 'Control de Vidrios';
     } else {
         return title;
     }

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import { useSelector, useDispatch } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function DatePicker({ inputReceived, index, setInputsGlobal }) {
+export default function DatePicker({ inputReceived, index, setInputsGlobal, inputsValues }) {
     const [date, setDate] = useState({ fecha: new Date(), texto: 'sin fecha' });
     const [show, setShow] = useState();
     const [mode, setMode] = useState('date');
@@ -21,9 +21,8 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal }) {
 
     const onChange = (event, selectedDate) => {
         if (event.type === 'set') {
-            const currentDate = selectedDate || date.fecha;
+            const currentDate = selectedDate || inputsValues[index]?.value;
             setShow(false)
-            setDate({ fecha: currentDate, texto: fechaATexto(currentDate) })
             setInputsGlobal(index, currentDate)
         } else {
             setShow(false)
@@ -41,17 +40,17 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal }) {
                 {inputReceived.name + ':'}
             </Text>
             <Text style={[styles.normalText, { fontSize: 14 }]}>
-                {date.texto}
+                {inputsValues[index]?.value ? fechaATexto(inputsValues[index]?.value) : "Sin fecha"}
             </Text>
             <View style={styles.buttonFooterStyle}>
                 <TouchableOpacity key={index} onPress={() => showMode('date')}>
                     <Text style={styles.buttonText}>
-                        {(date.texto === 'sin fecha') ? 'Agregar Fecha' : 'Cambiar Fecha'}
+                        {!inputsValues[index]?.value ? 'Agregar Fecha' : 'Cambiar Fecha'}
                     </Text>
                 </TouchableOpacity>
                 {(show === true) && (
                     <DateTimePicker
-                        value={date.fecha}
+                        value={inputsValues[index]?.value || new Date()}
                         mode={'date'}
                         textColor={"#ffffff"}
                         display='spinner'
