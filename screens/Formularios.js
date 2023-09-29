@@ -119,8 +119,16 @@ export default function Formularios({ navigation }) {
             formType: 1,
         },
         {
-            "title": "Uso y cambio de aceite en freidora",
-            "rolNeeded": 1
+            title: "Uso y cambio de aceite en freidora",
+            rolNeeded: 1,
+            formType: 3,
+            inputs: [
+                { name: "Uso" },
+                { name: "Filtracion" },
+                { name: "Limpieza superficial" },
+                { name: "Cambio de Aceite" },
+                { name: "Limpieza profunda" },
+            ]
         },
         {
             "title": "Entrega de bidones de aceite usado",
