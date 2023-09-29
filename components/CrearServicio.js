@@ -22,7 +22,7 @@ export default function CrearServicio({ navigation, params }) {
 
     useEffect(() => {
         if (row.length > 0) {
-            
+
             if (!editionMode) {
                 let array = [];
                 for (let i = 0; i < row.length; i++) {
@@ -57,7 +57,7 @@ export default function CrearServicio({ navigation, params }) {
             } else {
                 copiaReglones[index] = [{ values: inputsValueRow }]
             }
-      
+
             // for (let i = 0; i < copiaReglones[index][0].values.length; i++) {   
             //     console.log('index', index)
             //     if ((!copiaReglones[index][0].values[i]?.value.length) && (cardToCheck.inputs[index].options[i].tipo === "select")) {
@@ -88,7 +88,7 @@ export default function CrearServicio({ navigation, params }) {
             visibleCopia[index] = false;
             setVisible(visibleCopia)
         }}>
-            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between',         marginBottom: 10}}>
+            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                 <Text style={styles.titleForm}>Agregar:</Text>
                 <TouchableOpacity>
                     <AntDesign name="closecircle" size={30} color="black" style={styles.closeBtn} onPress={() => {
@@ -100,13 +100,13 @@ export default function CrearServicio({ navigation, params }) {
                     }} />
                 </TouchableOpacity>
             </View>
-            <ScrollView style={{paddingHorizontal: 10}}>
+            <ScrollView style={{ paddingHorizontal: 10 }}>
                 {/* mapeo el array de row y si es tipo text o tipo date creare un componente diferente */}
                 {row?.map((input, index) => {
                     if (input.tipo === "date") {
-                        return (                    
+                        return (
                             <View key={index}>
-                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow}/>
+                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
                             </View>
                         )
                     } else if (input.tipo === "text") {
@@ -130,23 +130,51 @@ export default function CrearServicio({ navigation, params }) {
                     } else if (input.tipo === "time") {
                         return (
                             <View key={index}>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow}/>
+                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
                             </View>
                         )
-                    }  else if (input.tipo === "timeHeader") {
+                    } else if (input.tipo === "timeHeader") {
                         return (
                             <View key={index}>
-                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10 }}>Mantenimiento</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10 }}>{input.titulo}</Text>
                                 <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, marginBottom: 25 }} />
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow}/>
+                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow} />
                             </View>
                         )
-                    }  else if (input.tipo === "timeTop") {
+                    } else if (input.tipo === "timeTop") {
                         return (
                             <View key={index}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow}/>
+                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow} />
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textTop") {
+                        return (
+                            <View key={index} style={{backgroundColor: "#f0f0f0", padding: 10}}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        style={styles.userInput}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+                                        onChangeText={(value) => {
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "dateTop") {
+                        return (
+                            <View key={index} style={{backgroundColor: "#f0f0f0", padding: 10}}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
+                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
                             </View>
                         )
                     }
@@ -166,6 +194,32 @@ export default function CrearServicio({ navigation, params }) {
                                         }}
                                     />
                                 </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textMiddle") {
+                        return (
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }} >
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        style={styles.userInput}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+                                        onChangeText={(value) => {
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "dateFooter") {
+                        return (
+                            <View key={index} style={{ marginBottom: 30, backgroundColor: "#f0f0f0", padding: 10 }} >
+                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
                             </View>
                         )
                     }
@@ -195,7 +249,7 @@ export default function CrearServicio({ navigation, params }) {
                 <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
                 <TouchableOpacity style={styles.buttonForm} onPress={() => handleSaveButton()}>
                     <Text style={styles.buttonFormText}>
-                        { (!editionMode) ? "Guardar" : "Actualizar" }
+                        {(!editionMode) ? "Guardar" : "Actualizar"}
                     </Text>
                 </TouchableOpacity>
 

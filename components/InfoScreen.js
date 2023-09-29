@@ -92,12 +92,14 @@ export default function InfoScreen({ navigation, params }) {
                 <ScrollView>
 
 
-            <View style={{}}>
+            <View style={{alignSelf: 'center'}}>
 
                 {mensajes?.map((msg, index) => {
                     if (msg.tipo === "title")
                         return (
-                    <Text key={index} style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{msg.text}</Text>
+                            <View key={index} style={{flexDirection: 'row'}}>
+                                <Text style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{msg.text}</Text>
+                            </View>
                         )
                         else if (msg.tipo === "text")
                         return (
@@ -158,6 +160,8 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 14,
+        // permito que el text haga wrap
+        flexWrap: 'wrap',
         // hago que la fuente sea gothan rounded
         fontFamily: 'GothamRoundedBold',
         // establezo el line-height en 24px
@@ -165,6 +169,8 @@ const styles = StyleSheet.create({
         // centro el texto
         textAlign: 'left',
         marginTop: 10,
+        textAlign: 'center',
+
         // aplico bold al texto
     },
     inputContainer: {

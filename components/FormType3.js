@@ -394,7 +394,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                                     value={inputsValues[index]?.value}
                                     onChangeText={(value) => {
                                         let array = [...inputsValues];
-                                        array[index].value = value;
+                                        array[index] = { name: input.name, value: value };
                                         setInputsValues(array);
                                     }}
                                 />
