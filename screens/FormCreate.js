@@ -4,12 +4,25 @@ import Header from '../components/Header';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { NavigationContext } from "@react-navigation/native";
+import CrearServicio from '../components/CrearServicio';
+import BlackWindow from '../components/BlackWIndow';
 import FormType1 from '../components/FormType1';
 import FormType2 from '../components/FormType2';
 import ButtonBar from '../components/ButtonBar';
+import ConfirmScreen from '../components/ConfirmScreen';
+import InfoScreen from '../components/InfoScreen';
 
 export default function FormCreate({ navigation }) {
     // traigo del redux el state cardToCheck
+
+    const [visibleForm, setVisibleForm] = useState(false); // visibleForm es un booleano que indica si se muestra o no el formulario de crear servicio
+    const [viewDelete, setViewDelete] = useState(false);
+    const [reglonPicked, setReglonPicked] = useState(null)
+    const [editionMode, setEditionMode] = useState(false);
+    const [viewInfo, setViewInfo] = useState(false);
+
+    const [reglones, setReglones] = useState([]); 
+
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const rol = useSelector((state) => state.rol);
 
@@ -19,22 +32,75 @@ export default function FormCreate({ navigation }) {
         });
     }, []);
 
+    function deteleReglon() {
+        let array = [...reglones];
+        array.splice(reglonPicked, 1)
+        // actualizo el array de reglones
+        setReglones(array)
+    }
 
     let cajaText = [{
 
     }]
 
-    // cambio el title del componente por cardToCheck.title
+    let params = {
+        visible: visibleForm,
+        setVisible: setVisibleForm,
+        setReglones: setReglones,
+        reglones: reglones,
+        editionMode: editionMode,
+        setEditionMode: setEditionMode,
+        reglonPicked: reglonPicked,
+    }
+
+    let paramsDelete = {
+        title: '¿Desea eliminar este elemento?',
+        message: 'Si así lo decides, se eliminará de manera permanante y no lo podrás recuperar.',
+        viewWindow: viewDelete,
+        setViewWindow: setViewDelete,
+        action: deteleReglon,
+        data: reglonPicked,
+        botonNo: "Cancelar",
+        botonYes: "Eliminar",
+    }
+
+    let paramsInfo = {
+        title1: 'SERVICIO LÍNEA CALIENTE',
+        message1: 'Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC, por un tiempo máximo de 2 horas.',
+        message1p2: 'Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.',
+        title2: 'SERVICIO LÍNEA FRIA',
+        message2: 'Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºCpor un máximo de 2 horas.', 
+        message2p2: 'Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.', 
+        message2p3: 'Contratos certificados con IRAM BPM: mantener a menos de 4ºC.',
+        viewWindow: viewInfo,
+        setViewWindow: setViewInfo,
+        action: '',
+        data: '',
+        botonNo: "Cancelar",
+        botonYes: "Eliminar",
+    }
 
     return (
         <View style={styles.container}>
             <Header cajaText={cajaText} unElemento={true} />
+            <BlackWindow visible={viewDelete} setVisible={setViewDelete} />
+            <ConfirmScreen navigation={navigation} params={paramsDelete}/>
+
+            <BlackWindow visible={viewInfo} setVisible={setViewInfo} />
+            <InfoScreen navigation={navigation} params={paramsInfo}/>        
+
+            {cardToCheck.formType === 2 ? (
+                <BlackWindow visible={visibleForm} setVisible={() => {setVisibleForm(false); setEditionMode(false)}} />
+            ) : null}
+            {cardToCheck.formType === 2 ? (
+                <CrearServicio params={params} />
+            ) : null}
             <ScrollView>
                 <Text style={styles.titleForm}>{cardToCheck.title}</Text>
                 {cardToCheck.formType === 1 ? (
                     <FormType1 />
                 ) : cardToCheck.formType === 2 ? (
-                    <FormType2 />
+                    <FormType2 visibleForm={visibleForm} setVisibleForm={setVisibleForm} reglones={reglones} setReglones={setReglones} setViewDelete={setViewDelete} reglonPicked={reglonPicked} setReglonPicked={setReglonPicked} editionMode={editionMode} setEditionMode={setEditionMode}  viewInfo={viewInfo} setViewInfo={setViewInfo}/>
                 ) : null}
             </ScrollView>
             <ButtonBar navigation={navigation} />

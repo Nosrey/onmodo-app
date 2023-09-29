@@ -26,19 +26,6 @@ export default function Formularios({ navigation }) {
         {
             title: "Control de Cloro Activo Residual",
             rolNeeded: 1,
-            title2: "Registro para el comedor",
-            inputs: [
-                { name: "Fecha de alerta", tipo: "date" },
-                { name: "Fecha de recuperación", tipo: "date" },
-                { name: "Responsables", tipo: "text" },
-                { name: "Producto", tipo: "text" },
-                { name: "Marca", tipo: "text" },
-                { name: "Lote/Vencimiento", tipo: "date" },
-                { name: "Cantidad de producto", tipo: "text" },
-                { name: "Destino del producto", tipo: "text" },
-                { name: "Fecha de disposición final", tipo: "date" },
-            ],
-            formType: 1,
         },
         {
             "title": "Control de Equipos de Frío",
@@ -93,12 +80,43 @@ export default function Formularios({ navigation }) {
             "rolNeeded": 1
         },
         {
-            "title": "Servicio en línea",
-            "rolNeeded": 1
+            title: "Servicio en línea",
+            rolNeeded: 1,
+            formType: 2,
+            inputs: [
+                { name: "Fecha", tipo: "date" },
+                {
+                    name: "Servicios", tipo: "row", options: [
+                        { name: "Servicio", tipo: "text" },
+                        { name: "Preparación", tipo: "text" },
+                        { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 1" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 2" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Acciones correctivas", tipo: "text" },
+                        { name: "Responsable", tipo: "text"}
+                    ]
+                },
+                { name: "Verificado por", tipo: "text" },
+                { name: "Fecha", tipo: "date" },
+                { name: "Hora", tipo: "time" },
+            ]
         },
         {
-            "title": "Recuperación de productos",
-            "rolNeeded": 1
+            title: "Recuperación de productos",
+            rolNeeded: 1,
+            title2: "Registro para el comedor",
+            inputs: [
+                { name: "Fecha de alerta", tipo: "date" },
+                { name: "Fecha de recuperación", tipo: "date" },
+                { name: "Responsables", tipo: "text" },
+                { name: "Producto", tipo: "text" },
+                { name: "Marca", tipo: "text" },
+                { name: "Lote/Vencimiento", tipo: "date" },
+                { name: "Cantidad de producto", tipo: "text" },
+                { name: "Destino del producto", tipo: "text" },
+                { name: "Fecha de disposición final", tipo: "date" },
+            ],
+            formType: 1,
         },
         {
             "title": "Uso y cambio de aceite en freidora",

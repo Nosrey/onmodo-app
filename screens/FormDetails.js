@@ -17,6 +17,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 // importo icons de Feather
 import { Feather } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
+import BlackWindow from '../components/BlackWIndow';
 
 export default FormDetails = ({ navigation }) => {
     const [fontsLoaded] = useFonts({
@@ -155,6 +156,8 @@ export default FormDetails = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <BlackWindow visible={viewEdit} setVisible={setViewEdit} />
+            <BlackWindow visible={viewDelete} setVisible={setViewDelete} />
             <ConfirmScreen navigation={navigation} params={paramsEdit}/>
             <ConfirmScreen navigation={navigation} params={paramsDelete}/>
             <View>

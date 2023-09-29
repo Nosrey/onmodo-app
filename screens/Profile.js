@@ -15,6 +15,7 @@ import ButtonBar from '../components/ButtonBar';
 import Header from '../components/Header';
 // importo confirmScreen
 import ConfirmScreen from '../components/ConfirmScreen';
+import BlackWindow from '../components/BlackWIndow';
 
 
 export default function Profile({ navigation }) {
@@ -158,6 +159,7 @@ export default function Profile({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <BlackWindow visible={viewCloseSesion} setVisible={setViewCloseSesion} />
             <ConfirmScreen navigation={navigation} params={params}/>
             <ScrollView>
                 <Header cajaText={cajaText}/>
