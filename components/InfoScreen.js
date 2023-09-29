@@ -1,6 +1,6 @@
 // creo un componente para que se muestre un popup donde confirmare una accion con dos botones de si o no
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
@@ -8,9 +8,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 export default function InfoScreen({ navigation, params }) {
+    const screenWidth = Dimensions.get('window').width;
+    const screenHeight = Dimensions.get('window').height;
     // obtengo y creo los valores title, message, action, data de params
     const { mensajes, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput } = params;
-
+    
     const [inputCounter, setInputCounter] = useState(0);
 
     const [fontsLoaded] = useFonts({
@@ -74,32 +76,40 @@ export default function InfoScreen({ navigation, params }) {
         position: 'absolute',
         bottom: (mensajes?.length > 4) ? "20%" : "10%",
         zIndex: 2,
+
     }
 
 
 
 
     return (
-        <View style={[container, visible]}>
+        <View style={[container, visible, {height: screenHeight * 0.6}]}>
             <View style={{ width: "100%", display: "flex" }}>
                 <TouchableOpacity>
                     <AntDesign name="closecircle" size={30} color="black" style={styles.closeBtn} onPress={() => { setViewWindow(false) }} />
                 </TouchableOpacity>
             </View>
+                <ScrollView>
 
-            {mensajes?.map((msg, index) => {
-                if (msg.tipo === "title")
-                    return (
-                        <Text key={index} style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{msg.text}</Text>
-                    )
-                else if (msg.tipo === "text")
-                    return (
-                        <Text key={index} style={[styles.message, {
-                            // hago que el texto este justificado
-                            textAlign: 'justify',
-                        }]}>{msg.text}</Text>
-                    )
-            })}
+
+            <View style={{}}>
+
+                {mensajes?.map((msg, index) => {
+                    if (msg.tipo === "title")
+                        return (
+                    <Text key={index} style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{msg.text}</Text>
+                        )
+                        else if (msg.tipo === "text")
+                        return (
+                            <Text key={index} style={[styles.message, {
+                                // hago que el texto este justificado
+                                textAlign: 'justify',
+                            }]}>{msg.text}</Text>
+                        )
+                })}
+                            </View>
+
+                </ScrollView>
         </View>
     )
 }

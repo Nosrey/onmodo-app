@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DatePicker from './DatePicker';
 import TimePicker from './TimePicker';
@@ -8,7 +9,7 @@ import TimePicker from './TimePicker';
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 
-export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina}) {
+export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
 
@@ -19,7 +20,11 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         if (cardToCheck.inputs?.length > 0) {
             let array = [];
             for (let i = 0; i < cardToCheck.inputs.length; i++) {
-                array.push({ name: cardToCheck.inputs[i].name, value: '' })
+                if (cardToCheck.inputs[i].tipo !== "select") {
+                    array.push({ name: cardToCheck.inputs[i].name, value: '' })
+                } else {
+                    array.push({ name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] })
+                }
             }
             setInputsValues(array);
         }
@@ -34,7 +39,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
     function handleDeleteButton(index, index2) {
         setReglonPicked(index)
         setIndexPicked(index2)
-        setViewDelete(true) 
+        setViewDelete(true)
     }
 
     function handleEditButton(index, index2) {
@@ -61,22 +66,38 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     let reglonFinal = [];
                     for (let j = 0; j < reglones[i]?.length; j++) {
                         reglonFinal.push(reglones[i][j].values)
+                        for (let k = 0; k < reglonFinal.length; k++) {
+                            for (let l = 0; l < reglonFinal[k].length; l++) {
+                                if (cardToCheck.inputs[i]?.options[l].tipo === "select" && reglonFinal[k][l].value === "") {
+                                    reglonFinal[k][l].value = cardToCheck.inputs[i]?.options[l].options[0]
+                                }
+                            }
+                        }
                     }
                     copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglonFinal })
                     console.log('reglonFinal:', reglonFinal)
-        
+
                 } else if (cardToCheck.inputs[i]?.tipo !== "subTitle") {
                     copiaInputsValue.push({ name: inputsValues[i]?.name, value: inputsValues[i]?.value })
                 }
             }
+
             let objeto = {
                 idUser: id,
-                inputs: copiaInputsValue,
+            }
+            if (cardToCheck.exception2) {
+                let inputFinal = [];
+                for (let i = 0; i < copiaInputsValue[0].value.length; i++) {
+                    inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productoDecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
+                }
+                objeto.inputs = inputFinal
+            } else {
+                objeto.inputs = copiaInputsValue
             }
 
             console.log('objeto: ', objeto)
 
-            
+
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body
             fetch(cardToCheck.url, {
                 method: 'POST',
@@ -88,13 +109,21 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
-                    setNotif({view: true, message: "¡Formulario creado exitosamente!", color: "verde"})
-                    
+                    setNotif({ view: true, message: "¡Formulario creado exitosamente!", color: "verde" })
+
                     if (cardToCheck.inputs?.length > 0) {
                         let array = [];
                         for (let i = 0; i < cardToCheck.inputs.length; i++) {
-                            array.push({ name: cardToCheck.inputs[i].name, value: '' })
+                            if (cardToCheck.inputs[i].tipo !== "select") {
+                                array.push({ name: cardToCheck.inputs[i].name, value: '' })
+                            } else {
+                                array.push({ name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] })
+                            }
                         }
+
+
+
+
                         setInputsValues(array);
                         setReglones([]);
                     }
@@ -106,7 +135,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 })
                 .catch((error) => {
                     setSaving(false);
-                    setNotif({view: true, message: "¡Ups! Ocurrió un error", color: "naranja"})
+                    setNotif({ view: true, message: "¡Ups! Ocurrió un error", color: "naranja" })
                     console.error('Error:', error);
                 });
         }
@@ -122,13 +151,12 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     <AntDesign name="infocirlceo" size={20} color="#1976D2" style={{ marginRight: 5 }} />
 
                     <Text style={{
-            // fuente color azul rgb(25, 118, 210) pero en hex
+                        // fuente color azul rgb(25, 118, 210) pero en hex
                         color: '#1976D2',
                     }}>VER MÁS</Text>
                 </View>
             </TouchableOpacity>
 
-            
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "date") {
                     return (
@@ -142,11 +170,11 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         <View style={styles.reglon}>
                             <View style={styles.fila}>
                                 {reglones.length ? (
-                                    reglones[index]?.map((reglon, index2) => { 
+                                    reglones[index]?.map((reglon, index2) => {
                                         return (
                                             <View key={index2}>
                                                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                    <Text style={{ fontFamily: 'GothamRoundedMedium', width: "80%" }}>{"Elemento #" + (index2 + 1) }</Text>
+                                                    <Text style={{ fontFamily: 'GothamRoundedMedium', width: "80%" }}>{"Elemento #" + (index2 + 1)}</Text>
 
                                                     <TouchableOpacity style={{ display: 'flex', alignItems: 'left', justifyContent: 'center', width: "10%", }}>
                                                         <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton(index2, index) }} />
@@ -192,26 +220,43 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                                 />
                             </View>
                         </View>
-                        )
+                    )
                 }
                 else if (input.tipo === "time") {
                     return (
                         <TimePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
                     )
                 }
-                else if (input.tipo = "subTitle") {
+                else if (input.tipo === "subTitle") {
                     return (
-                        <Text key={index} style={[styles.normalText, {fontSize: 18, marginBottom: 10, marginTop: 15}]}>{input.name}</Text>
+                        <Text key={index} style={[styles.normalText, { fontSize: 18, marginBottom: 10, marginTop: 15 }]}>{input.name}</Text>
                     )
                 }
+                else if (input.tipo === "select") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValues];
+                                    array[index].value = itemValue;
+                                    setInputsValues(array);
+                                }}
+                            >
+                                {input.options.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                        </View>
+                    )
+                }
+      
             })}
 
-
-
-
-{/* 
-            <DatePicker inputReceived={cardToCheck.inputs[3]} index={3} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} /> */}
-            
             <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
             <TouchableOpacity style={styles.buttonForm} onPress={handleSaveButton}>
                 <Text style={styles.buttonFormText}>

@@ -57,6 +57,15 @@ export default function CrearServicio({ navigation, params }) {
             } else {
                 copiaReglones[index] = [{ values: inputsValueRow }]
             }
+      
+            // for (let i = 0; i < copiaReglones[index][0].values.length; i++) {   
+            //     console.log('index', index)
+            //     if ((!copiaReglones[index][0].values[i]?.value.length) && (cardToCheck.inputs[index].options[i].tipo === "select")) {
+            //         console.log('changing')
+            //         copiaReglones[index].values[i] = { name: cardToCheck.inputs[index].options[i].name, value: cardToCheck.inputs[index].options[i].options[0] }
+            //         console.log('2: ', copiaReglones[index])
+            //     }
+            // }         
             setReglones(copiaReglones)
         } else {
             let copiaReglones = [...reglones];
