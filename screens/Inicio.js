@@ -44,10 +44,6 @@ export default function Inicio({ navigation }) {
                 title: 'Documentación',
                 onPress: () => console.log('cambiando de pagina')
             },
-            {
-                title: 'Mi cuenta',
-                onPress: () => navigation.navigate('Profile')
-            },
         ];
     } else if (rol == '2') {
         cards = [
@@ -77,7 +73,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Cuentas',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('CreateAccount')
             },
         ];
     } else if (rol == '3') {
@@ -108,7 +104,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Cuentas',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('CreateAccount')
             },
         ];
     } else if (rol == '4') {
@@ -126,12 +122,8 @@ export default function Inicio({ navigation }) {
                 onPress: () => console.log('cambiando de pagina')
             },
             {
-                title: 'Crear Cuenta',
-                onPress: () => console.log('cambiando de pagina')
-            },
-            {
-                title: 'Mi cuenta',
-                onPress: () => navigation.navigate('Profile')
+                title: 'Cuentas',
+                onPress: () => navigation.navigate('CreateAccount')
             },
         ];
     }

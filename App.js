@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Login from './screens/Login';
+import CreateAccount from './screens/CreateAccount';
 import Inicio from './screens/Inicio';
 import PasswordRecovery from './screens/PasswordRecovery';
 import PasswordCreate from './screens/PasswordCreate';
@@ -136,6 +137,11 @@ export default function App() {
             name="Profile"
             component={Profile}
             options={{ title: 'Profile' }}
+          />
+          <Stack.Screen
+            name="CreateAccount"
+            component={CreateAccount}
+            options={{ title: 'Create Account' }}
           />
           <Stack.Screen
             name="Formularios"
