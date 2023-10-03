@@ -59,8 +59,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
     function handleColorCheckBox(index, indexAfectada, indexAfectadora, indexManejador, indexSubManejador, day) {
         let maxIndex = 0
         let contador = 0
-        // console.log(indexManejador - 2023)
-        // console.log(inputsValues[index]?.value[indexManejador - 2023]?.[indexSubManejador]?.[indexAfectadora])
         if (inputsValues[index]?.value[indexManejador - 2023]?.[indexSubManejador]?.[indexAfectadora]) {
 
             for (let i = 0; i <= day; i++) {
@@ -110,7 +108,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
         let array = inputsValues
         for (let i = 0; i < cardToCheck.inputs.length; i++) {
             if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Mes")) {
-                array[i] = { name: cardToCheck.inputs[i].name, value: new Date().toLocaleString('default', { month: 'long' }) }
+                array[i] = { name: cardToCheck.inputs[i].name, value: new Date().toLocaleString('es-ES', { month: 'long' }).toLowerCase() }
             }
             else if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Año")) {
                 array[i] = { name: cardToCheck.inputs[i].name, value: new Date().getFullYear() }
@@ -119,7 +117,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 array[i] = { name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] }
             }
         }
-
         setInputsValues(array)
     }, [])
 
@@ -170,6 +167,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
             let manejadorValue = inputsValues[indexManejador]?.value;
             let subManejadorValue = null;
             if (cardToCheck.inputs[indexSubManejador].name === "Mes") {
+                // indexSubManejador = 
                 subManejadorValue = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element.toLowerCase() === inputsValues[indexSubManejador]?.value.toLowerCase())
             } else {
                 subManejadorValue = inputsValues[indexSubManejador]?.value;
@@ -189,6 +187,8 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 array[index].value[manejadorValue - 2023][subManejadorValue][index2] = []
             }
             array[index].value[manejadorValue - 2023][subManejadorValue][index2][day] = value;
+            console.log('test', array[index].value[manejadorValue - 2023][subManejadorValue])
+
             setInputsValues(array);
 
         } else {
@@ -206,6 +206,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 array[index].value[0][0][index2] = []
             }
             array[index].value[0][0][index2][day] = value;
+            console.log('test: ', array[index].value[0][0][index2][day])
             setInputsValues(array);
         }
     }
@@ -232,14 +233,14 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
             let indexAfectada = cardToCheck.inputs[index].options.findIndex((element) => element === afectada)
             let indexAfectadora = cardToCheck.inputs[index].options.findIndex((element) => element === afectadora)
 
-            if ((index2 === indexAfectada) && (inputsValues[index]?.value[yearIndex - 2023]?.[monthIndex]?.[indexAfectada]?.[day] === true)) {                
+            if ((index2 === indexAfectada) && (inputsValues[index]?.value[yearIndex - 2023]?.[monthIndex]?.[indexAfectada]?.[day] === true)) {
                 return handleColorCheckBox(index, indexAfectada, indexAfectadora, yearIndex, monthIndex, day)
             } else {
                 return 'black'
             }
         }
         else return 'gray'
-        
+
     }
 
     function handleInfoButton() {
@@ -278,20 +279,54 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                         }
                         if (entrar) mesesFinal.push({ name: (j).toString(), array: arrayOptions })
                     }
-                arrayFinal.push({ name: (i + 2023).toString(), meses: mesesFinal })
-                console.log("arrayFinal: ", arrayFinal)
+                    arrayFinal.push({ name: (i + 2023).toString(), meses: mesesFinal })
                 }
 
                 objetoFinal.inputs = arrayFinal
                 let indexObservaciones = cardToCheck.inputs.findIndex((element) => element.name === "Observaciones")
                 objetoFinal.observaciones = inputsValues[indexObservaciones]?.value
-            } else {
-                objetoFinal.inputs = inputsValues
+            } else {                
+                // SOLO FUNCIONA SI HAY UN SOLO CHECKBOX
+
+                let indexCheckBox = cardToCheck.inputs.findIndex((element) => element.tipo === "checkBox")
+                let arrayFinal = []
+                for (let i = 0; i < inputsValues[indexCheckBox]?.value.length; i++) {
+                    let mesesFinal = []
+                    for (let j = 0; j < inputsValues[indexCheckBox]?.value[i]?.length; j++) {
+                        let entrar = false
+                        let arrayOptions = []
+                        for (let k = 0; k < inputsValues[indexCheckBox]?.value[i]?.[j]?.length; k++) {
+                            let arrayDays = []
+                            let entrar2 = false
+                            for (let l = 0; l < 31; l++) {
+                                if (inputsValues[indexCheckBox]?.value[i]?.[j]?.[k]?.[l] === true) {
+                                    entrar = true
+                                    entrar2 = true
+                                    arrayDays.push(true)
+                                } else {
+                                    arrayDays.push(false)
+                                }
+                            }
+                            if (entrar2) arrayOptions.push({ name: cardToCheck.inputs[indexCheckBox].options[k], array: arrayDays })
+                        }
+                        if (entrar) mesesFinal.push({ name: (j).toString(), array: arrayOptions })
+                    }
+                    arrayFinal.push({ name: (i + 2023).toString(), meses: mesesFinal })
+                }
+
+                objetoFinal.inputs = arrayFinal
+                // let indexObservaciones = cardToCheck.inputs.findIndex((element) => element.name === "Observaciones")
+                // objetoFinal.observaciones = inputsValues[indexObservaciones]?.value
+
+                for (let i = 0; i < cardToCheck.inputs.length; i++) {
+                    if (i === indexCheckBox) continue
+                    let objeto = {}
+                    objeto.name = cardToCheck.inputs[i].name
+                    objeto.value = inputsValues[i]?.value
+                    objetoFinal[objeto.name] = { value: objeto.value}    
+                }
             }
-
-            console.log("Objeto final: ", objetoFinal)
-            console.log("Objeto de inputs: ", objetoFinal.inputs[0].meses)
-
+            console.log('objetoFinal: ', objetoFinal)
 
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en bod
             fetch(cardToCheck.url, {
@@ -305,7 +340,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 .then(data => {
                     console.log('Success:', data);
                     setNotif({ view: true, message: "¡Formulario creado exitosamente!", color: "verde" })
-                    
+
                     let array = []
                     for (let i = 0; i < cardToCheck.inputs.length; i++) {
                         if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Mes")) {
@@ -479,7 +514,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
-                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                selectedValue={inputsValues[index]?.value.toLowerCase()}
                                 style={styles.userInput}
                                 editable={input.disabled ? false : true}
                                 onValueChange={(itemValue, itemIndex) => {
@@ -490,7 +525,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                             >
                                 {input.options.map((option, index) => {
                                     return (
-                                        <Picker.Item key={index} label={option} value={option} />
+                                        <Picker.Item key={index} label={option.toLowerCase()} value={option} />
                                     )
                                 })}
                             </Picker>

@@ -359,7 +359,7 @@ export default function Formularios({ navigation }) {
                 { text: "No utilizar el aceite más de 5 veces (el Registro permite llevar cuenta del uso de la freidora).", tipo: "text" },
                 ],
             inputs: [
-                { name: "Mes", tipo: "picker", options: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"], subManejador: true },
+                { name: "Mes", tipo: "picker", options: ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"], subManejador: true },
                 // hago otro picker pero con los años de 2023 a 2040 en array
                 { name: "Año", tipo: "picker", options: ["2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035", "2036", "2037", "2038", "2039", "2040"], manejador: true },
                 { name: "Control del aceite en freidora", tipo: "checkBox", options: ["Uso", "Filtracion", "Limpieza superficial", "Cambio de Aceite", "Limpieza profunda"], colores: true, afectada: "Uso", afectadora: "Cambio de Aceite" },

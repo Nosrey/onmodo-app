@@ -75,7 +75,6 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         }
                     }
                     copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglonFinal })
-                    console.log('reglonFinal:', reglonFinal)
 
                 } else if (cardToCheck.inputs[i]?.tipo !== "subTitle") {
                     copiaInputsValue.push({ name: inputsValues[i]?.name, value: inputsValues[i]?.value })
@@ -272,7 +271,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         </View>
                     )
                 }
-      
+
             })}
 
             <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
