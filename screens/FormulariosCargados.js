@@ -199,8 +199,16 @@ export default function FormulariosCargados({ navigation }) {
        update()
     }, []);
 
+    // ejecuto update si retrocedo a esta pantalla
     useEffect(() => {
-        let cards = formularios.map((item) => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            update()
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+    useEffect(() => {
+        let cards = formularios.map((item) => {        
             return {
                 title: getTitle(item.title),
                 onPress: () => {
