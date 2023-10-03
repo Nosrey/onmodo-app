@@ -278,7 +278,8 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                         }
                         if (entrar) mesesFinal.push({ name: (j).toString(), array: arrayOptions })
                     }
-                    arrayFinal.push({ name: (i + 2023).toString(), meses: mesesFinal })
+                arrayFinal.push({ name: (i + 2023).toString(), meses: mesesFinal })
+                console.log("arrayFinal: ", arrayFinal)
                 }
 
                 objetoFinal.inputs = arrayFinal
@@ -287,6 +288,9 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
             } else {
                 objetoFinal.inputs = inputsValues
             }
+
+            console.log("Objeto final: ", objetoFinal)
+            console.log("Objeto de inputs: ", objetoFinal.inputs[0].meses)
 
 
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en bod

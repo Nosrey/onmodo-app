@@ -130,6 +130,7 @@ export default function Login({ navigation }) {
                                     dispatch({ type: 'counter/setProvincia', payload: json2.response[0].provincia });
                                     dispatch({ type: 'counter/setLocalidad', payload: json2.response[0].localidad });
                                     dispatch({ type: 'counter/setContratoComedor', payload: json2.response[0].contratoComedor });
+                                    dispatch({ type: 'counter/setBusiness', payload: json2.response[0].business });
                                     // reviso json2.response[0] y a todos los elementos que sean un array los guardo en otro array llamado formularios que sera un let
                                     let formularios = [];
                                     // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
