@@ -155,8 +155,38 @@ export default function Formularios({ navigation }) {
 
         },
         {
-            "title": "Armado y Fraccionamiento",
-            "rolNeeded": 1
+            title: "Armado y Fraccionamiento",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/planillaarmado",
+            verMas: [
+                { text: "Instrucciones", tipo: "title" },
+                { text: "LÍMITE CRÍTICO", tipo: "text" },
+                { text: "TEMPERATURA INTERNA: Menor a 13ºC", tipo: "text" },
+                { text: "PROCEDIMIENTO", tipo: "text" },
+                { text: "1. Se prepara el primer plato (plato testigo) como muestra de referencia para armar el resto de los platos, teniendo en cuenta gramajes, ingredientes, formas, tamaños, presentación, entre otros.", tipo: "text" },
+                { text: "2. Se registra en esta planillala temperatura inicial del alimento del plato testigo y se deja el termómetro colocado en él durante todo el proceso. El uso de porcionadores es mandatorio para la estandarización del producto final y uso racional de la materia prima.", tipo: "text" },
+                { text: "3. El primer plato permanece a un lado con el termómetro mientras se continúa con la producción de todo el lote, siguiendo el plato testigo.", tipo: "text" },
+                { text: "4. Del plato testigo se monitorea su temperatura, estando correcto el procedimiento si el alimento se encuentra a menos de 13ºC en el centro del alimento.", tipo: "text" },
+                { text: "5. Finalizado el último plato, se efectúa la lectura del termómetro del plato testigo y se registra en esta planillala temperatura final. El armado de platos no debe superar los 45 minutos de exposición a temperatura ambiente.", tipo: "text" },
+                { text: "ACCIONES DE CORRECCIÓN", tipo: "text" },
+                { text: "Si la temperatura interna del alimento:", tipo: "text" },
+                { text: "-Está entre 13ºC y 15ºC, refrigerar el lote inmediatamente.", tipo: "text" },
+                { text: "-Supera los 15ºC, desechar el lote.", tipo: "text" },
+            ],
+            inputs: [
+                {name: "Planilla de Armado/Fraccionamiento", tipo: "row", options: [
+                    { name: "Fecha", tipo: "date" },
+                    { name: "Producto", tipo: "text" },
+
+                    { name: "Hora", tipo: "timeHeader", titulo: "PROCESO DE ARMADO/FRACCIONAMIENTO", cabecera: "INICIO" }, { name: "Temp. Interna", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", cabecera: "FINAL" }, { name: "Temp. Interna", tipo: "textFooter" },
+
+                    { name: "Acciones Correcion", tipo: "text" },
+                ]}
+            ],
+
+
         },
         {
             "title": "Registro de Capacitación",
@@ -182,12 +212,65 @@ export default function Formularios({ navigation }) {
             ]
         },
         {
-            "title": "Carga-Recepción de materia prima",
-            "rolNeeded": 1
+            title: "Carga/Recepción de materia prima",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/carga",
+            verMas: [
+                { text: "LÍMITES CRÍTICOS PARA EL INGRESO DE MERCADERÍAS", tipo: "title" },
+                { text: "TEMPERATURA DE ALIMENTOS:", tipo: "text" },
+                { text: "* Congelados: -18ºC ± 6ºC, o según indicación rótulo.", tipo: "text" },
+                { text: "* Carnes Frescas: 1 a 5ºC .", tipo: "text" },
+                { text: "* Pollos: -2ºC a 2ºC, hasta 7ºC con notificación al proveedor.", tipo: "text" },
+                { text: "* Lácteoss: 2ºC a 5ºC, hasta 7ºC con notificación al proveedor o según indicación en el envase.", tipo: "text" },
+                { text: "* Fiambres: Hasta 7ºC o según indicación en el envase.", tipo: "text" },
+                { text: "* Huevos: Cascara: 8ºC a 13°C. Pasteurizado: hasta 7°C.", tipo: "text" },
+                { text: "* Frutas y verduras frescas: Hasta 7°C o según indicación proveedor.", tipo: "text" },
+                { text: "* Otros alimentos no perecederos: Ambiente.", tipo: "text" },
+                { text: "ADHERENCIA A LAS ESPECIFICACIONES POR PRODUCTO:", tipo: "text" },
+                { text: "* Congelados: RNE, RNPA, fecha de vencimiento y fecha de elaboración: N° SENASA si es de origen animal. Verificar dureza y ausencia de desecación por congelamiento. Envase íntegro. Sin signos de descongelamiento previo.", tipo: "text" },
+                { text: "* Carnes Frescas:RNE, RNPA, Nº de SENASA, fecha de vencimiento y fecha de elaboración Olor característico", tipo: "text" },
+                { text: "* Pollos: RNE, RNPA, Nº de SENASA, fecha de vencimiento y fecha de faena. Canastos plásticos limpios.", tipo: "text" },
+                { text: "* Lácteos: RNE, RNPA, fecha de vencimiento y fecha de elaboración. Puede tener Nº de SENASA. Envase íntegro y limpio.", tipo: "text" },
+                { text: "* Fiambres: RNE, RNPA, fecha de vencimiento y fecha de elaboración. Puede requerir Nº de SENASA. Envase íntegro y limpio.", tipo: "text" },
+                { text: "* Huevos:Nº SENASA, fecha de vencimiento.Huevos limpios y sin rajaduras, envases limpios.", tipo: "text" },
+                { text: "* Frutas y verduras frescas: Características organolépticas acordes al producto.Cajones plásticos limpios.", tipo: "text" },
+                { text: "* Otros alimentos no perecederos: RNE, RNPA, fecha de vencimiento y fecha de elaboración. Pueden Requerir Nº SENASA. Envases íntegros y limpios.", tipo: "text" },
+                { text: "ACCIONES DE CORRECCIÓN", tipo: "title" },
+                { text: "Si los alimentos no cumplen con las especificaciones deben ser rechazados en el momento de la recepción.", tipo: "text" },
+                { text: "Cada rechazo genera un “Reporte de rechazo/devolución de Materias Primas” del cual se generan dos copias firmadas:", tipo: "text" },
+                { text: "* Constancia para el establecimiento", tipo: "text" },
+                { text: "* Constancia para el proveedor", tipo: "text" },
+                { text: "Desvíos encontrados en la recepción que se hayan repetido más de 3 veces correspondientes a un mismo proveedor y a un mismo desvío deben ser informados a: hseq@aramark.com.ar para su intervención, junto con los reportes correspondientes.", tipo: "text" },
+            ],
+            inputs: [
+                { name: "DATOS DE TRANSPORTE", tipo: "subTitle" },
+                { name: "Estado sanitario:", tipo: "select", options: ["Cumple", "No cumple"] },
+                { name: "Patente térmico", tipo: "text" },
+                { name: "Habilitación SENASA", tipo: "text" },
+                { name: "N° Precinto lateral", tipo: "text" },
+                { name: "N° Precinto trasero", tipo: "text" },
+                { name: "Termógrafo:", tipo: "select", options: ["SI", "NO"] },
+                { name: "Resp. lectura termógrafo", tipo: "text" },
+                { name: "Observaciones", tipo: "textGrande" },
+                {
+                    name: "Carga/ Recepción", tipo: "row", options: [
+                        { name: "Fecha de Carga", tipo: "dateTop", cabecera: "Fechas" }, { name: "Fecha de Recepción", tipo: "dateFooter" },
+                        { name: "Proveedor", tipo: "text" },
+                        { name: "Producto", tipo: "text" },
+                        { name: "Cantidad Comprada", tipo: "textTop", cabecera: "Cantidad (Kg-Un)" }, { name: "Cantidad Recibida", tipo: "textFooter" },
+                        { name: "T° de Carga", tipo: "textTop", cabecera: "Temperatura Alimento (ºC)" }, { name: "T° de Recepcion", tipo: "textFooter" },
+                        { name: "T° de Carga", tipo: "textTop", cabecera: "Temperatura Caja Camión (ºC)" }, { name: "T° de Recepcion", tipo: "textFooter" },
+                        { name: "Dentro de vida útil", tipo: "textTop", cabecera: "Rotulación" }, { name: "Nro. lote", tipo: "textMiddle" }, { name: "Fecha vto.", tipo: "textFooter" },
+                        { name: "Recibido", tipo: "textTop", cabecera: "Acciones de corrección tomadas" }, { name: "Motivo del rechazo", tipo: "textFooter" },
+                    ]
+                }
+            ]
+
         },
         {
             "title": "Control de Proceso",
-            "rolNeeded": 1
+            "rolNeeded": 1,
         },
         {
             "title": "Descongelamiento",
@@ -229,7 +312,7 @@ export default function Formularios({ navigation }) {
                     name: "Servicios", tipo: "row", rolIndex: 0, options: [
                         { name: "Servicio", tipo: "text" },
                         { name: "Preparación", tipo: "text" },
-                        { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio", titulo: "Mantenimiento" }, { name: "Temp", tipo: "textFooter" },
                         { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 1" }, { name: "Temp", tipo: "textFooter" },
                         { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 2" }, { name: "Temp", tipo: "textFooter" },
                         { name: "Acciones correctivas", tipo: "text" },

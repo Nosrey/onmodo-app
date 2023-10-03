@@ -222,6 +222,24 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         </View>
                     )
                 }
+                else if (input.tipo === "textGrande") {
+                    return (
+                        <View key={index} style={{ marginVertical: 20, marginTop: 5 }}>
+                            <Text style={[styles.normalText, { marginVertical: 5 }]}>{input.name}</Text>
+                            <TextInput
+                                style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
+                                multiline={true}
+                                numberOfLines={4}
+                                onChangeText={(value) => {
+                                    let array = [...inputsValues];
+                                    array[index] = { name: input.name, value: value };
+                                    setInputsValues(array);
+                                }}
+                                value={inputsValues[index]?.value}
+                            />
+                        </View>
+                    )
+                }
                 else if (input.tipo === "time") {
                     return (
                         <TimePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />

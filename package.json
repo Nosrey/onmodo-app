@@ -19,6 +19,8 @@
     "@react-navigation/native-stack": "^6.9.13",
     "@reduxjs/toolkit": "^1.9.5",
     "expo": "~49.0.8",
+    "expo-checkbox": "~2.4.0",
+    "expo-image-picker": "^14.5.0",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "gotham-fonts": "^1.0.3",
@@ -35,8 +37,7 @@
     "react-native-web": "~0.19.6",
     "react-navigation": "^4.4.4",
     "react-navigation-stack": "^2.10.4",
-    "react-redux": "^8.1.2",
-    "expo-checkbox": "~2.4.0"
+    "react-redux": "^8.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
