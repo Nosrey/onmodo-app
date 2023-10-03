@@ -94,7 +94,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 objeto.inputs = copiaInputsValue
             }
 
-            console.log('objeto: ', objeto)
+            console.log("🚀 ~ file: FormType2.js:98 ~ handleSaveButton ~ objeto:", JSON.stringify(objeto))
 
 
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body

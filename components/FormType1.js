@@ -46,7 +46,7 @@ export default function FormType1({ navigation, setNotif }) {
                 values: inputsValues
             }
 
-            console.log('objeto final: ', objetoFinal)
+            console.log("🚀 ~ file: FormType1.js:50 ~ handleSaveButton ~ objetoFinal:", objetoFinal)
 
             fetch(cardToCheck.url, {
                 method: 'POST',

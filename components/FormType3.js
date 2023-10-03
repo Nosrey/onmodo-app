@@ -187,7 +187,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 array[index].value[manejadorValue - 2023][subManejadorValue][index2] = []
             }
             array[index].value[manejadorValue - 2023][subManejadorValue][index2][day] = value;
-            console.log('test', array[index].value[manejadorValue - 2023][subManejadorValue])
 
             setInputsValues(array);
 
@@ -206,7 +205,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 array[index].value[0][0][index2] = []
             }
             array[index].value[0][0][index2][day] = value;
-            console.log('test: ', array[index].value[0][0][index2][day])
             setInputsValues(array);
         }
     }
@@ -326,7 +324,8 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                     objetoFinal[objeto.name] = { value: objeto.value}    
                 }
             }
-            console.log('objetoFinal: ', objetoFinal)
+            // console.log('objetoFinal: ', objetoFinal)
+            console.log("🚀 ~ file: FormType3.js:330 ~ handleSaveButton ~ objetoFinal:", JSON.stringify(objetoFinal))
 
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en bod
             fetch(cardToCheck.url, {
