@@ -31,6 +31,7 @@ export default FormDetails = ({ navigation }) => {
     // obtengo id y fullName
     const id = useSelector((state) => state.id);
     const fullName = useSelector((state) => state.fullName);
+    const [targetId, setTargetId] = useState(0);
 
     const { title, entries } = cardToCheck;
 
@@ -62,8 +63,38 @@ export default FormDetails = ({ navigation }) => {
         setListaEstados(listaEstadosTemp);
     }
 
-    function handleTest() {
-        console.log('test de botones')        
+    function handleDelete(id) {
+        console.log('entring... ', cardToCheck.title, ' ', id)
+        let url = "https://api.onmodoapp.com/api/" + cardToCheck.title + "/" + id;
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => {
+                console.log('response: ', response)
+                if (response.status === 200) {
+                    // si la respuesta es 200 entonces lo elimino de la lista
+                    let listaEstadosTemp = listaEstados.filter((item) => {
+                        if (item.id !== id) {
+                            return item;
+                        }
+                    });
+                    setListaEstados(listaEstadosTemp);
+                    // ahora elimino de la lista de entriesFound
+                    let entriesFoundTemp = entriesFound.filter((item) => {
+                        if (item._id !== id) {
+                            return item;
+                        }
+                    });
+                    setEntriesFound(entriesFoundTemp);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            }); 
+        console.log('listo ', id)
     }
 
     let paramsEdit = {
@@ -71,7 +102,7 @@ export default FormDetails = ({ navigation }) => {
         message: 'Para editar tienes que estar autorizado. Puedes enviar una solicitud de edición junto con un mensaje explicando el motivo. Cuando se encuentre aprobado, aparecerá en verde.',
         viewWindow: viewEdit,
         setViewWindow: setViewEdit,
-        action: handleTest,
+        action: handleDelete,
         data: '',
         botonNo: "Cancelar",
         botonYes: "Enviar",
@@ -85,17 +116,19 @@ export default FormDetails = ({ navigation }) => {
         message: 'Si así lo decides, se eliminará de manera permanante y no lo podrás recuperar.',
         viewWindow: viewDelete,
         setViewWindow: setViewDelete,
-        action: handleTest,
-        data: '',
+        action: handleDelete,
+        data: targetId,
         botonNo: "Cancelar",
         botonYes: "Eliminar",
     }
 
     function handleEditButton () {
+        
         setViewEdit(true)
     }
 
-    function handleDeleteButton () {
+    function handleDeleteButton (id) {
+        setTargetId(id)
         setViewDelete(true)
     }
     
@@ -124,7 +157,7 @@ export default FormDetails = ({ navigation }) => {
 
             </View>
             {/* si el estado de la propiedad activado es true entonces muestro el contenido */}
-            {listaEstados.find((element) => element.id === item._id).activado
+            {listaEstados.find((element) => element.id === item._id)?.activado
                 ? <View style={[itemListContainer, {
                     backgroundColor: (
                         (item.status === 'pending') ? '#FFB82F1A' : ((item.status === 'approved') ? '#7BC1001A' : ((item.status === 'denied') ? '#FF2E111A' : 'white'))
@@ -140,7 +173,7 @@ export default FormDetails = ({ navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton() }}/>
+                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(item._id) }}/>
                     </TouchableOpacity>
 
                     <Text style={[styles.textEditables, { width: "25%", color: (item.status === 'approved' ? '#7BC100' : ((item.status === 'pending') ? '#FFB82F' : (item.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item.status === 'approved' ? 'Aprobado' : ((item.status === 'pending') ? 'Pendiente' : ((item.status === 'denied') ? 'Denegado' : '')))}</Text>

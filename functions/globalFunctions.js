@@ -29,6 +29,8 @@ function getTitle(title) {
         return 'Control de Cloro Activo Residual';
     } else if (title === 'controlvidrio') {
         return 'Control de Vidrios';
+    } else if (title === 'controlequipofrio') {
+        return 'Control de Equipos de frio';
     } else {
         return title;
     }
