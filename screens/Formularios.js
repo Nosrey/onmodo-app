@@ -273,8 +273,55 @@ export default function Formularios({ navigation }) {
             "rolNeeded": 1,
         },
         {
-            "title": "Descongelamiento",
-            "rolNeeded": 1
+            title: "Descongelamiento",
+            rolNeeded: 1,
+            url: "https://api.onmodoapp.com/api/descongelamiento",
+            formType: 2,
+            verMas: [
+                // titulo PROCEDIMIENTO
+                { text: "PROCEDIMIENTO", tipo: "title" },
+                { text: "En equipos de frío:", tipo: "text" },
+                { text: "1. Se retiran del freezer los alimentos a descongelar, eliminando los contenedores de cartón u otros materiales aislantes.", tipo: "text" },
+                { text: "2. Se dispone el alimento en un recipiente limpio y sanitizado con una bandeja adecuada. Se rotula con fecha de inicio del proceso.", tipo: "text" },
+                { text: "3. Se colocan dichos recipientes en cámaras, antecámaras o heladeras a temperaturas entre 5ºC y 12ºC.", tipo: "text" },
+                { text: "4. Al finalizar el proceso, se rotula el alimento con la fecha del día.", tipo: "text" },
+                { text: "5. Mantener refrigerado hasta el final de su vida útil.", tipo: "text" },
+                { text: "Sumergido en agua no contacto directo :", tipo: "text" },
+                { text: "1. Se dispone del producto en un contenedor o bacha previamente sanitizada y cubrir con agua caliente (si es posible utilizar agua hirviendo).", tipo: "text" },
+                { text: "2. El recambio de esta agua se hace cada 30 minutos y el tiempo máximo que se establece para mantener esta operación es de 4 horas.", tipo: "text" },
+                { text: "3. Al finalizar el proceso, se rotula el alimento con la fecha del día. Vida útil: 24 hs.", tipo: "text" },
+                { text: "4. Mantener refrigerado hasta el final de su vida útil.", tipo: "text" }, 
+                { text: "MICROONDAS:", tipo: "text" }, 
+                { text: "1. Se retira el envoltorio externo del producto.", tipo: "text" }, 
+                { text: "2. Se dispone de la pieza en un contenedor limpio y sanitizado, apto para microondas.", tipo: "text" }, 
+                { text: "3. Se selecciona la función de “descongelar”, y se programa el nivel de potencia y tiempo según lo establecido en el manual del equipo.", tipo: "text" }, 
+                { text: "4. Todos los alimentos crudos descongelados en microondas se cocinan dentro de las 12 horas de finalizado el descongelamiento.", tipo: "text" }, 
+                { text: "", tipo: "text" }, 
+                { text: "ACCIONES DE CORRECCIÓN", tipo: "title" }, 
+                { text: "Si la temperatura interna del alimento es hasta 13ºC, cocinar. Si es mayor a 13ºC, descartar.", tipo: "text" }, 
+            ],
+            inputs: [
+                {
+                    name: "Proceso", tipo: "row", options: [
+                        { name: "Fecha", tipo: "date" },
+                        { name: "Alimento", tipo: "text" },
+                        { name: "Nro. lote", tipo: "text" },
+                        { name: "Método", tipo: "select", options: [
+                            "Equipos de Frío",
+                            "Agua caliente",
+                            "Microondas",
+                            "Cocción directa",
+                        ]},
+                        { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Inicio" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 1" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 2" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 3" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Final" }, { name: "Temp", tipo: "textFooter" },
+                        { name: "Acciones de correción", tipo: "text" },
+                        { name: "Responsable", tipo: "text" },
+                    ]
+                },
+            ]
         },
         {
             "title": "Despacho a producción",
