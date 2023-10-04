@@ -209,3 +209,6 @@ export const PUESTOS_N1 = [
     'Jefe de recepción',
     'Jefe Técnico especial de oficio'
   ]
+
+    // exporto API_URL como http://localhost:8080
+    export const API_URL = 'http://localhost:8080';

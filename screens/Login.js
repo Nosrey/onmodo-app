@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono d
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import Notification from '../components/Notification';
+import { API_URL } from '../functions/globalFunctions';}
 
 export default function Login({ navigation }) {
     const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion
@@ -86,13 +87,14 @@ export default function Login({ navigation }) {
     //         setLoginError(true);
     //     }
     // }
-    // hago un fetch a la api https://api.onmodoapp.com/api/login donde en el body envio con metodo post el legajo y la contraseña como strings asi { legajo: string, password:string}
+    // hago un fetch a la api ${API_URL}/api/login donde en el body envio con metodo post el legajo y la contraseña como strings asi { legajo: string, password:string}
     // si la respuesta es 200, navego a la pantalla Inicio
     function handleLogin() {
         if (!inputError && !logged) {
             dispatch({ type: 'counter/setLogged', payload: true });
             setErrorMessage('')
-            fetch('https://api.onmodoapp.com/api/login', {
+
+            fetch(`${API_URL}/api/login`);
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -112,8 +114,8 @@ export default function Login({ navigation }) {
                         dispatch({ type: 'counter/setToken', payload: json.response.token });
                         dispatch({ type: 'counter/setId', payload: json.response.id });
                         dispatch({ type: 'counter/setRol', payload: json.response.rol });
-                        // ahora hago un fetch a https://api.onmodoapp.com/api/business/${idUser} donde idUser es el id del usuario logueado que esta en json.response.id y tras eso hago dispatch para fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor
-                        fetch(`https://api.onmodoapp.com/api/business/${json.response.id}`, {
+                        // ahora hago un fetch a ${API_URL}/api/business/${idUser} donde idUser es el id del usuario logueado que esta en json.response.id y tras eso hago dispatch para fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor
+                        fetch(`${API_URL}/api/business/${json.response.id}`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',

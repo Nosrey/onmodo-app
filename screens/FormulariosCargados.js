@@ -12,6 +12,7 @@ import Filtrador from '../components/Filtrador';
 import { getTitle } from '../functions/globalFunctions';
 import ButtonBar from '../components/ButtonBar';
 import Notification from '../components/Notification';
+import { API_URL } from '../functions/globalFunctions'
 
 export default function FormulariosCargados({ navigation }) {
     const dispatch = useDispatch();
@@ -27,7 +28,7 @@ export default function FormulariosCargados({ navigation }) {
 
     function update() {
 
-        fetch(`https://api.onmodoapp.com/api/business/${id}`, {
+        fetch(`${API_URL}/api/business/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
