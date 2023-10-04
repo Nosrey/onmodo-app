@@ -271,6 +271,29 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         </View>
                     )
                 }
+                else if (input.tipo === "selectShow") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValues];
+                                    array[index].value = itemValue;
+                                    setInputsValues(array);
+                                }}
+                            >
+                                {input.options.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{inputsValues[index]?.value || input.options[0]}</Text>
+                        </View>
+                    )
+                }
 
             })}
 

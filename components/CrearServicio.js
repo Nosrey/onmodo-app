@@ -152,7 +152,7 @@ export default function CrearServicio({ navigation, params }) {
                     }
                     else if (input.tipo === "textTop") {
                         return (
-                            <View key={index} style={{backgroundColor: "#f0f0f0", padding: 10}}>
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
                                 <View style={styles.passwordInputContainer}>
@@ -170,9 +170,98 @@ export default function CrearServicio({ navigation, params }) {
                             </View>
                         )
                     }
+                    else if (input.tipo === "selectTop") {
+                        return (
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
+
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                                <Picker
+                                    selectedValue={inputsValueRow[index]?.value || input.options[0]}
+                                    style={styles.userInput}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        let array = [...inputsValueRow];
+                                        array[index].value = itemValue;
+                                        setInputsValueRow(array);
+                                    }}
+                                >
+                                    {input.options.map((option, index) => {
+                                        return (
+                                            <Picker.Item key={index} label={option} value={option} />
+                                        )
+                                    })}
+                                </Picker>         
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "selectHeader") {
+                        return (
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10 }}>{input.titulo}</Text>
+                                <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 0, marginBottom: 15 }} />
+
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, display: (input.cabecera.length ? 'flex' : "none") }}>{input.cabecera}</Text>
+
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                                <Picker
+                                    selectedValue={inputsValueRow[index]?.value || input.options[0]}
+                                    style={styles.userInput}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        let array = [...inputsValueRow];
+                                        array[index].value = itemValue;
+                                        setInputsValueRow(array);
+                                    }}
+                                >
+                                    {input.options.map((option, index) => {
+                                        return (
+                                            <Picker.Item key={index} label={option} value={option} />
+                                        )
+                                    })}
+                                </Picker>         
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textGrandeTop") {
+                        return (
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+                                        onChangeText={(value) => {
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textGrande") {
+                        return (
+                            <View key={index} style={{ marginVertical: 20, marginTop: 5 }}>
+                                <Text style={[styles.normalText, { marginVertical: 5 }]}>{input.name}</Text>
+                                <TextInput
+                                    style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
+                                    multiline={true}
+                                    numberOfLines={4}
+                                    onChangeText={(value) => {
+                                        let array = [...inputsValueRow];
+                                        array[index].value = value;
+                                        setInputsValueRow(array);
+                                    }}
+                                    value={inputsValueRow[index]?.value || ''}
+                                />
+                            </View>
+                        )
+                    }
                     else if (input.tipo === "dateTop") {
                         return (
-                            <View key={index} style={{backgroundColor: "#f0f0f0", padding: 10}}>
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
                                 <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
                             </View>
@@ -181,6 +270,26 @@ export default function CrearServicio({ navigation, params }) {
                     else if (input.tipo === "textFooter") {
                         return (
                             <View key={index} style={{ marginBottom: 30, backgroundColor: "#f0f0f0", padding: 10 }} >
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        style={styles.userInput}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+                                        onChangeText={(value) => {
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textFooterCabecera") {
+                        return (
+                            <View key={index} style={{ marginBottom: 30, backgroundColor: "#f0f0f0", padding: 10 }} >
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
                                 <View style={styles.passwordInputContainer}>
                                     <TextInput
@@ -243,6 +352,31 @@ export default function CrearServicio({ navigation, params }) {
                             </Picker>
                         </View>
                     )
+
+                    else if (input.tipo === "selectShow") {
+                        return (
+                            <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                                <Picker
+                                    selectedValue={inputsValueRow[index]?.value || input.options[0]}
+                                    style={styles.userInput}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        let array = [...inputsValueRow];
+                                        array[index].value = itemValue;
+                                        setInputsValueRow(array);
+                                    }}
+                                >
+                                    {input.options.map((option, index) => {
+                                        return (
+                                            <Picker.Item key={index} label={option} value={option} />
+                                        )
+                                    })}
+                                </Picker>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{inputsValueRow[index]?.value || input.options[0]}</Text>
+                            </View>
+                        )
+                    }
+
                 })}
 
 

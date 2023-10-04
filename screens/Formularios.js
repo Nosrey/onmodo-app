@@ -352,16 +352,93 @@ export default function Formularios({ navigation }) {
             ]
         },
         {
-            "title": "Distribución y expedición",
-            "rolNeeded": 1
+            title: "Distribución y expedición",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/distribucion",
+            verMas: [
+                { text: "Llegado al punto de distribución los alimentos deben consumirse dentro de las 2 horas de entrega o mantenerse en refrigeración hasta el momento de su regeneración.", tipo: "text" },
+                { text: "ALIMENTOS CALIENTES", tipo: "title" },
+                { text: "Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC durante el transporte y la recepción.", tipo: "text" },
+                { text: "ALIMENTOS FRÍOS", tipo: "title" },
+                { text: "Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºC", tipo: "text" },
+            ],
+            inputs: [
+                // un fecha
+                { name: "Fecha", tipo: "date" },
+                // un row
+                {
+                    name: "Distribución y expedición", tipo: "row", options: [
+                        // servicio tipo select con "Desayuno" | "Almuerzo" | "Merienda" | "Cena".
+                        { name: "Servicio", tipo: "select", options: ["Desayuno", "Almuerzo", "Merienda", "Cena"] },
+                        // preparacion tipo text
+                        { name: "Preparación", tipo: "textGrande" },
+                        { name: "Hora", tipo: "timeTop", cabecera: "Despacho", titulo: "Distribución/Expedición" }, { name: "Temp", tipo: "textFooter" },
+
+                        { name: "Hora", tipo: "timeTop", cabecera: "Recepción" }, { name: "Temp", tipo: "textFooter" },
+                        // un select con las siguientes opciones llamado acciones correctivas
+                        // *Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.
+                        // * Desechar porque la temperatura está por debajo de 55 °C,
+                        // * Desechar porque la temperatura está por encima de 15°C.
+                        // * Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C.
+                        // * Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C.
+                        { name: "Acciones correctivas", tipo: "selectShow", options: ["Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.", "Desechar porque la temperatura está por debajo de 55 °C", "Desechar porque la temperatura está por encima de 15°C", "Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C", "Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C"] },
+                    ]   
+                },
+            ]
         },
         {
             "title": "Planilla de recepción",
             "rolNeeded": 1
         },
         {
-            "title": "Planilla de sanitización",
-            "rolNeeded": 1
+            title: "Planilla de sanitización",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/sanitizacion",
+            verMas: [
+                // titulo sanitizacion
+                { text: "SANITIZACIÓN", tipo: "title" },
+                // text 1. Seleccionar las unidades/hojas que no cuenten con características organolépticas apropiadas..
+                { text: "1. Seleccionar las unidades/hojas que no cuenten con características organolépticas apropiadas.", tipo: "text" },
+                { text: "2. Lavado inicial: sumergir y remover los productos en una bacha con agua potable durante 5 minutos.", tipo: "text" },
+                { text: "3. Sanitización: Colocar los vegetales/frutas previamente lavados en solución clorada (15 ml de lavandina o cloro cada 5 litros de agua) durante 5 minutos. Recambiar la solución clorada en cada operación.", tipo: "text" },
+                { text: "4. Enjuague final: todos los vegetales y frutas deben ser enjuagados.", tipo: "text" },
+                { text: "5. Acondicionamiento post-sanitización:se deben disponer en recipientes limpios (canastos o bolsas cristal), rotulados y protegidos. Los vegetales,una vez sanitizados, deben ser tratados como alimentos listos para consumo, refrigerados a menos de 5ºC.", tipo: "text" },
+                { text: "LÍMITE CRÍTICO", tipo: "title" },
+                { text: '* Concentración deseada entre 100 y 200 ppm" (medir con tiras reactivas)', tipo: "text" },
+                { text: "Tiempo de contacto 5 minutos.", tipo: "text" },
+                { text: "ACCIONES DE CORRECCIÓN", tipo: "title" },
+                { text: "Si la concentración es mayor, diluir con agua potable hasta llegar a la concentración deseada.", tipo: "text" },
+                { text: "Si la concentración es menor, dosificar manualmente en relación al volumen de la bacha.", tipo: "text" },
+            ],
+            inputs: [
+                // tipo row
+                {
+                    name: "Sanitización", tipo: "row", options: [
+                        // fecha
+                        { name: "Fecha", tipo: "date" },
+                        // Vegetal a desinfectar
+                        { name: "Vegetal a desinfectar", tipo: "text" },
+                        // select Si/No con opciones Si, No
+                        { name: "Lavado", tipo: "selectTop", cabecera: "LAVADO INICIAL", options: ["Si", "No"] },
+                        // tipo selectHeader 
+                        { name: "Concentración", tipo: "selectHeader", titulo: "DESINFECCIÓN", cabecera: "", options: ["Si", "No"] },
+                        { name: "Minutos", tipo: "textFooterCabecera", cabecera: "Tiempo inmersión"},
+                        { name: "Enjuague", tipo: "selectTop", cabecera: "ENJUAGUE FINAL", options: ["Si", "No"] },
+                        // tipo text acciones de correcion
+                        { name: "Acciones de correción", tipo: "text" },
+                        // responsable
+                        { name: "Responsable", tipo: "text" },
+                    ]
+                },
+                // responsable tipo text
+                { name: "Responsable", tipo: "text" },
+                // Fecha
+                { name: "Fecha", tipo: "date" },
+                // hora    
+                { name: "Hora", tipo: "time" },
+            ]    
         },
         {
             title: "Servicio en línea",
