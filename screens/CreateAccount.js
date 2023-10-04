@@ -19,6 +19,7 @@ import BlackWindow from '../components/BlackWIndow';
 import notImg from '../assets/notImg.png'
 import * as ImagePicker from 'expo-image-picker';
 import { PUESTOS_N1, PUESTOS_N2 } from '../functions/globalFunctions';
+import Notification from '../components/Notification';
 
 
 export default function CreateAccount({ navigation }) {
@@ -38,6 +39,7 @@ export default function CreateAccount({ navigation }) {
 
     const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
     const [image, setImage] = useState(null);
+    const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion de guardado exitoso
 
     const [profileInputs, setProfileInputs] = useState({
         imagen: null,
@@ -46,7 +48,8 @@ export default function CreateAccount({ navigation }) {
         telefono: '',
         email: '',
         nivel: 1,
-        puesto: '',
+        // puesto inicia en el primer valor
+        puesto: PUESTOS_N1[0],
         provincia: '',
         localidad: '',
         contratoComedor: '',
@@ -97,11 +100,18 @@ export default function CreateAccount({ navigation }) {
                 const data = await resp.json();
                 let provincias = data.provincias.sort((a, b) => a.nombre.localeCompare(b.nombre));
                 setProvincias(provincias);
+           
+                const resp2 = await fetch(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${provincias[0].id}&campos=id,nombre&max=500`);
+                const data2 = await resp2.json();
+                let final = data2.municipios.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                setLocalidades(final)
+                setProfileInputs({ ...profileInputs, provincia: provincias[0].nombre, localidad: final[0].nombre });
+
                 return provincias;
             } catch (error) {
                 console.error('Error:', error);
                 throw new Error('No se pudo obtener los datos del usuario.');
-           }
+            }
         };
         getProvincias()
     }, []);
@@ -120,7 +130,63 @@ export default function CreateAccount({ navigation }) {
         setLoginError(false);
     }
 
-    const createNewUSer  = async ({
+    function handleSaveButton() {
+        // verifico si alguno de los campos estan vacios
+        if (profileInputs.nombre == '' || profileInputs.legajo == '' || profileInputs.telefono == '' || profileInputs.email == '' || profileInputs.puesto == '' || profileInputs.provincia == '' || profileInputs.localidad == '' || profileInputs.contratoComedor == '' || profileInputs.imagen == null) {
+            setNotif({ view: true, message: "¡Ups! Faltan completar campos", color: "naranja" })
+            // hago un console.log del elemento que falta
+
+            console.log("Falta completar: ", 
+              (profileInputs.nombre == '') ? "nombre" : 
+              (profileInputs.legajo == '') ? "legajo" : 
+              (profileInputs.telefono == '') ? "telefono" : 
+              (profileInputs.email == '') ? "email" : 
+              (profileInputs.puesto == '') ? "puesto" : 
+              (profileInputs.provincia == '') ? "provincia" : 
+              (profileInputs.localidad == '') ? "localidad" : 
+              (profileInputs.contratoComedor == '') ? "contratoComedor" :
+              (profileInputs.imagen == null) ? "imagen" : "validation complete")
+        }
+        // verifico si el valor de email es un email valido usando una expresion regular
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileInputs.email)) {
+            setNotif({ view: true, message: "¡Ups! El email ingresado no es válido", color: "naranja" })
+        }
+        else {
+            console.log('todo bien: ', profileInputs)
+            setNotif({ view: true, message: "¡Cuenta creada exitosamente!", color: "verde" })
+            vaciarInputs();
+            createNewUSer({
+                email: profileInputs.email,
+                fullName: profileInputs.nombre,
+                legajo: profileInputs.legajo,
+                number: profileInputs.telefono,
+                puesto: profileInputs.puesto,
+                contratoComedor: profileInputs.contratoComedor,
+                rol: profileInputs.nivel,
+                business: business,
+                provincia: profileInputs.provincia,
+                localidad: profileInputs.localidad,
+                imgProfile: profileInputs.imagen
+            })
+        }
+    }
+
+    function vaciarInputs() {
+        setProfileInputs({
+            imagen: null,
+            nombre: '',
+            legajo: '',
+            telefono: '',
+            email: '',
+            nivel: 1,
+            puesto: PUESTOS_N1[0],
+            provincia: provincias[0].nombre,
+            localidad: localidades[0].nombre,
+            contratoComedor: '',
+        })
+    }
+
+    const createNewUSer = async ({
         email,
         fullName,
         legajo,
@@ -132,40 +198,40 @@ export default function CreateAccount({ navigation }) {
         provincia,
         localidad,
         imgProfile,
-      }) => {
+    }) => {
         try {
             console.log('business: ', business)
-          const formData = new FormData();
-          formData.append('imgProfile', imgProfile);
-          formData.append('email', email);
-          formData.append('fullName', fullName);
-          formData.append('legajo', legajo);
-          formData.append('number', number);
-          formData.append('puesto', puesto);
-          formData.append('contratoComedor', contratoComedor);
-          formData.append('rol', rol); // No need to parseInt here
-          formData.append('business', business);
-          formData.append('provincia', provincia);
-          formData.append('localidad', localidad);
-      
-          const response = await fetch(`https://api.onmodoapp.com/api/register`, {
-            method: 'POST',
-            body: formData, // Use 'body' instead of 'data' for FormData
-          });
-      
-          if (!response.ok) {
-            throw new Error(`HTTP Error! Status: ${response.status}`);
-          }
-      
-          const data = await response.json();
-          console.log("formData", formData)
-          console.log("data", data)
-          return data;
+            const formData = new FormData();
+            formData.append('imgProfile', imgProfile);
+            formData.append('email', email);
+            formData.append('fullName', fullName);
+            formData.append('legajo', legajo);
+            formData.append('number', number);
+            formData.append('puesto', puesto);
+            formData.append('contratoComedor', contratoComedor);
+            formData.append('rol', rol); // No need to parseInt here
+            formData.append('business', business);
+            formData.append('provincia', provincia);
+            formData.append('localidad', localidad);
+
+            const response = await fetch(`https://api.onmodoapp.com/api/register`, {
+                method: 'POST',
+                body: formData, // Use 'body' instead of 'data' for FormData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP Error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("formData", formData)
+            console.log("data", data)
+            return data;
         } catch (error) {
-          console.error('Error:', error);
-          throw error;
+            console.error('Error:', error);
+            throw error;
         }
-      };
+    };
 
     function handleCloseSesion() {
         // elimino el stack de navegacion
@@ -209,16 +275,16 @@ export default function CreateAccount({ navigation }) {
 
     const getLocalidades = async (idProv) => {
         try {
-          const resp = await fetch(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${idProv}&campos=id,nombre&max=500`);
-          const data = await resp.json();
-          let final = data.municipios.sort((a, b) => a.nombre.localeCompare(b.nombre));
-          return final
+            const resp = await fetch(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${idProv}&campos=id,nombre&max=500`);
+            const data = await resp.json();
+            let final = data.municipios.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            return final
 
         } catch (error) {
-          console.error('Error:', error);
-          throw new Error('No se pudo obtener los datos del usuario.');
+            console.error('Error:', error);
+            throw new Error('No se pudo obtener los datos del usuario.');
         }
-      };
+    };
 
     const footerContainer = {
         // hago que el elemento este al fondo de la pagina o pantalla
@@ -272,25 +338,26 @@ export default function CreateAccount({ navigation }) {
 
 
     if (hasGalleryPermission === false) {
-        return <Text style={{textAlign: 'center', fontFamily: 'GothamRoundedBold', fontSize: 25, paddingHorizontal: "20%", marginTop: 60}}>Acceso denegado a la galería</Text>;
+        return <Text style={{ textAlign: 'center', fontFamily: 'GothamRoundedBold', fontSize: 25, paddingHorizontal: "20%", marginTop: 60 }}>Acceso denegado a la galería</Text>;
     }
 
 
     return (
         <View style={styles.container}>
+            <Notification params={notif} notif={notif} setNotif={setNotif} />
             <BlackWindow visible={viewCloseSesion} setVisible={setViewCloseSesion} />
             <ConfirmScreen navigation={navigation} params={params} />
             <ScrollView>
                 <Header cajaText={cajaText} />
 
-                <TouchableOpacity onPress={pickImage} style={{display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 20}}>
+                <TouchableOpacity onPress={pickImage} style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 20 }}>
                     <Image source={(profileInputs.imagen) ? { uri: profileInputs.imagen } : notImg} style={styles.profileImg} />
-                    <TouchableOpacity onPress={pickImage} style={[buttonFooterStyle, {width: "40%"}]}>
+                    <TouchableOpacity onPress={pickImage} style={[buttonFooterStyle, { width: "40%" }]}>
                         <Text style={[styles.buttonText]}>Cambiar imagen</Text>
                     </TouchableOpacity>
 
                 </TouchableOpacity>
-                
+
                 {/* Formularios */}
                 <View style={styles.form}>
                     <View style={styles.inputContainer}>
@@ -324,7 +391,7 @@ export default function CreateAccount({ navigation }) {
                                 value={profileInputs.telefono}
                                 onChange={(e) => setProfileInputs({ ...profileInputs, telefono: e.nativeEvent.text })}
                                 style={tlfInput}
-                                placeholder={"Número de contacto"} 
+                                placeholder={"Número de contacto"}
                             />
                         </View>
                     </View>
@@ -335,7 +402,7 @@ export default function CreateAccount({ navigation }) {
                                 value={profileInputs.email}
                                 onChange={(e) => setProfileInputs({ ...profileInputs, email: e.nativeEvent.text })}
                                 style={tlfInput}
-                                placeholder={"Correo electrónico"} 
+                                placeholder={"Correo electrónico"}
                             />
                         </View>
                     </View>
@@ -391,10 +458,10 @@ export default function CreateAccount({ navigation }) {
                                 }}
                                 style={styles.userInput}>
                                 {provincias?.map((provincia, index) => {
-                                    return <Picker.Item key={index} label={provincia.nombre} value={provincia.nombre} />                                        
+                                    return <Picker.Item key={index} label={provincia.nombre} value={provincia.nombre} />
                                 })}
                             </Picker>
-                        </View>                        
+                        </View>
                     </View>
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Localidad</Text>
@@ -425,19 +492,7 @@ export default function CreateAccount({ navigation }) {
 
 
                 <View style={[footerContainer, { display: "flex", alignItems: "center", justifyContent: "center" }]}>
-                    <TouchableOpacity style={[buttonFooterStyle, { backgroundColor: "#A0B875", width: "95%" }]} onPress={() => createNewUSer({
-                        email: profileInputs.email,
-                        fullName: profileInputs.nombre,
-                        legajo: profileInputs.legajo,
-                        number: profileInputs.telefono,
-                        puesto: profileInputs.puesto,
-                        contratoComedor: profileInputs.contratoComedor,
-                        rol: profileInputs.nivel,
-                        business: business,
-                        provincia: profileInputs.provincia,
-                        localidad: profileInputs.localidad,
-                        imgProfile: profileInputs.imagen})
-                        }>
+                    <TouchableOpacity style={[buttonFooterStyle, { backgroundColor: "#A0B875", width: "95%" }]} onPress={handleSaveButton}>
                         <Text style={[styles.buttonText]}>Crear cuenta</Text>
                     </TouchableOpacity>
                 </View>
