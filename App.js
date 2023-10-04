@@ -31,6 +31,7 @@ const initialState = {
   puesto: '',
   provincia: '',
   localidad: '',
+  business: '',
   contratoComedor: '',
   formularios: [],
   cardToCheck: {},
@@ -66,6 +67,9 @@ const counterSlice = createSlice({
       state.number = action.payload;
     }
     ,
+    setBusiness(state, action) {
+      state.business = action.payload;
+    },
     setPuesto(state, action) {
       state.puesto = action.payload;
     }

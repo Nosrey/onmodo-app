@@ -24,14 +24,9 @@ import { PUESTOS_N1, PUESTOS_N2 } from '../functions/globalFunctions';
 export default function CreateAccount({ navigation }) {
     const dispatch = useDispatch();
     // preparo las constantes para fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor del redux
-    const fullName = useSelector(state => state.fullName);
-    const legajo = useSelector(state => state.legajo);
-    const number = useSelector(state => state.number);
-    const puesto = useSelector(state => state.puesto);
+
     const rol = useSelector(state => state.rol);
-    const provincia = useSelector(state => state.provincia);
-    const localidad = useSelector(state => state.localidad);
-    const contratoComedor = useSelector(state => state.contratoComedor);
+    const business = useSelector(state => state.business);
     const [editable, setEditable] = useState(false); // Estado para habilitar/deshabilitar la edición de los inputs [true/false]
 
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false]
@@ -124,6 +119,53 @@ export default function CreateAccount({ navigation }) {
         setPasswordInput2(value);
         setLoginError(false);
     }
+
+    const createNewUSer  = async ({
+        email,
+        fullName,
+        legajo,
+        number,
+        puesto,
+        contratoComedor,
+        rol,
+        business,
+        provincia,
+        localidad,
+        imgProfile,
+      }) => {
+        try {
+            console.log('business: ', business)
+          const formData = new FormData();
+          formData.append('imgProfile', imgProfile);
+          formData.append('email', email);
+          formData.append('fullName', fullName);
+          formData.append('legajo', legajo);
+          formData.append('number', number);
+          formData.append('puesto', puesto);
+          formData.append('contratoComedor', contratoComedor);
+          formData.append('rol', rol); // No need to parseInt here
+          formData.append('business', business);
+          formData.append('provincia', provincia);
+          formData.append('localidad', localidad);
+      
+          const response = await fetch(`https://api.onmodoapp.com/api/register`, {
+            method: 'POST',
+            body: formData, // Use 'body' instead of 'data' for FormData
+          });
+      
+          if (!response.ok) {
+            throw new Error(`HTTP Error! Status: ${response.status}`);
+          }
+      
+          const data = await response.json();
+          console.log("formData", formData)
+          console.log("data", data)
+          return data;
+        } catch (error) {
+          console.error('Error:', error);
+          throw error;
+        }
+      };
 
     function handleCloseSesion() {
         // elimino el stack de navegacion
@@ -382,8 +424,20 @@ export default function CreateAccount({ navigation }) {
                 </View>
 
 
-                <View style={[footerContainer, {display: "flex", alignItems: "center", justifyContent: "center"}]}>
-                    <TouchableOpacity style={[buttonFooterStyle,{backgroundColor: "#A0B875", width: "95%"}]}>
+                <View style={[footerContainer, { display: "flex", alignItems: "center", justifyContent: "center" }]}>
+                    <TouchableOpacity style={[buttonFooterStyle, { backgroundColor: "#A0B875", width: "95%" }]} onPress={() => createNewUSer({
+                        email: profileInputs.email,
+                        fullName: profileInputs.nombre,
+                        legajo: profileInputs.legajo,
+                        number: profileInputs.telefono,
+                        puesto: profileInputs.puesto,
+                        contratoComedor: profileInputs.contratoComedor,
+                        rol: profileInputs.nivel,
+                        business: business,
+                        provincia: profileInputs.provincia,
+                        localidad: profileInputs.localidad,
+                        imgProfile: profileInputs.imagen})
+                        }>
                         <Text style={[styles.buttonText]}>Crear cuenta</Text>
                     </TouchableOpacity>
                 </View>
