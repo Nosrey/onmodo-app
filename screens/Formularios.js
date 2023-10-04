@@ -324,8 +324,32 @@ export default function Formularios({ navigation }) {
             ]
         },
         {
-            "title": "Despacho a producción",
-            "rolNeeded": 1
+            title: "Despacho a producción",
+            rolNeeded: 1,
+            formType: 2,
+            url: "https://api.onmodoapp.com/api/despachoproduccion",
+            inputs: [
+                // un subTitle de "Los productos que deben registrarse en la siguiente planilla son:"
+                { name: "Los productos que deben registrarse en la siguiente planilla son:", tipo: "subTitle" },
+                { name: "* Carnes vacunas", tipo: "subTitle" },
+                { name: "* Pollo", tipo: "subTitle" },
+                { name: "* Pescado", tipo: "subTitle" },
+                { name: "* Cerdo", tipo: "subTitle" },
+                { name: "* Huevo pasteurizado (líquido, barra, salmuera)", tipo: "subTitle" },
+                { name: "Frecuencia: Diaria", tipo: "subTitle" },
+                // un tipo Fecha
+                { name: "Fecha", tipo: "date" },
+                // un row
+                {
+                    name: "Despacho a producción", tipo: "row", options: [
+                        { name: "Producto", tipo: "select", options: ["Carnes vanucas", "Pollo", "Pescado", "Cerdo", "Huevo", "pasteurizado (líquido, barra, salmuera)"] },
+                        { name: "Cantidad planificada", tipo: "text" },
+                        { name: "Cantidad real", tipo: "text" },
+                        { name: "Proveedor", tipo: "text" },
+                        { name: "Lote", tipo: "text" },
+                    ]
+                },
+            ]
         },
         {
             "title": "Distribución y expedición",
