@@ -35,6 +35,9 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const id = useSelector((state) => state.id);
+    const businessName = useSelector((state) => state.business);
+    const rol = useSelector((state) => state.rol);
+    const nombre = useSelector((state) => state.fullName);
 
     function handleInputChange(value, index, day, name) {
         let array = [...inputsValues];
@@ -252,6 +255,9 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
 
             let objetoFinal = {
                 idUser: id,
+                rol: rol,
+                nombre: nombre,
+                businessName: businessName,
             }
             if (cardToCheck.exception1 === true) {
                 let indexCheckBox = cardToCheck.inputs.findIndex((element) => element.tipo === "checkBox")
@@ -333,7 +339,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: objetoFinal,
+                body: JSON.stringify(objetoFinal),                
             })
                 .then(response => response.json())
                 .then(data => {

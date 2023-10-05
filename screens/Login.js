@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono d
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import Notification from '../components/Notification';
-import { API_URL } from '../functions/globalFunctions';}
+import { API_URL } from '../functions/globalFunctions';
 
 export default function Login({ navigation }) {
     const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion
@@ -93,8 +93,8 @@ export default function Login({ navigation }) {
         if (!inputError && !logged) {
             dispatch({ type: 'counter/setLogged', payload: true });
             setErrorMessage('')
-
-            fetch(`${API_URL}/api/login`);
+            
+            fetch(`${API_URL}/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,11 +103,11 @@ export default function Login({ navigation }) {
                     // convierto el legajoInput en string
                     legajo: legajoInput.toString(),
                     password: passwordInput.toString(),
-                }),
+                })
             })
                 .then((response) => response.json())
                 .then((json) => {
-                    if (json.success == true) {
+                    if (json?.success == true) {
                         // hago un dispatch que vuelva logged en true
 
                         // hago unos 3 dispatch que setean token, id y rol de json.response
@@ -165,7 +165,7 @@ export default function Login({ navigation }) {
                 .catch((error) => {
                     setNotif({ view: true, message: 'Ups, algo salio mal', color: 'naranja' });
                     dispatch({ type: 'counter/setLogged', payload: false });
-                    console.error(error);
+                    console.error('algo fallo: ', error);
                 });
         } else {
             if (isNaN(legajoInput)) setErrorMessage('Los datos ingresados no son validos, el legajo debe ser un número')

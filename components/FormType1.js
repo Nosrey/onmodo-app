@@ -9,6 +9,11 @@ export default function FormType1({ navigation, setNotif }) {
     const dispatch = useDispatch();
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const id = useSelector((state) => state.id);
+    
+    const businessName = useSelector((state) => state.business);
+    const rol = useSelector((state) => state.rol);
+    const nombre = useSelector((state) => state.fullName);
+
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
 
@@ -43,7 +48,10 @@ export default function FormType1({ navigation, setNotif }) {
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body
             let objetoFinal = {
                 idUser: id,
-                values: inputsValues
+                values: inputsValues,
+                rol: rol,
+                nombre: nombre,
+                businessName: businessName,
             }
 
             console.log("🚀 ~ file: FormType1.js:50 ~ handleSaveButton ~ objetoFinal:", objetoFinal)

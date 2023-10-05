@@ -396,7 +396,7 @@ export default function Formularios({ navigation }) {
             title: "Planilla de sanitización",
             rolNeeded: 1,
             formType: 2,
-            url: API_URL} + "/api/sanitizacion",
+            url: API_URL + "/api/sanitizacion",
             verMas: [
                 // titulo sanitizacion
                 { text: "SANITIZACIÓN", tipo: "title" },
