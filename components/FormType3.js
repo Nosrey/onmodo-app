@@ -414,7 +414,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                         <View key={index} style={{ marginVertical: 20 }}>
                             <Text style={[styles.normalText, { marginVertical: 5 }]}>{input.name}</Text>
                             <TextInput
-                                style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
+                                style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: '#3b3b3b', borderRadius: 10, padding: 10 }]}
                                 multiline={true}
                                 numberOfLines={4}
                                 onChangeText={(value) => {
@@ -516,7 +516,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 }
                 else if (input.tipo === "select") {
                     return (
-                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                        <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 selectedValue={inputsValues[index]?.value.toLowerCase()}
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
     passwordInputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderColor: '#C3C3C3',
+        borderColor: '#3b3b3b',
         borderWidth: 1,
         borderRadius: 10,
         paddingHorizontal: 10,
@@ -637,7 +637,7 @@ const styles = StyleSheet.create({
     userInput: {
         flex: 1,
         height: 40,
-        color: '#C3C3C3',
+        color: 'black',
         fontSize: 16,
         fontFamily: "GothamRoundedMedium",
         marginBottom: 15,

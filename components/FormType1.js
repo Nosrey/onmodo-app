@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     passwordInputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        borderColor: '#C3C3C3',
+        borderColor: '#3b3b3b',
         borderWidth: 1,
         borderRadius: 10,
         paddingHorizontal: 10,
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     userInput: {
         flex: 1,
         height: 40,
-        color: '#C3C3C3',
+        color: 'black',
         fontSize: 16,
         fontFamily: "GothamRoundedMedium",
 
