@@ -3,32 +3,31 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'reac
 import { useSelector, useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import DatePicker from './DatePicker';
-import TimePicker from './TimePicker';
+import DatePicker from './DatePickerView';
+import TimePicker from './TimePickerView';
 // traigo el icon plussquareo la libreria AntDesign
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 
-export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
+export default function FormType2View({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
     const [allowSaveCaseProcess, setAllowSaveCaseProcess] = useState(false);
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
+    const objectToCheck = useSelector((state) => state.objectToCheck);
     const id = useSelector((state) => state.id);
     const businessName = useSelector((state) => state.business);
     const rol = useSelector((state) => state.rol);
     const nombre = useSelector((state) => state.fullName);
 
     useEffect(() => {
-        if (cardToCheck.inputs?.length > 0) {
+        if (objectToCheck.inputs?.length > 0) {
             let array = [];
             for (let i = 0; i < cardToCheck.inputs.length; i++) {
-                if (cardToCheck.inputs[i].tipo !== "select") {
-                    array.push({ name: cardToCheck.inputs[i].name, value: '' })
-                } else {
-                    array.push({ name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] })
-                }
+                // establezco inputsValue con los valores de objectToCheck
+                let item = objectToCheck.inputs?.find((input) => input.name === cardToCheck.inputs[i].name)
+                array.push({ name: cardToCheck.inputs[i].name, value: item?.value })
             }
             setInputsValues(array);
         }
@@ -41,9 +40,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
     }
 
     function handleDeleteButton(index, index2) {
-        setReglonPicked(index)
-        setIndexPicked(index2)
-        setViewDelete(true)
+
     }
 
     function handleEditButton(index, index2) {
@@ -64,7 +61,6 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         if (allowSaveCaseProcess || !cardToCheck.exceptionP1) {
             if (saving) return; // si saving es true, no hago nada
             else {
-                console.log('entre')
                 setSaving(true); // si saving es false, lo pongo en true
                 let copiaInputsValue = []
                 for (let i = 0; i < cardToCheck.inputs?.length; i++) {
@@ -154,6 +150,27 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         }
     }
 
+    function traducirFecha(fecha) {
+        //  traduzco de esto "2023-10-09T16:47:26.976Z" a legible
+        if (fecha?.length) {
+
+            let dia = fecha.slice(8, 10)
+            let mes = fecha.slice(5, 7)
+            let anio = fecha.slice(0, 4)
+            let meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+            let mesTexto = meses[mes - 1]
+            return dia + '/' + mesTexto + '/' + anio
+        } else return 'vacio'
+    }
+
+    function traducirHora(hora) {
+        // traduzco esta hora 2023-10-11T03:27:28.079Z
+        if (hora?.length) {
+            let horaTexto = hora.slice(11, 16)
+            return horaTexto
+        } else return 'vacio'
+    }
+
 
 
     return (
@@ -169,16 +186,14 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     }}>VER MÁS</Text>
                 </View>
             </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
-                    console.log('inputsValue: ', inputsValues)
-                    console.log('reglones: ', JSON.stringify(reglones))
-                    }}>
-                    <Text>Prueba</Text>
-                </TouchableOpacity>
+
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "date") {
-                    return (                        
-                        <DatePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} setAllowSaveCaseProcess={setAllowSaveCaseProcess} allowSaveCaseProcess={allowSaveCaseProcess} />
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirFecha(inputsValues[index]?.value)}</Text>
+                        </View>
                     )
                 }
                 else if (input.tipo === "row") return (
@@ -195,12 +210,10 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                                                     <Text style={{ fontFamily: 'GothamRoundedMedium', width: "80%" }}>{"Elemento #" + (index2 + 1)}</Text>
 
                                                     <TouchableOpacity style={{ display: 'flex', alignItems: 'left', justifyContent: 'center', width: "10%", }}>
-                                                        <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton(index2, index) }} />
+                                                        <Feather name="eye" size={20} color="black" onPress={() => { handleEditButton(index2, index) }} />
                                                     </TouchableOpacity>
 
-                                                    <TouchableOpacity style={{ display: 'flex', alignItems: 'right', justifyContent: 'center', width: "10%", }}>
-                                                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(index2, index) }} />
-                                                    </TouchableOpacity>
+
 
                                                 </View>
                                                 <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginVertical: 10 }} />
@@ -208,15 +221,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
                                         )
                                     })) : null}
-                                <TouchableOpacity style={styles.buttonFooterStyle} onPress={() => {
-                                    let copiaVisibleForm = visibleForm;
-                                    copiaVisibleForm[index] = true;
-                                    setVisibleForm(copiaVisibleForm);
-                                    setCortina(true)
-                                }}>
-                                    <AntDesign name="plussquareo" size={30} color="#7BC100" style={{ alignSelf: 'center' }} />
-                                    <Text style={[styles.buttonText]}>Agregar</Text>
-                                </TouchableOpacity>
+
                             </View>
                         </View>
                     </View>
@@ -227,13 +232,14 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
                             <View style={styles.passwordInputContainer}>
                                 <TextInput
+                                    editable={false}
                                     style={styles.userInput}
                                     placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
                                     value={inputsValues[index]?.value}
                                     onChangeText={(value) => {
                                         let array = [...inputsValues];
                                         array[index].value = value;
-                                        setInputsValues(array);
+
                                     }}
                                 />
                             </View>
@@ -245,13 +251,14 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         <View key={index} style={{ marginVertical: 20, marginTop: 5 }}>
                             <Text style={[styles.normalText, { marginVertical: 5 }]}>{input.name}</Text>
                             <TextInput
+                                editable={false}
                                 style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
                                 multiline={true}
                                 numberOfLines={4}
                                 onChangeText={(value) => {
                                     let array = [...inputsValues];
                                     array[index] = { name: input.name, value: value };
-                                    setInputsValues(array);
+
                                 }}
                                 value={inputsValues[index]?.value}
                             />
@@ -260,7 +267,10 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 }
                 else if (input.tipo === "time") {
                     return (
-                        <TimePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirHora(inputsValues[index]?.value)}</Text>
+                        </View>
                     )
                 }
                 else if (input.tipo === "subTitle") {
@@ -273,12 +283,13 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                editable={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
-                                onValueChange={(itemValue, itemIndex) => {                                 
+                                onValueChange={(itemValue, itemIndex) => {
                                     let array = [...inputsValues];
                                     array[index].value = itemValue;
-                                    setInputsValues(array);
+
                                 }}
                             >
                                 {input.options.map((option, index) => {
@@ -295,12 +306,13 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                editable={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
                                 onValueChange={(itemValue, itemIndex) => {
                                     let array = [...inputsValues];
                                     array[index].value = itemValue;
-                                    setInputsValues(array);
+
                                 }}
                             >
                                 {input.options.map((option, index) => {
@@ -316,12 +328,6 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
             })}
 
-            <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
-            <TouchableOpacity style={[styles.buttonForm, { backgroundColor: (!allowSaveCaseProcess && cardToCheck.exceptionP1 === true) ? "#b4b5b3" : "#7BC100" }]} onPress={handleSaveButton}>
-                <Text style={styles.buttonFormText}>
-                    Guardar
-                </Text>
-            </TouchableOpacity>
         </View>
     )
 }

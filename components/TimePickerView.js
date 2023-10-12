@@ -3,30 +3,29 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import { useSelector, useDispatch } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function DatePicker({ inputReceived, index, setInputsGlobal, inputsValues, allowSaveCaseProcess, setAllowSaveCaseProcess }) {
-    const [date, setDate] = useState({ fecha: new Date(), texto: 'sin fecha' });
+export default function TimePicker({ inputReceived, index, setInputsGlobal, gris, inputsValues }) {
+    const [time, setTime] = useState({ hora: new Date(), texto: 'Sin Hora' });
     const [show, setShow] = useState();
-    const [mode, setMode] = useState('date');
 
-    // traigo el cardToCheck del redux
-    const cardToCheck = useSelector((state) => state.cardToCheck);
-
-    const fechaATexto = (fecha) => {
-        fecha = fecha.toISOString()
-        // recibira una fecha en este formato 2023-09-12T23:30:52.044Z y debo retornarla en un formato legible en un formato asi: 12/sept/2023
-        let dia = fecha.slice(8, 10)
-        let mes = fecha.slice(5, 7)
-        let anio = fecha.slice(0, 4)
-        let meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
-        let mesTexto = meses[mes - 1]
-        return dia + '/' + mesTexto + '/' + anio
+    const horaATexto = (hora) => {
+        // recibira una hora en este formato 2023-09-12T23:30:52.044Z y debo retornarla en un formato legible en un formato asi: 4:30 pm
+        let horas = inputsValues[index]?.value.getHours()
+        let minutos = inputsValues[index]?.value.getMinutes()
+        // si uno de los elementos esta solo le agrego un cero al inicio, si por ejemplo hay un 1 entonces sera 01, si hay un 10 entonces no hago nada
+        if (horas < 10) {
+            horas = '0' + horas
+        }
+        if (minutos < 10) {
+            minutos = '0' + minutos
+        }
+        return horas + ':' + minutos
     }
 
     const onChange = (event, selectedDate) => {
         if (event.type === 'set') {
-            const currentDate = selectedDate || inputsValues[index]?.value;
+            const currentHour = selectedDate || inputsValues[index]?.value;
             setShow(false)
-            setInputsGlobal(index, currentDate)
+            setInputsGlobal(index, currentHour)
         } else {
             setShow(false)
         }
@@ -36,32 +35,40 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
         setShow(true)
     };
 
+    const colorGris = {
+        backgroundColor: gris ? "#f0f0f0" : '#fff',
+        padding: gris ? 10 : 0,
+        paddingBottom: gris ? 20 : 0,
+        paddingTop: gris ? 5 : 0,
+    }
+
+    const container ={
+        marginTop: !gris ? 5 : 0,
+        marginBottom: !gris ? 20 : 0,
+    }
 
     return (
-        <View key={index} style={styles.container}>
+        <View key={index} style={[container, colorGris]}>
             <Text style={[styles.normalText, { marginBottom: 0 }]}>
                 {inputReceived.name + ':'}
             </Text>
             <Text style={[styles.normalText, { fontSize: 14 }]}>
-                {inputsValues[index]?.value ? fechaATexto(inputsValues[index]?.value) : "Sin fecha"}
+                {(inputsValues[index]?.value) ? (inputsValues[index]?.value.getHours() < 10 ? '0' + inputsValues[index]?.value.getHours() : inputsValues[index]?.value.getHours()) + ':' + (inputsValues[index]?.value.getMinutes() < 10 ? '0' + inputsValues[index]?.value.getMinutes() : inputsValues[index]?.value.getMinutes()) : 'Sin Hora'}
             </Text>
             <View style={styles.buttonFooterStyle}>
-                <TouchableOpacity key={index} onPress={() => showMode('date')}>
+                <TouchableOpacity key={index} onPress={showMode}>
                     <Text style={styles.buttonText}>
-                        {!inputsValues[index]?.value ? 'Agregar Fecha' : 'Cambiar Fecha'}
+                        {(!inputsValues[index]?.value) ? 'Agregar Hora' : 'Cambiar Hora'}
                     </Text>
                 </TouchableOpacity>
                 {(show === true) && (
                     <DateTimePicker
                         value={inputsValues[index]?.value || new Date()}
-                        mode={'date'}
+                        mode={'time'}
                         textColor={"#ffffff"}
                         display='spinner'
-
-                        onChange={(event, selectedDate) => {
-                            if (cardToCheck.exceptionP1 && inputReceived.name === "Fecha") setAllowSaveCaseProcess(true)
-                            onChange(event, selectedDate)
-                        }}
+                        is24Hour={true}
+                        onChange={(event, selectedDate) => onChange(event, selectedDate)}
                     />
                 )}
             </View>
@@ -70,10 +77,7 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
 }
 
 const styles = StyleSheet.create({
-    container: {
-        marginTop: 5,
-        marginBottom: 20,
-    },
+
     datePickerContainer: {
         // borde de 1 px y rounded color verde
         borderWidth: 1,

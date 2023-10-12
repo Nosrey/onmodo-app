@@ -5,7 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import { AntDesign } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 
-export default function FormType3({ setViewInfo, navigation, setNotif }) {
+export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
     const [globalInputs, setGlobalInputs] = useState([]); // este es el array que tendra todos los inputs que se creen en el formulario
     const [inputsValues, setInputsValues] = useState([])
@@ -34,6 +34,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
     const height20 = height * 0.2
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
+    const objectToCheck = useSelector((state) => state.objectToCheck);
     const id = useSelector((state) => state.id);
     const businessName = useSelector((state) => state.business);
     const rol = useSelector((state) => state.rol);
@@ -95,33 +96,47 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
     }
 
 
-    // useEffect(() => {
-    //     if (globalInputs.length) {
-    //         let yearIndex = cardToCheck.inputs.findIndex((element) => element.manejador === true)
-    //         let year = inputsValues[yearIndex].value
-    //         let monthIndex = cardToCheck.inputs.findIndex((element) => element.subManejador === true)
-    //         let meses = inputsValues[monthIndex].value
-
-    //         setInputsValues(globalInputs[year - 2023].meses[meses].array)
-
-    //     }
-    // }, [globalInputs, inputsValues])
-
     useEffect(() => {
-        let array = inputsValues
-        for (let i = 0; i < cardToCheck.inputs.length; i++) {
-            if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Mes")) {
-                array[i] = { name: cardToCheck.inputs[i].name, value: new Date().toLocaleString('es-ES', { month: 'long' }).toLowerCase() }
-            }
-            else if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Año")) {
-                array[i] = { name: cardToCheck.inputs[i].name, value: new Date().getFullYear() }
-            }
-            else if (cardToCheck.inputs[i].tipo === "select") {
-                array[i] = { name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] }
+        if (cardToCheck.exception1 === true && inputsValues.length === 0) {
+            let array = []
+            let arrayAnios = []
+            let arrayMeses = []
+            let meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+            let opciones = ["Uso", "Filtracion", "Limpieza superficial", "Cambio de Aceite", "Limpieza profunda"]
+            for (let i = 0; i < objectToCheck.inputs.length; i++) {
+                // establezco inputsValue con los valores de objectToCheck
+                array[0] = { name: "Mes", value: meses[Number(objectToCheck.inputs[0]?.meses[0].name)] }
+                array[1] = { name: "Año", value: objectToCheck.inputs[0]?.name }
+
+                for (let j = 0; j < objectToCheck.inputs[i]?.meses.length; j++) {
+                    arrayMeses[Number(objectToCheck.inputs[i]?.meses[j].name)] = []
+                    let opcionesArrayTemp = []
+                    for (let k = 0; k < opciones.length; k++) {
+                        // arrayMeses[Number(objectToCheck.inputs[i]?.meses[j].name)].push(objectToCheck.inputs[i]?.meses[j]?.array[k]?.array)
+
+
+                        if (opciones.includes(objectToCheck.inputs[i]?.meses[j]?.array[k]?.name)) {
+                            let index = opciones.findIndex((element) => element === objectToCheck.inputs[i]?.meses[j]?.array[k]?.name)
+                            opcionesArrayTemp[index] = (objectToCheck.inputs[i]?.meses[j]?.array[k]?.array)
+                        }
+                        arrayMeses[Number(objectToCheck.inputs[i]?.meses[j].name)] = opcionesArrayTemp
+
+                    }
+                }
+
+                arrayAnios[Number(objectToCheck.inputs[i]?.name) - 2023] = arrayMeses
+
+                array[2] = { name: "Control del aceite en freidora", value: arrayAnios }
+                array[3] = { name: "Observaciones", value: objectToCheck.observaciones }
+
+                setInputsValues(array)
             }
         }
-        setInputsValues(array)
     }, [])
+
+
+
+    
 
     function updateData(index) {
         if (cardToCheck.inputs[index].subManejador === true || cardToCheck.inputs[index].manejador === true) {
@@ -188,6 +203,20 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
             }
             if (!array[index]?.value[manejadorValue - 2023][subManejadorValue][index2]) {
                 array[index].value[manejadorValue - 2023][subManejadorValue][index2] = []
+            } else {
+                let arrayTemp = array[index].value[manejadorValue - 2023][subManejadorValue][index2]
+                let arrayFinal = []
+                for (let i = 0; i < 31; i++) {
+                    if (i === day) {
+                        arrayFinal[i] = value
+                    }
+                    else if (arrayTemp[i] === true) {
+                        arrayFinal[i] = true
+                    } else {
+                        arrayFinal[i] = false
+                    }
+                }
+                array[index].value[manejadorValue - 2023][subManejadorValue][index2] = arrayFinal
             }
             array[index].value[manejadorValue - 2023][subManejadorValue][index2][day] = value;
 
@@ -247,6 +276,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
     function handleInfoButton() {
         setViewInfo(true)
     }
+
 
     function handleSaveButton() {
         if (saving) return; // si saving es true, no hago nada
@@ -389,10 +419,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => console.log("inputsValues: ", JSON.stringify(inputsValues))}>
-                <Text>Prueba</Text>
-            </TouchableOpacity>
-
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "picker") {
                     return (
@@ -454,6 +480,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                     return (
                         <View key={index} style={{ marginVertical: 40 }}>
                             {/* creo una tabla, primero creare una fila que sera la cabecera de la tabla y tendra los numeros del 1 al 31 */}
+             
                             <ScrollView horizontal={true}>
 
                                 <View style={{ flexDirection: 'column', width: "100%" }}>

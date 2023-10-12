@@ -32,14 +32,12 @@ export default function CrearServicio({ navigation, params }) {
                 for (let i = 0; i < row.length; i++) {
                     if (row[i].tipo === "select") array.push({ name: row[i].name, value: row[i].options[0] })
                     else array.push({ name: row[i].name, value: '' })
-            }
-            setInputsValueRow(array);
+                }
+                setInputsValueRow(array);
             }
             else if (editionMode) {
                 if (index === indexPicked) {
-                    console.log('editando', reglones[index][reglonPicked].values[0])
                     let array = [];
-                    console.log('index: ', index)
                     for (let i = 0; i < reglones[index][reglonPicked]?.values.length; i++) {
                         array.push({ name: reglones[index][reglonPicked]?.values[i]?.name ?? '', value: reglones[index][reglonPicked]?.values[i]?.value ?? 0 })
                     }
@@ -55,7 +53,7 @@ export default function CrearServicio({ navigation, params }) {
                     setInputsValueRow(array)
                 }
             }
-            
+
         }
     }, [row, visible, reglones, editionMode])
 
@@ -78,23 +76,13 @@ export default function CrearServicio({ navigation, params }) {
                 copiaReglones[index].push({ values: inputsValueRow })
             } else {
                 copiaReglones[index] = [{ values: inputsValueRow }]
-            }
-
-            // for (let i = 0; i < copiaReglones[index][0].values.length; i++) {   
-            //     console.log('index', index)
-            //     if ((!copiaReglones[index][0].values[i]?.value.length) && (cardToCheck.inputs[index].options[i].tipo === "select")) {
-            //         console.log('changing')
-            //         copiaReglones[index].values[i] = { name: cardToCheck.inputs[index].options[i].name, value: cardToCheck.inputs[index].options[i].options[0] }
-            //         console.log('2: ', copiaReglones[index])
-            //     }
-            // }         
+            }   
             setReglones(copiaReglones)
         } else {
             let copiaReglones = [...reglones];
             copiaReglones[index][reglonPicked] = {
                 values: inputsValueRow,
             }
-            console.log('guardado: ', copiaReglones)
             setReglones(copiaReglones)
             setEditionMode(false)
         }
@@ -236,6 +224,27 @@ export default function CrearServicio({ navigation, params }) {
         }
     }
 
+    function traducirFecha(fecha) {
+        //  traduzco de esto "2023-10-09T16:47:26.976Z" a legible
+        if (fecha?.length) {
+
+            let dia = fecha.slice(8, 10)
+            let mes = fecha.slice(5, 7)
+            let anio = fecha.slice(0, 4)
+            let meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+            let mesTexto = meses[mes - 1]
+            return dia + '/' + mesTexto + '/' + anio
+        } else return 'vacio'
+    }
+
+    function traducirHora(hora) {
+        // traduzco esta hora 2023-10-11T03:27:28.079Z
+        if (hora?.length) {
+            let horaTexto = hora.slice(11, 16)
+            return horaTexto
+        } else return 'vacio'
+    }
+
     return (
         <View style={[styles.container, visibleStyle]} onPress={() => {
             let visibleCopia = [...visible];
@@ -261,7 +270,8 @@ export default function CrearServicio({ navigation, params }) {
                     if (input.tipo === "date") {
                         return (
                             <View key={index}>
-                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirFecha(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )
                     } else if (input.tipo === "text") {
@@ -270,13 +280,14 @@ export default function CrearServicio({ navigation, params }) {
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
                                 <View style={styles.passwordInputContainer}>
                                     <TextInput
+                                        editable={false}
                                         style={styles.userInput}
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
-                                            setInputsValueRow(array);
+
                                         }}
                                     />
                                 </View>
@@ -285,7 +296,7 @@ export default function CrearServicio({ navigation, params }) {
                     } else if (input.tipo === "time") {
                         return (
                             <View key={index}>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirHora(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )
                     } else if (input.tipo === "timeHeader") {
@@ -294,14 +305,14 @@ export default function CrearServicio({ navigation, params }) {
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10 }}>{input.titulo}</Text>
                                 <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, marginBottom: 25 }} />
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow} />
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{traducirHora(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )
                     } else if (input.tipo === "timeTop") {
                         return (
                             <View key={index}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
-                                <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} gris={true} inputsValues={inputsValueRow} />
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{traducirHora(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )
                     }
@@ -317,15 +328,16 @@ export default function CrearServicio({ navigation, params }) {
                                 </View>
                                 <View style={styles.passwordInputContainer}>
                                     <TextInput
+                                        editable={false}
                                         keyboardType={((input?.name === "Alimento" && cardToCheck.exceptionR1 === true) || (input?.name === "Temp." && cardToCheck?.exceptionP1) ? "numeric" : "default")}
                                         style={styles.userInput}
                                         placeholder={row[index].name}
-                                        value={inputsValueRow[index]?.value || ''}
+                                        value={inputsValueRow[index]?.value}
                                         onChangeText={(value) => {
-                                            dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index)
+
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
-                                            setInputsValueRow(array);
+
                                         }}
                                     />
                                 </View>
@@ -339,12 +351,13 @@ export default function CrearServicio({ navigation, params }) {
 
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                                 <Picker
+                                    editable={false}
                                     selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                     style={styles.userInput}
                                     onValueChange={(itemValue, itemIndex) => {
                                         let array = [...inputsValueRow];
                                         array[index].value = itemValue;
-                                        setInputsValueRow(array);
+
                                     }}
                                 >
                                     {input.options.map((option, index) => {
@@ -369,12 +382,13 @@ export default function CrearServicio({ navigation, params }) {
 
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                                 <Picker
+                                    editable={false}
                                     selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                     style={styles.userInput}
                                     onValueChange={(itemValue, itemIndex) => {
                                         let array = [...inputsValueRow];
                                         array[index].value = itemValue;
-                                        setInputsValueRow(array);
+
                                     }}
                                 >
                                     {input.options.map((option, index) => {
@@ -393,13 +407,14 @@ export default function CrearServicio({ navigation, params }) {
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
                                 <View style={styles.passwordInputContainer}>
                                     <TextInput
+                                        editable={false}
                                         style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
-                                            setInputsValueRow(array);
+
                                         }}
                                     />
                                 </View>
@@ -411,13 +426,14 @@ export default function CrearServicio({ navigation, params }) {
                             <View key={index} style={{ marginVertical: 20, marginTop: 5 }}>
                                 <Text style={[styles.normalText, { marginVertical: 5 }]}>{input.name}</Text>
                                 <TextInput
+                                    editable={false}
                                     style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: "#C3C3C3", borderRadius: 10, padding: 10 }]}
                                     multiline={true}
                                     numberOfLines={4}
                                     onChangeText={(value) => {
                                         let array = [...inputsValueRow];
                                         array[index].value = value;
-                                        setInputsValueRow(array);
+
                                     }}
                                     value={inputsValueRow[index]?.value || ''}
                                 />
@@ -428,7 +444,8 @@ export default function CrearServicio({ navigation, params }) {
                         return (
                             <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
-                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirFecha(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )
                     }
@@ -443,15 +460,16 @@ export default function CrearServicio({ navigation, params }) {
                                 </View>
                                 <View style={styles.passwordInputContainer}>
                                     <TextInput
+                                        editable={false}
                                         keyboardType={((input?.name === "Alimento" && cardToCheck.exceptionR1 === true) || (input?.name === "Temp." && cardToCheck?.exceptionP1) ? "numeric" : "default")}
                                         style={styles.userInput}
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
-                                            dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index)
+
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
-                                            setInputsValueRow(array);
+
                                         }}
                                     />
                                 </View>
@@ -465,13 +483,14 @@ export default function CrearServicio({ navigation, params }) {
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
                                 <View style={styles.passwordInputContainer}>
                                     <TextInput
+                                        editable={false}
                                         style={styles.userInput}
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
-                                            setInputsValueRow(array);
+
                                         }}
                                     />
                                 </View>
@@ -489,15 +508,16 @@ export default function CrearServicio({ navigation, params }) {
                                 </View>
                                 <View style={styles.passwordInputContainer}>
                                     <TextInput
+                                        editable={false}
                                         keyboardType={((input?.name === "Alimento" && cardToCheck.exceptionR1 === true) || (input?.name === "Temp." && cardToCheck?.exceptionP1) ? "numeric" : "default")}
                                         style={styles.userInput}
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
-                                            dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index)
+
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
-                                            setInputsValueRow(array);
+
                                         }}
                                     />
                                 </View>
@@ -507,7 +527,8 @@ export default function CrearServicio({ navigation, params }) {
                     else if (input.tipo === "dateFooter") {
                         return (
                             <View key={index} style={{ marginBottom: 30, backgroundColor: "#f0f0f0", padding: 10 }} >
-                                <DatePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirFecha(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )
                     }
@@ -515,6 +536,7 @@ export default function CrearServicio({ navigation, params }) {
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                editable={false}
                                 selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                 style={styles.userInput}
                                 onValueChange={(itemValue, itemIndex) => {
@@ -527,7 +549,7 @@ export default function CrearServicio({ navigation, params }) {
 
                                     let array = [...inputsValueRow];
                                     array[index].value = itemValue;
-                                    setInputsValueRow(array);
+
                                 }}
                             >
                                 {input.options.map((option, index) => {
@@ -544,12 +566,13 @@ export default function CrearServicio({ navigation, params }) {
                             <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                                 <Picker
+                                    editable={false}
                                     selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                     style={styles.userInput}
                                     onValueChange={(itemValue, itemIndex) => {
                                         let array = [...inputsValueRow];
                                         array[index].value = itemValue;
-                                        setInputsValueRow(array);
+
                                     }}
                                 >
                                     {input.options.map((option, index) => {
@@ -567,11 +590,7 @@ export default function CrearServicio({ navigation, params }) {
 
 
                 <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
-                <TouchableOpacity style={styles.buttonForm} onPress={() => handleSaveButton()}>
-                    <Text style={styles.buttonFormText}>
-                        {(!editionMode) ? "Guardar" : "Actualizar"}
-                    </Text>
-                </TouchableOpacity>
+
 
             </ScrollView>
         </View>

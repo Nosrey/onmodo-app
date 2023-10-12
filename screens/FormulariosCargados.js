@@ -12,7 +12,7 @@ import Filtrador from '../components/Filtrador';
 import { getTitle } from '../functions/globalFunctions';
 import ButtonBar from '../components/ButtonBar';
 import Notification from '../components/Notification';
-import { API_URL } from '../functions/globalFunctions'
+import { API_URL, formulariosData } from '../functions/globalFunctions'
 
 export default function FormulariosCargados({ navigation }) {
     const dispatch = useDispatch();
@@ -152,26 +152,30 @@ export default function FormulariosCargados({ navigation }) {
         date: '2023-08-01T20:17:51.036Z'
     }]
 
-    let cards = formularios.map((item) => {
-        return {
-            title: getTitle(item.title),
-            onPress: () => {
-                // creo un useDispatch para establecer cardToCheck    
-                dispatch({ type: 'counter/setCardToCheck', payload: item });
-                navigation.navigate('FormDetails');
-            },
-            entries: item.entries,
-            date: (item.entries?.length) ? getMostRecent(item.entries) : null
-        }
-    }).sort((a, b) => {
-        if (typeof a.date === 'string' && typeof b.date === 'string') {
-            return new Date(b.date) - new Date(a.date);
-        }
-        return 0;
-    }).reverse(); // add this line to reverse the order
+    let cards = []
+    // let cards = formularios.map((item) => {
+    //     // de formulariosData obtengo el .url y en ese string ubico la palabra "/api/" y apartir de ahi en adelante obtengo la palabra, por ejemplo en "http://localhost:8080/api/controlproceso" obtengo "controlproceso" y luego uso find para obtener el elemento de item.title que contenga esa palabra
+    //     let formCoincidence = formulariosData.find((element) => element.url?.includes(item.title));        
+    //     if (formCoincidence !== undefined) formCoincidence.entries = item?.entries;   
+    //     return {
+    //         title: getTitle(item.title),
+    //         onPress: () => {
+    //             // creo un useDispatch para establecer cardToCheck    
+    //             dispatch({ type: 'counter/setCardToCheck', payload: formCoincidence });
+    //             navigation.navigate('FormDetails');
+    //         },
+    //         entries: item.entries,
+    //         date: (item.entries?.length) ? getMostRecent(item.entries) : null
+    //     }
+    // }).sort((a, b) => {
+    //     if (typeof a.date === 'string' && typeof b.date === 'string') {
+    //         return new Date(b.date) - new Date(a.date);
+    //     }
+    //     return 0;
+    // }).reverse(); // add this line to reverse the order
 
-    // unifico cards 2 encima de cards
-    cards = [...cards2, ...cards];
+    // // unifico cards 2 encima de cards
+    // cards = [...cards2, ...cards];
 
 
 
@@ -209,23 +213,33 @@ export default function FormulariosCargados({ navigation }) {
     }, [navigation]);
 
     useEffect(() => {
-        let cards = formularios.map((item) => {        
-            return {
-                title: getTitle(item.title),
-                onPress: () => {
-                    // creo un useDispatch para establecer cardToCheck    
-                    dispatch({ type: 'counter/setCardToCheck', payload: item });
-                    navigation.navigate('FormDetails');
-                },
-                entries: item.entries,
-                date: (item.entries?.length) ? getMostRecent(item.entries) : null
+        let cards = formularios.map((item) => {
+            let formCoincidence = formulariosData.find((element) => element.url?.includes(item.title));
+
+            if (formCoincidence !== undefined) {
+                return {
+                    title: getTitle(item.title),
+                    onPress: () => {
+                        // creo un useDispatch para establecer cardToCheck 
+                        // hago que payload sea formCoincidence pero con el entries de item   
+                        dispatch({ type: 'counter/setCardToCheck', payload: {
+                            ...formCoincidence,
+                            entries: item?.entries
+                        } });
+                        navigation.navigate('FormDetails');
+                    },
+                    entries: item.entries,
+                    date: (item.entries?.length) ? getMostRecent(item.entries) : null
+                }
+            } else {
+                return undefined
             }
-        }).sort((a, b) => {
+        }).filter((item) => item !== undefined).sort((a, b) => {
             if (typeof a.date === 'string' && typeof b.date === 'string') {
                 return new Date(b.date) - new Date(a.date);
             }
             return 0;
-        }).reverse(); // add this line to reverse the order
+        })// add this line to reverse the order
 
         // unifico cards 2 encima de cards
         cards = [...cards2, ...cards];

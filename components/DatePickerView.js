@@ -17,7 +17,7 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
         let dia = fecha.slice(8, 10)
         let mes = fecha.slice(5, 7)
         let anio = fecha.slice(0, 4)
-        let meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+        let meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'nov', 'dic']
         let mesTexto = meses[mes - 1]
         return dia + '/' + mesTexto + '/' + anio
     }
