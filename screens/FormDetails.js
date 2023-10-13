@@ -18,6 +18,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
+import { API_URL } from '../functions/globalFunctions'
 
 export default FormDetails = ({ navigation }) => {
     const [fontsLoaded] = useFonts({
@@ -65,7 +66,7 @@ export default FormDetails = ({ navigation }) => {
 
     function handleDelete(id) {
         console.log('entring... ', cardToCheck.title, ' ', id)
-        let url = "https://api.onmodoapp.com/api/" + cardToCheck.title + "/" + id;
+        let url = API_URL + "/api/" + cardToCheck.title + "/" + id;
         fetch(url, {
             method: 'DELETE',
             headers: {

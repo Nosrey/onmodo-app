@@ -11,6 +11,7 @@ import Filtrador from '../components/Filtrador';
 // importo getTitle de globalFunctions
 import { getTitle } from '../functions/globalFunctions';
 import ButtonBar from '../components/ButtonBar';
+import { API_URL } from '../functions/globalFunctions'
 
 export default function Formularios({ navigation }) {
     const dispatch = useDispatch();
@@ -27,7 +28,7 @@ export default function Formularios({ navigation }) {
             title: "Control de Cloro Activo Residual",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/controlcloro",
+            url:  API_URL + "/api/controlcloro",
             inputs: [
                 {
                     name: "Control", tipo: "row", options: [
@@ -43,7 +44,7 @@ export default function Formularios({ navigation }) {
             title: "Control de Equipos de Frío",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/controlequipofrio",
+            url:  API_URL + "/api/controlequipofrio",
             verMas: [
                 { text: "Límite de control", tipo: "title" },
                 { text: "Temperaturas de cámaras:", tipo: "text" },
@@ -93,7 +94,7 @@ export default function Formularios({ navigation }) {
             title: "Control de Vidrios",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/controlvidrios",
+            url:  API_URL + "/api/controlvidrios",
 
             inputs: [
 
@@ -124,7 +125,7 @@ export default function Formularios({ navigation }) {
             title: "Checkeo de uso de EPP",
             rolNeeded: 2,
             formType: 3,
-            url: "https://api.onmodoapp.com/api/chequeoepp",
+            url:  API_URL + "/api/chequeoepp",
             verMas: [
                 { text: "Instrucciones", tipo: "title" },
                 { text: "Tildar el uso de EPP de cada empleado según los que corresponden con su puesto de trabajo.", tipo: "text" },
@@ -158,7 +159,7 @@ export default function Formularios({ navigation }) {
             title: "Armado y Fraccionamiento",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/planillaarmado",
+            url:  API_URL + "/api/planillaarmado",
             verMas: [
                 { text: "Instrucciones", tipo: "title" },
                 { text: "LÍMITE CRÍTICO", tipo: "text" },
@@ -196,7 +197,7 @@ export default function Formularios({ navigation }) {
             title: "Decomiso de materias primas",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/registrodecomiso",
+            url:  API_URL + "/api/registrodecomiso",
             exception2: true,
             inputs: [
                 {
@@ -215,7 +216,7 @@ export default function Formularios({ navigation }) {
             title: "Carga/Recepción de materia prima",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/carga",
+            url:  API_URL + "/api/carga",
             verMas: [
                 { text: "LÍMITES CRÍTICOS PARA EL INGRESO DE MERCADERÍAS", tipo: "title" },
                 { text: "TEMPERATURA DE ALIMENTOS:", tipo: "text" },
@@ -275,7 +276,7 @@ export default function Formularios({ navigation }) {
         {
             title: "Descongelamiento",
             rolNeeded: 1,
-            url: "https://api.onmodoapp.com/api/descongelamiento",
+            url:  API_URL + "/api/descongelamiento",
             formType: 2,
             verMas: [
                 // titulo PROCEDIMIENTO
@@ -327,7 +328,7 @@ export default function Formularios({ navigation }) {
             title: "Despacho a producción",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/despachoproduccion",
+            url:  API_URL + "/api/despachoproduccion",
             inputs: [
                 // un subTitle de "Los productos que deben registrarse en la siguiente planilla son:"
                 { name: "Los productos que deben registrarse en la siguiente planilla son:", tipo: "subTitle" },
@@ -355,7 +356,7 @@ export default function Formularios({ navigation }) {
             title: "Distribución y expedición",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/distribucion",
+            url:  API_URL + "/api/distribucion",
             verMas: [
                 { text: "Llegado al punto de distribución los alimentos deben consumirse dentro de las 2 horas de entrega o mantenerse en refrigeración hasta el momento de su regeneración.", tipo: "text" },
                 { text: "ALIMENTOS CALIENTES", tipo: "title" },
@@ -395,7 +396,7 @@ export default function Formularios({ navigation }) {
             title: "Planilla de sanitización",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/sanitizacion",
+            url: API_URL + "/api/sanitizacion",
             verMas: [
                 // titulo sanitizacion
                 { text: "SANITIZACIÓN", tipo: "title" },
@@ -444,7 +445,7 @@ export default function Formularios({ navigation }) {
             title: "Servicio en línea",
             rolNeeded: 1,
             formType: 2,
-            url: "https://api.onmodoapp.com/api/servicioenlinea",
+            url:  API_URL + "/api/servicioenlinea",
             verMas: [
                 { text: "SERVICIO LÍNEA CALIENTE", tipo: "title" },
                 { text: "Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC, por un tiempo máximo de 2 horas.", tipo: "text" },
@@ -474,7 +475,7 @@ export default function Formularios({ navigation }) {
         },
         {
             title: "Recuperación de productos",
-            url: "https://api.onmodoapp.com/api/recuperacionproducto",
+            url:  API_URL + "/api/recuperacionproducto",
             rolNeeded: 1,
             title2: "Registro para el comedor",
             inputs: [
@@ -492,7 +493,7 @@ export default function Formularios({ navigation }) {
         },
         {
             title: "Uso y cambio de aceite en freidora",
-            url: "https://api.onmodoapp.com/api/usocambioaceite",
+            url:  API_URL + "/api/usocambioaceite",
             rolNeeded: 1,
             formType: 3,
             exception1: true,

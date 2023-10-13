@@ -15,6 +15,9 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const id = useSelector((state) => state.id);
+    const businessName = useSelector((state) => state.business);
+    const rol = useSelector((state) => state.rol);
+    const nombre = useSelector((state) => state.fullName);
 
     useEffect(() => {
         if (cardToCheck.inputs?.length > 0) {
@@ -83,6 +86,9 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
             let objeto = {
                 idUser: id,
+                rol: rol,
+                nombre: nombre,
+                businessName: businessName,
             }
             if (cardToCheck.exception2) {
                 let inputFinal = [];

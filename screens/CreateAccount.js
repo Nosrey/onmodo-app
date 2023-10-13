@@ -18,7 +18,7 @@ import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
 import notImg from '../assets/notImg.png'
 import * as ImagePicker from 'expo-image-picker';
-import { PUESTOS_N1, PUESTOS_N2 } from '../functions/globalFunctions';
+import { PUESTOS_N1, PUESTOS_N2, API_URL } from '../functions/globalFunctions';
 import Notification from '../components/Notification';
 
 
@@ -135,14 +135,14 @@ export default function CreateAccount({ navigation }) {
         if (profileInputs.nombre == '' || profileInputs.legajo == '' || profileInputs.telefono == '' || profileInputs.email == '' || profileInputs.puesto == '' || profileInputs.provincia == '' || profileInputs.localidad == '' || profileInputs.contratoComedor == '' || profileInputs.imagen == null) {
             setNotif({ view: true, message: "¡Ups! Faltan completar campos", color: "naranja" })
             // hago un console.log del elemento que falta
-
-            console.log("Falta completar: ", 
-              (profileInputs.nombre == '') ? "nombre" : 
-              (profileInputs.legajo == '') ? "legajo" : 
-              (profileInputs.telefono == '') ? "telefono" : 
-              (profileInputs.email == '') ? "email" : 
-              (profileInputs.puesto == '') ? "puesto" : 
-              (profileInputs.provincia == '') ? "provincia" : 
+                                                                        
+            console.log("Falta completar: ",                            
+              (profileInputs.nombre == '') ? "nombre" :                 
+              (profileInputs.legajo == '') ? "legajo" :                 
+              (profileInputs.telefono == '') ? "telefono" :             
+              (profileInputs.email == '') ? "email" :                   
+              (profileInputs.puesto == '') ? "puesto" :                 
+              (profileInputs.provincia == '') ? "provincia" :           
               (profileInputs.localidad == '') ? "localidad" : 
               (profileInputs.contratoComedor == '') ? "contratoComedor" :
               (profileInputs.imagen == null) ? "imagen" : "validation complete")
@@ -214,7 +214,7 @@ export default function CreateAccount({ navigation }) {
             formData.append('provincia', provincia);
             formData.append('localidad', localidad);
 
-            const response = await fetch(`https://api.onmodoapp.com/api/register`, {
+            const response = await fetch(`${API_URL}/api/register`, {
                 method: 'POST',
                 body: formData, // Use 'body' instead of 'data' for FormData
             });
