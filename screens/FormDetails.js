@@ -66,7 +66,7 @@ export default FormDetails = ({ navigation }) => {
 
     function handleDelete(id) {
         console.log('entring... ', cardToCheck.title, ' ', id)
-        let url = API_URL + "/api/" + cardToCheck.title + "/" + id;
+        let url = API_URL + "/api/" + cardToCheck.title + (cardToCheck.title === 'controlvidrio' ? "s/" : "/") + id;
         fetch(url, {
             method: 'DELETE',
             headers: {

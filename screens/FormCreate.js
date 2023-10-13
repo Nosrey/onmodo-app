@@ -112,6 +112,7 @@ export default function FormCreate({ navigation }) {
                     return (
                         <CrearServicio key={index} params={{
                             index: index,
+                            indexPicked: indexPicked,
                             visible: visibleForm,
                             setVisible: setVisibleForm,
                             cortina: viewCortinaNegra,

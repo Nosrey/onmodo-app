@@ -3,10 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import { useSelector, useDispatch } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function DatePicker({ inputReceived, index, setInputsGlobal, inputsValues }) {
+export default function DatePicker({ inputReceived, index, setInputsGlobal, inputsValues, allowSaveCaseProcess, setAllowSaveCaseProcess }) {
     const [date, setDate] = useState({ fecha: new Date(), texto: 'sin fecha' });
     const [show, setShow] = useState();
     const [mode, setMode] = useState('date');
+
+    // traigo el cardToCheck del redux
+    const cardToCheck = useSelector((state) => state.cardToCheck);
 
     const fechaATexto = (fecha) => {
         fecha = fecha.toISOString()
@@ -55,7 +58,10 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
                         textColor={"#ffffff"}
                         display='spinner'
 
-                        onChange={(event, selectedDate) => onChange(event, selectedDate)}
+                        onChange={(event, selectedDate) => {
+                            if (cardToCheck.exceptionP1 && inputReceived.name === "Fecha") setAllowSaveCaseProcess(true)
+                            onChange(event, selectedDate)
+                        }}
                     />
                 )}
             </View>

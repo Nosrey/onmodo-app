@@ -31,7 +31,35 @@ function getTitle(title) {
         return 'Control de Vidrios';
     } else if (title === 'controlequipofrio') {
         return 'Control de Equipos de frio';
-    } else {
+    }
+    else if (title === 'carga') {
+        return 'Carga/Recepción de materia prima'
+    }
+    else if (title === 'chequeoepp') {
+        return 'Checkeo de uso de EPP'
+    }
+    else if (title === 'controlproceso') {
+        return 'Control de Proceso'
+    }
+    else if (title === 'descongelamiento') {
+        return 'Descongelamiento'
+    }
+    else if (title === 'distribucion') {
+        return 'Distribución y expedición'
+    }
+    else if (title === 'planillaarmado') {
+        return 'Armado y Fraccionamiento'
+    }
+    else if (title === 'despachoproduccion') {
+        return 'Despacho a producción'
+    }
+    else if (title === 'sanitizacion') {
+        return 'Planilla de sanitización'
+    }
+    else if (title === 'recepcion') {
+        return 'Planilla de Recepción'
+    }
+    else {
         return title;
     }
 }

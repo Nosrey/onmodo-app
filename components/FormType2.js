@@ -12,6 +12,7 @@ import { Feather } from '@expo/vector-icons';
 export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
+    const [allowSaveCaseProcess, setAllowSaveCaseProcess] = useState(false);
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const id = useSelector((state) => state.id);
@@ -60,89 +61,96 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
     }
 
     function handleSaveButton() {
-        if (saving) return; // si saving es true, no hago nada
-        else {
-            setSaving(true); // si saving es false, lo pongo en true
-            let copiaInputsValue = []
-            for (let i = 0; i < cardToCheck.inputs?.length; i++) {
-                if (cardToCheck.inputs[i]?.tipo === "row") {
-                    let reglonFinal = [];
-                    for (let j = 0; j < reglones[i]?.length; j++) {
-                        reglonFinal.push(reglones[i][j].values)
-                        for (let k = 0; k < reglonFinal.length; k++) {
-                            for (let l = 0; l < reglonFinal[k].length; l++) {
-                                if (cardToCheck.inputs[i]?.options[l].tipo === "select" && reglonFinal[k][l].value === "") {
-                                    reglonFinal[k][l].value = cardToCheck.inputs[i]?.options[l].options[0]
+        if (allowSaveCaseProcess || !cardToCheck.exceptionP1) {
+            if (saving) return; // si saving es true, no hago nada
+            else {
+                console.log('entre')
+                setSaving(true); // si saving es false, lo pongo en true
+                let copiaInputsValue = []
+                for (let i = 0; i < cardToCheck.inputs?.length; i++) {
+                    if (cardToCheck.inputs[i]?.tipo === "row") {
+                        let reglonFinal = [];
+                        for (let j = 0; j < reglones[i]?.length; j++) {
+                            reglonFinal.push(reglones[i][j].values)
+                            for (let k = 0; k < reglonFinal.length; k++) {
+                                for (let l = 0; l < reglonFinal[k].length; l++) {
+                                    if (cardToCheck.inputs[i]?.options[l].tipo === "select" && reglonFinal[k][l].value === "") {
+                                        reglonFinal[k][l].value = cardToCheck.inputs[i]?.options[l].options[0]
+                                    }
                                 }
                             }
                         }
+                        copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglonFinal })
+
+                    } else if (cardToCheck.inputs[i]?.tipo !== "subTitle") {
+                        copiaInputsValue.push({ name: inputsValues[i]?.name, value: inputsValues[i]?.value })
                     }
-                    copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglonFinal })
-
-                } else if (cardToCheck.inputs[i]?.tipo !== "subTitle") {
-                    copiaInputsValue.push({ name: inputsValues[i]?.name, value: inputsValues[i]?.value })
                 }
-            }
 
-            let objeto = {
-                idUser: id,
-                rol: rol,
-                nombre: nombre,
-                businessName: businessName,
-            }
-            if (cardToCheck.exception2) {
-                let inputFinal = [];
-                for (let i = 0; i < copiaInputsValue[0].value.length; i++) {
-                    inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productoDecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
+                let objeto = {
+                    idUser: id,
+                    rol: rol,
+                    nombre: nombre,
+                    businessName: businessName,
                 }
-                objeto.inputs = inputFinal
-            } else {
-                objeto.inputs = copiaInputsValue
-            }
+                if (cardToCheck.exception2) {
+                    let inputFinal = [];
+                    for (let i = 0; i < copiaInputsValue[0].value.length; i++) {
+                        inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productoDecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
+                    }
+                    objeto.inputs = inputFinal
+                } else {
+                    objeto.inputs = copiaInputsValue
+                }
 
-            console.log("🚀 ~ file: FormType2.js:98 ~ handleSaveButton ~ objeto:", JSON.stringify(objeto))
+                console.log("🚀 ~ file: FormType2.js:98 ~ handleSaveButton ~ objeto:", JSON.stringify(objeto))
 
 
-            // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body
-            fetch(cardToCheck.url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(objeto),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    setNotif({ view: true, message: "¡Formulario creado exitosamente!", color: "verde" })
+                // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body
+                fetch(cardToCheck.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(objeto),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        setNotif({ view: true, message: "¡Formulario creado exitosamente!", color: "verde" })
 
-                    if (cardToCheck.inputs?.length > 0) {
-                        let array = [];
-                        for (let i = 0; i < cardToCheck.inputs.length; i++) {
-                            if (cardToCheck.inputs[i].tipo !== "select") {
-                                array.push({ name: cardToCheck.inputs[i].name, value: '' })
-                            } else {
-                                array.push({ name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] })
+                        if (cardToCheck.inputs?.length > 0) {
+                            let array = [];
+                            for (let i = 0; i < cardToCheck.inputs.length; i++) {
+                                if (cardToCheck.inputs[i].tipo !== "select") {
+                                    array.push({ name: cardToCheck.inputs[i].name, value: '' })
+                                } else {
+                                    array.push({ name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] })
+                                }
                             }
+
+
+
+
+                            setInputsValues(array);
+                            setReglones([]);
                         }
 
 
-
-
-                        setInputsValues(array);
-                        setReglones([]);
-                    }
-
-
-                    setSaving(false);
-                    // si la respuesta es exitosa, muestro un mensaje de exito
-                    // y vuelvo a la pantalla anterior
-                })
-                .catch((error) => {
-                    setSaving(false);
-                    setNotif({ view: true, message: "¡Ups! Ocurrió un error", color: "naranja" })
-                    console.error('Error:', error);
-                });
+                        setSaving(false);
+                        // si la respuesta es exitosa, muestro un mensaje de exito
+                        // y vuelvo a la pantalla anterior
+                    })
+                    .catch((error) => {
+                        setSaving(false);
+                        setNotif({ view: true, message: "¡Ups! Ocurrió un error", color: "naranja" })
+                        console.error('Error:', error);
+                    });
+            }
+        } else if (inputsValues[0].value == "") {
+            setNotif({ view: true, message: "Por favor ingresa una fecha", color: "naranja" })
+        } else {
+            setNotif({ view: true, message: "Porfavor elige una fecha que no este repetida", color: "naranja" })
         }
     }
 
@@ -164,8 +172,8 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "date") {
-                    return (
-                        <DatePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} />
+                    return (                        
+                        <DatePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} setAllowSaveCaseProcess={setAllowSaveCaseProcess} allowSaveCaseProcess={allowSaveCaseProcess} />
                     )
                 }
                 else if (input.tipo === "row") return (
@@ -262,7 +270,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                             <Picker
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
-                                onValueChange={(itemValue, itemIndex) => {
+                                onValueChange={(itemValue, itemIndex) => {                                 
                                     let array = [...inputsValues];
                                     array[index].value = itemValue;
                                     setInputsValues(array);
@@ -304,7 +312,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
             })}
 
             <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
-            <TouchableOpacity style={styles.buttonForm} onPress={handleSaveButton}>
+            <TouchableOpacity style={[styles.buttonForm, { backgroundColor: (!allowSaveCaseProcess && cardToCheck.exceptionP1 === true) ? "#b4b5b3" : "#7BC100" }]} onPress={handleSaveButton}>
                 <Text style={styles.buttonFormText}>
                     Guardar
                 </Text>
