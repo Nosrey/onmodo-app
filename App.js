@@ -11,6 +11,7 @@ import FormulariosCargados from './screens/FormulariosCargados';
 import Formularios from './screens/Formularios';
 import FormDetails from './screens/FormDetails';
 import FormCreate from './screens/FormCreate';
+import FormView from './screens/FormView';
 import { NavigationContainer } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // importo de react redux provider, useSelector, useDispatch
@@ -35,6 +36,7 @@ const initialState = {
   contratoComedor: '',
   formularios: [],
   cardToCheck: {},
+  objectToCheck: {},
 }
 
 const counterSlice = createSlice({
@@ -44,6 +46,9 @@ const counterSlice = createSlice({
     // creo una accion que cambie el estado logged a true o false dependiendo del valor recibido
     setLogged(state, action) {
       state.logged = action.payload;
+    },
+    setObjectToCheck(state, action) {
+      state.objectToCheck = action.payload;
     },
     // actions que editan token, rol e id con valores recibidos
     setToken(state, action) {
@@ -161,6 +166,11 @@ export default function App() {
             name="FormulariosCargados"
             component={FormulariosCargados}
             options={{ title: 'Formularios Cargados' }}
+          />
+          <Stack.Screen
+            name="FormView"
+            component={FormView}
+            options={{ title: 'Form View' }}
           />
           <Stack.Screen
             name="FormDetails"

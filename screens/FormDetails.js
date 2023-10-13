@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { getTitle } from '../functions/globalFunctions';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
@@ -21,6 +21,7 @@ import BlackWindow from '../components/BlackWIndow';
 import { API_URL } from '../functions/globalFunctions'
 
 export default FormDetails = ({ navigation }) => {
+    const dispatch = useDispatch();
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
@@ -39,8 +40,9 @@ export default FormDetails = ({ navigation }) => {
     const [listaEstados, setListaEstados] = useState(entries?.map((item) => {
         return { id: item._id, activado: false }
     }));
+    let entriesCopy = [...entries];
 
-    const [entriesFound, setEntriesFound] = useState(entries);
+    const [entriesFound, setEntriesFound] = useState(entriesCopy ? entriesCopy.reverse() : []);
     const [inputValue, setInputValue] = useState('');
 
     const itemListContainer = {
@@ -51,10 +53,6 @@ export default FormDetails = ({ navigation }) => {
     }
 
     function handleViewButton(id) {
-        // encuentro en el array listaEstados el elemento que tenga el mismo id que el que recibo y entonces pongo en opuesto el estado de la propiedad activado
-        // console.log('id: ', id)
-        // console.log(listaEstados)
-
         let listaEstadosTemp = listaEstados.map((item) => {
             if (item.id === id) {
                 item.activado = !item.activado;
@@ -64,9 +62,22 @@ export default FormDetails = ({ navigation }) => {
         setListaEstados(listaEstadosTemp);
     }
 
+    function getUrl(id) {
+        if (cardToCheck.title === 'controlvidrio') return API_URL + "/api/" + cardToCheck.title + "s/" + id;
+        else if (cardToCheck.title === 'controlproceso') return API_URL + "/api/" + cardToCheck.title + "s/" + id;
+        else return API_URL + "/api/" + cardToCheck.title + "/" + id;
+    }
+
+    function handleSpectButton(id) {
+        let item = cardToCheck.entries?.find((element) => element._id === id);
+        // hago dispactch a objectToCheck con item
+        dispatch({ type: 'counter/setObjectToCheck', payload: item });
+        // hago navigate a FormView
+        navigation.navigate('FormView');
+    }
+
     function handleDelete(id) {
-        console.log('entring... ', cardToCheck.title, ' ', id)
-        let url = API_URL + "/api/" + cardToCheck.title + (cardToCheck.title === 'controlvidrio' ? "s/" : "/") + id;
+        let url = getUrl(id)
         fetch(url, {
             method: 'DELETE',
             headers: {
@@ -166,7 +177,7 @@ export default FormDetails = ({ navigation }) => {
 
                 }]}>
                     <TouchableOpacity  style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="eye" size={20} color="black" onPress={() => { console.log('especting any function') }} />
+                        <Feather name="eye" size={20} color="black" onPress={() => { handleSpectButton(item._id) }} />
                     </TouchableOpacity>
 
                     <TouchableOpacity  style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
