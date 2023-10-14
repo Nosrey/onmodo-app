@@ -32,7 +32,7 @@ export default function Inicio({ navigation }) {
 
     if (rol == '1') {
         cards = [
-             {
+            {
                 title: 'Formularios',
                 onPress: () => navigation.navigate('Formularios')
             },
@@ -47,7 +47,7 @@ export default function Inicio({ navigation }) {
         ];
     } else if (rol == '2') {
         cards = [
-             {
+            {
                 title: 'Formularios',
                 onPress: () => navigation.navigate('Formularios')
             },
@@ -69,7 +69,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Legajos',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Legajos')
             },
             {
                 title: 'Cuentas',
@@ -82,7 +82,7 @@ export default function Inicio({ navigation }) {
                 title: 'Estadísticas',
                 onPress: () => console.log('cambiando de pagina')
             },
-             {
+            {
                 title: 'Formularios',
                 onPress: () => navigation.navigate('Formularios')
             },
@@ -100,7 +100,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Legajos',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Legajos')
             },
             {
                 title: 'Cuentas',
@@ -119,7 +119,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Legajos',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Legajos')
             },
             {
                 title: 'Cuentas',
@@ -157,14 +157,14 @@ export default function Inicio({ navigation }) {
     }
 
     let cajaTextoHeader = [
-        {title: "| Inicio", style: "title"},
-        {title: "Nivel " + rol, style: "title"}
+        { title: "| Inicio", style: "title" },
+        { title: "Nivel " + rol, style: "title" }
     ];
 
     return (
         <View style={styles.container}>
             <View>
-                <Header cajaText={cajaTextoHeader} />          
+                <Header cajaText={cajaTextoHeader} />
             </View>
 
             <ScrollView>

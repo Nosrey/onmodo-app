@@ -12,8 +12,9 @@ import Formularios from './screens/Formularios';
 import FormDetails from './screens/FormDetails';
 import FormCreate from './screens/FormCreate';
 import FormView from './screens/FormView';
+import Legajos from './screens/Legajos';
 import { NavigationContainer } from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // importo de react redux provider, useSelector, useDispatch
 import { Provider } from 'react-redux';
 // importo de reduxjs/toolkit configureStore y createSlice
@@ -131,6 +132,11 @@ export default function App() {
             name="Inicio"
             component={Inicio}
             options={{ title: 'Inicio' }}
+          />
+          <Stack.Screen
+            name="Legajos"
+            component={Legajos}
+            options={{ title: 'Legajos' }}
           />
           <Stack.Screen
             name="PasswordRecovery"
