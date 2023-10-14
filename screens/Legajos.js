@@ -26,14 +26,38 @@ import Notification from '../components/Notification';
 
 
 export default function Legajos({ navigation }) {
+    // traigo businesId del store
+    const business = useSelector(state => state.business);
+    const rol = useSelector(state => state.rol);
+
     const [inputValue, setInputValue] = useState('');
     const [legajosLista, setLegajosLista] = useState([
-        {legajo: 1234, nombre: "Juan Perez", nivel: "1", activado: false, id: 1},
-        {legajo: 1235, nombre: "Jose andres", nivel: "2", activado: false, id: 2},
-        {legajo: 1236, nombre: "Martina Ramona", nivel: "4", activado: false, id: 3},
-        {legajo: 1237, nombre: "Miguel Angel", nivel: "3", activado: false, id: 4},
-        {legajo: 1238, nombre: "Lucia Perez", nivel: "1", activado: false, id: 5},
     ]);
+
+    useEffect(() => {
+        // hago un fetch a la url API_URL + rol + :business
+        fetch(API_URL + '/api' + (rol < 2 ? '/rol1' : rol < 3 ? '/rol1-2' : '/rol1-2-3') + `/${business}`, {
+            // tipo get
+            method: 'GET',
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            // guardo la respuesta en el estado
+            // mapeo json y a cada elemento le agrego la propiedad activado en false
+            let listaLegajosTemp = json.map((item) => {
+                item.activado = false;
+                return item;
+            });
+            // reviso listaLegajosTemp y si el elemento tiene un legajo de mas de 7 digitos entonces lo convierto en un string que diga "legajo invalido"
+            listaLegajosTemp = listaLegajosTemp.map((item) => {
+                if (item.legajo > 9999999 || isNaN(item.legajo)) {
+                    item.legajo = "Legajo invalido";
+                }
+                return item;
+            });
+            setLegajosLista(listaLegajosTemp);         
+        })
+    }, []);
 
     const handleInputChange = (value) => {
         // guardo el valor del input en el estado inputValue
@@ -45,13 +69,17 @@ export default function Legajos({ navigation }) {
     }
 
     function handleViewButton(id) {
-        console.log('entro esta id: ', id)
-        let listaLegajosTemp = legajosLista.map((item) => {
-            if (item.id === id) {
-                item.activado = !item.activado;
-            }
-            return item;
-        });
+        // ubico el elemento
+        let elemento = legajosLista.find((element) => element._id === id);
+        // le cambio el estado a activado
+        elemento.activado = !elemento.activado;
+        // creo una lista temporal
+        let listaLegajosTemp = [...legajosLista];
+        // busco el indice del elemento
+        let indice = listaLegajosTemp.findIndex((element) => element._id === id);
+        // lo reemplazo
+        listaLegajosTemp[indice] = elemento;
+        // actualizo el estado
         setLegajosLista(listaLegajosTemp);
     }
 
@@ -60,16 +88,16 @@ export default function Legajos({ navigation }) {
             <View style={[styles.itemListContainer]}>
                 {/* en la propiedad item.createdAt hay una fecha en formato 2023-08-01T19:37:43.071Z y yo creare de ahi un texto en formato 12/04/24 sacado de esa informacion y otro en formato 14:54 hs sacado de esa informacion tambien*/}
                 <Text style={{ fontFamily: "GothamRoundedMedium", color: "#000000", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.legajo}</Text>
-                <Text style={{ fontFamily: "GothamRoundedMedium", color: "#000000", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.nombre}</Text>
-                <Text style={{ fontFamily: "GothamRoundedMedium", color: "#000000", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.nivel}</Text>
+                <Text style={{ fontFamily: "GothamRoundedMedium", color: "#000000", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.fullName}</Text>
+                <Text style={{ fontFamily: "GothamRoundedMedium", color: "#000000", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.rol}</Text>
                 {/* agrego un boton para desplegar mas opciones, el que es como una V hacia abajo de icons */}
-                <TouchableOpacity onPress={() => { handleViewButton(item.id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "25%", position: 'relative' }}>
+                <TouchableOpacity onPress={() => { handleViewButton(item._id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "25%", position: 'relative' }}>
                     <Icon name="arrow-down" size={15} color="black" style={{ position: 'absolute', right: 25 }} />
                 </TouchableOpacity>
 
             </View>
             {/* si el estado de la propiedad activado es true entonces muestro el contenido */}
-            {legajosLista.find((element) => element.id === item.id)?.activado
+            {legajosLista.find((element) => element._id === item._id)?.activado
                 ? <View style={[styles.itemListContainer]}>
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
                         <Feather name="eye" size={20} color="black" onPress={() => { console.log('pruebaView') }} />
@@ -80,7 +108,7 @@ export default function Legajos({ navigation }) {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="trash-2" size={20} color="black" oonPress={() => { console.log('pruebaDelete') }} />
+                        <Feather name="trash-2" size={20} color="black" onPress={() => { console.log('pruebaDelete') }} />
                     </TouchableOpacity>
 
                     <Text style={{width: "25%"}}></Text>
@@ -117,7 +145,7 @@ export default function Legajos({ navigation }) {
             <FlatList
                 data={legajosLista}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
             />
 
             <ButtonBar navigation={navigation} />
