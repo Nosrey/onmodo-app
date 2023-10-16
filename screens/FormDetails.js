@@ -63,13 +63,14 @@ export default FormDetails = ({ navigation }) => {
     }
 
     function getUrl(id) {
-        if (cardToCheck.title === 'controlvidrio') return API_URL + "/api/" + cardToCheck.title + "s/" + id;
-        else if (cardToCheck.title === 'controlproceso') return API_URL + "/api/" + cardToCheck.title + "s/" + id;
-        else return API_URL + "/api/" + cardToCheck.title + "/" + id;
+        // if (cardToCheck?.title === 'controlvidrio') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
+        // else if (cardToCheck?.title === 'controlproceso') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
+        // else return API_URL + "/api/" + cardToCheck.title + "/" + id;
+        return cardToCheck.url + "/" + id;
     }
 
     function handleSpectButton(id) {
-        let item = cardToCheck.entries?.find((element) => element._id === id);
+        let item = cardToCheck?.entries?.find((element) => element._id === id);
         // hago dispactch a objectToCheck con item
         dispatch({ type: 'counter/setObjectToCheck', payload: item });
         // hago navigate a FormView
@@ -85,7 +86,6 @@ export default FormDetails = ({ navigation }) => {
             },
         })
             .then((response) => {
-                console.log('response: ', response)
                 if (response.status === 200) {
                     // si la respuesta es 200 entonces lo elimino de la lista
                     let listaEstadosTemp = listaEstados.filter((item) => {
@@ -105,8 +105,48 @@ export default FormDetails = ({ navigation }) => {
             })
             .catch((error) => {
                 console.error('Error:', error);
-            }); 
-        console.log('listo ', id)
+            });
+    }
+
+
+
+    function handleEdit(id, reason) {
+        let url = getUrl(id)
+        // reviso url y si contiene "/controlprocesos" entonces lo cambio por "/controlproceso
+        if (url.includes("/controlprocesos")) {
+            url = url.replace("/controlprocesos", "/controlproceso")
+        }
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: "pending", motivoPeticion: reason }),
+        })
+            .then((response) => {
+                if (response.status === 200) {
+                    // seteo el entriesFound que es un array al cambiar el estado del objeto con esa id a pending
+                    setEntriesFound(entriesFound.map((item) => {
+                        if (item._id === id) {
+                            // Crear una copia del objeto
+                            let itemCopy = { ...item };
+                            // Modificar la copia
+                            itemCopy.status = "pending";
+                            // Devolver la copia
+                            return itemCopy;
+                        }
+                        // Si el item._id no coincide con id, devolver el item sin modificar
+                        return item;
+                    }));
+                }
+            })
+            .then(() => {
+                // refresco la pagina
+                navigation.navigate('FormDetails');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
 
     let paramsEdit = {
@@ -114,8 +154,8 @@ export default FormDetails = ({ navigation }) => {
         message: 'Para editar tienes que estar autorizado. Puedes enviar una solicitud de edición junto con un mensaje explicando el motivo. Cuando se encuentre aprobado, aparecerá en verde.',
         viewWindow: viewEdit,
         setViewWindow: setViewEdit,
-        action: handleDelete,
-        data: '',
+        action: handleEdit,
+        data: [targetId, internalInput],
         botonNo: "Cancelar",
         botonYes: "Enviar",
         typeable: true,
@@ -134,21 +174,21 @@ export default FormDetails = ({ navigation }) => {
         botonYes: "Eliminar",
     }
 
-    function handleEditButton () {
-        
+    function handleEditButton(id) {
+        setTargetId(id)
         setViewEdit(true)
     }
 
-    function handleDeleteButton (id) {
+    function handleDeleteButton(id) {
         setTargetId(id)
         setViewDelete(true)
     }
-    
+
     useEffect(() => {
         navigation?.setOptions({
-          title: getTitle(cardToCheck.title),
+            title: getTitle(cardToCheck?.title),
         });
-      }, []);
+    }, []);
 
     const renderItem = ({ item }) => (
         <View>
@@ -176,16 +216,16 @@ export default FormDetails = ({ navigation }) => {
                     ),
 
                 }]}>
-                    <TouchableOpacity  style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
+                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
                         <Feather name="eye" size={20} color="black" onPress={() => { handleSpectButton(item._id) }} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity  style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton() }} />
+                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
+                        <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton(item._id) }} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(item._id) }}/>
+                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(item._id) }} />
                     </TouchableOpacity>
 
                     <Text style={[styles.textEditables, { width: "25%", color: (item.status === 'approved' ? '#7BC100' : ((item.status === 'pending') ? '#FFB82F' : (item.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item.status === 'approved' ? 'Aprobado' : ((item.status === 'pending') ? 'Pendiente' : ((item.status === 'denied') ? 'Denegado' : '')))}</Text>
@@ -199,12 +239,13 @@ export default FormDetails = ({ navigation }) => {
         { title: '| ' + getTitle(title), style: "titleProfile" },
     ]
 
+
     return (
         <View style={styles.container}>
             <BlackWindow visible={viewEdit} setVisible={setViewEdit} />
             <BlackWindow visible={viewDelete} setVisible={setViewDelete} />
-            <ConfirmScreen navigation={navigation} params={paramsEdit}/>
-            <ConfirmScreen navigation={navigation} params={paramsDelete}/>
+            <ConfirmScreen navigation={navigation} params={paramsEdit} />
+            <ConfirmScreen navigation={navigation} params={paramsDelete} />
             <View>
                 <Header cajaText={cajaText} unElemento={true} />
                 {/* <Buscador inputValue={inputValue} handleInputChange={handleInputChange} /> */}
@@ -219,11 +260,14 @@ export default FormDetails = ({ navigation }) => {
             </View>
             {/* creo una linea horizontal */}
             <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginTop: 10 }} />
+
+
             <FlatList
                 data={entriesFound}
                 renderItem={renderItem}
                 keyExtractor={(item) => item._id}
             />
+
 
             <ButtonBar navigation={navigation} />
         </View>
