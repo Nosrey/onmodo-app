@@ -65,7 +65,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Solicitudes de Edición',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('SolicitudesEdicion')
             },
             {
                 title: 'Legajos',
@@ -96,7 +96,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Solicitudes de Edición',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('SolicitudesEdicion')
             },
             {
                 title: 'Legajos',
@@ -115,7 +115,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Solicitudes de Edición',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('SolicitudesEdicion')
             },
             {
                 title: 'Legajos',
