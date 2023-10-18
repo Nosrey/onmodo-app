@@ -2,27 +2,27 @@ function getTitle(title) {
     if (title === 'controlalergenos') {
         return 'Control Alergenos';
     } else if (title === 'entregabidones') {
-        return 'Entrega Bidones';
+        return 'Entrega de Bidones de Aceite Usado';
     } else if (title === 'flashincidente') {
         return 'Flash Incidente';
     } else if (title === 'informeintaccidente') {
         return 'Informe Accidente';
     } else if (title === 'registrocapacitacion') {
-        return 'Registro Capacitacion';
+        return 'Registro de Capacitación';
     } else if (title === 'registrodecomiso') {
-        return 'Registro Decomiso';
+        return 'Planilla de Decomiso de Materias Primas';
     } else if (title === 'registrosimulacro') {
         return 'Registro Simulacro';
     } else if (title === 'reporterechazo') {
-        return 'Reporte Rechazo';
+        return 'Rechazo /  Devolución de Materias Primas';
     } else if (title === 'verificacionbalanza') {
-        return 'Verificacion Balanza';
+        return 'Verificación Balanzas';
     } else if (title === 'verificaciontermometros') {
-        return 'Verificacion Termómetros';
+        return 'Verificación Termómetros';
     } else if (title === 'usocambioaceite') {
         return 'Uso y Cambio de Aceite en Freidora';
     } else if (title === 'servicioenlinea') {
-        return 'Servicios en Línea';
+        return 'Servicios en línea';
     } else if (title === 'recuperacionproducto') {
         return 'Recuperación de Productos';
     } else if (title === 'controlcloro') {
@@ -30,31 +30,31 @@ function getTitle(title) {
     } else if (title === 'controlvidrio') {
         return 'Control de Vidrios';
     } else if (title === 'controlequipofrio') {
-        return 'Control de Equipos de frio';
+        return 'Control de Equipos de Frío';
     }
     else if (title === 'carga') {
-        return 'Carga/Recepción de materia prima'
+        return 'Planilla de Carga / Recepción de Materias Primas'
     }
     else if (title === 'chequeoepp') {
-        return 'Checkeo de uso de EPP'
+        return 'Chequeo de uso de EPP'
     }
     else if (title === 'controlproceso') {
-        return 'Control de Proceso'
+        return 'Control de Procesos'
     }
     else if (title === 'descongelamiento') {
-        return 'Descongelamiento'
+        return 'Planilla de Descongelamiento'
     }
     else if (title === 'distribucion') {
-        return 'Distribución y expedición'
+        return 'Distribución / Expedición'
     }
     else if (title === 'planillaarmado') {
-        return 'Armado y Fraccionamiento'
+        return 'Planilla de Armado y Fraccionamiento'
     }
     else if (title === 'despachoproduccion') {
-        return 'Despacho a producción'
+        return 'Despacho a Producción'
     }
     else if (title === 'sanitizacion') {
-        return 'Planilla de sanitización'
+        return 'Planilla de Sanitización'
     }
     else if (title === 'recepcion') {
         return 'Planilla de Recepción'
@@ -345,7 +345,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Checkeo de uso de EPP",
+        title: "Chequeo de uso de EPP",
         rolNeeded: 2,
         formType: 3,
         url: API_URL + "/api/chequeoepp",
@@ -379,7 +379,7 @@ export const formulariosData = [
 
     },
     {
-        title: "Armado y Fraccionamiento",
+        title: "Planilla de Armado y Fraccionamiento",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/planillaarmado",
@@ -419,7 +419,7 @@ export const formulariosData = [
         "rolNeeded": 2
     },
     {
-        title: "Decomiso de materias primas",
+        title: "Planilla de Decomiso de Materias Primas",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/registrodecomiso",
@@ -438,7 +438,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Carga/Recepción de materia prima",
+        title: "Planilla de Carga / Recepción de Materias Primas",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/carga",
@@ -662,7 +662,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Descongelamiento",
+        title: "Planilla de Descongelamiento",
         rolNeeded: 1,
         url: API_URL + "/api/descongelamiento",
         formType: 2,
@@ -715,7 +715,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Despacho a producción",
+        title: "Despacho a Producción",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/despachoproduccion",
@@ -743,7 +743,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Distribución y expedición",
+        title: "Distribución / Expedición",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/distribucion",
@@ -779,7 +779,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Planilla de sanitización",
+        title: "Planilla de Sanitización",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/sanitizacion",
@@ -828,7 +828,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Servicio en línea",
+        title: "Servicios en línea",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/servicioenlinea",
@@ -860,7 +860,7 @@ export const formulariosData = [
         ]
     },
     {
-        title: "Recuperación de productos",
+        title: "Recuperación de Productos",
         url: API_URL + "/api/recuperacionproducto",
         rolNeeded: 1,
         title2: "Registro para el comedor",
@@ -878,7 +878,7 @@ export const formulariosData = [
         formType: 1,
     },
     {
-        title: "Uso y cambio de aceite en freidora",
+        title: "Uso y Cambio de Aceite en Freidora",
         url: API_URL + "/api/usocambioaceite",
         rolNeeded: 1,
         formType: 3,
@@ -902,15 +902,15 @@ export const formulariosData = [
         ]
     },
     {
-        "title": "Entrega de bidones de aceite usado",
+        "title": "Entrega de Bidones de Aceite Usado",
         "rolNeeded": 1
     },
     {
-        "title": "Rechazo-devolución de materia prima",
+        "title": "Rechazo /  Devolución de Materias Primas",
         "rolNeeded": 1
     },
     {
-        "title": "Verificación de Balanzas",
+        "title": "Verificación Balanzas",
         "rolNeeded": 1
     },
     {
