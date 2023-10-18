@@ -72,7 +72,7 @@ export default function Inicio({ navigation }) {
                 onPress: () => navigation.navigate('Legajos')
             },
             {
-                title: 'Cuentas',
+                title: 'Crear Cuenta',
                 onPress: () => navigation.navigate('CreateAccount')
             },
         ];
@@ -103,7 +103,7 @@ export default function Inicio({ navigation }) {
                 onPress: () => navigation.navigate('Legajos')
             },
             {
-                title: 'Cuentas',
+                title: 'Crear Cuenta',
                 onPress: () => navigation.navigate('CreateAccount')
             },
         ];
@@ -122,7 +122,7 @@ export default function Inicio({ navigation }) {
                 onPress: () => navigation.navigate('Legajos')
             },
             {
-                title: 'Cuentas',
+                title: 'Crear Cuenta',
                 onPress: () => navigation.navigate('CreateAccount')
             },
         ];
