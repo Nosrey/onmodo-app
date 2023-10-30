@@ -29,7 +29,16 @@ export default function ConfirmScreen({ navigation, params }) {
 
     const handleYesButton = () => {
         // ejecuto la accion recibida
-        action(data);
+        // reviso data, si es un solo valor ejecuto la accion con ese valor, si es un array ejecuto la accion con el array es decir [prop1, prop2, prop3] => action(prop1, prop2, prop3)
+        if (data) {
+            if (Array.isArray(data)) {
+                action(...data)
+            } else {
+                action(data)
+            }
+        } else {
+            action()
+        }
         if (setInternalInput) setInternalInput('')
         setViewWindow(false)
     }
