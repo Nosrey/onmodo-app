@@ -8,7 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
 // importo la imagen profileImg.png
-import profileImg from '../assets/profileImg.jpeg';
+import profileImg from '../assets/profileImg.jpg';
 // traigo useDispatch de react-redux
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonBar from '../components/ButtonBar';
@@ -22,6 +22,7 @@ export default function Profile({ navigation }) {
     const dispatch = useDispatch();
     // preparo las constantes para fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor del redux
     const fullName = useSelector(state => state.fullName);
+    const imgProfile = useSelector(state => state.imgProfile);
     const legajo = useSelector(state => state.legajo);
     const number = useSelector(state => state.number);
     const puesto = useSelector(state => state.puesto);
@@ -164,7 +165,11 @@ export default function Profile({ navigation }) {
             <ScrollView>
                 <Header cajaText={cajaText}/>
 
-                <Image source={profileImg} style={styles.profileImg} />
+                {/* <Image source={"imgProfile"} style={styles.profileImg} /> */}
+                {/* coloco una imagen asi pero a este link https://perfil-onmodo.s3.us-east-2.amazonaws.com/88dce68cab6d47a9ae330037bbcc732c */}
+                {imgProfile?.length ? <Image source={{ uri: imgProfile  }} style={styles.profileImg} />
+                : <Image source={ profileImg } style={styles.profileImg} />}
+                {/* <Image source={ profileImg } style={styles.profileImg} /> */}
 
                 {/* Formularios */}
                 <View style={styles.form}>

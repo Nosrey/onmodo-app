@@ -126,6 +126,7 @@ export default function Login({ navigation }) {
                                 if (json2.success == true) {
                                     // hago unos dispatch que setean fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor de json.response
                                     dispatch({ type: 'counter/setFullName', payload: json2.response[0].fullName });
+                                    dispatch({ type: 'counter/setImgProfile', payload: json2.response[0].imgProfile })
                                     dispatch({ type: 'counter/setLegajo', payload: json2.response[0].legajo });
                                     dispatch({ type: 'counter/setNumber', payload: json2.response[0].number });
                                     dispatch({ type: 'counter/setPuesto', payload: json2.response[0].puesto });

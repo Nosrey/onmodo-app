@@ -35,6 +35,7 @@ const initialState = {
   provincia: '',
   localidad: '',
   business: '',
+  imgProfile: '',
   contratoComedor: '',
   formularios: [],
   cardToCheck: {},
@@ -68,6 +69,10 @@ const counterSlice = createSlice({
     },
     setLegajo(state, action) {
       state.legajo = action.payload;
+    }
+    ,
+    setImgProfile(state, action) {
+      state.imgProfile = action.payload;
     }
     ,
     setNumber(state, action) {
