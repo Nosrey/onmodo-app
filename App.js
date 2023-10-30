@@ -13,6 +13,7 @@ import FormDetails from './screens/FormDetails';
 import FormCreate from './screens/FormCreate';
 import FormView from './screens/FormView';
 import Legajos from './screens/Legajos';
+import SolicitudesEdicion from './screens/SolicitudesEdicion';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // importo de react redux provider, useSelector, useDispatch
@@ -132,6 +133,11 @@ export default function App() {
             name="Inicio"
             component={Inicio}
             options={{ title: 'Inicio' }}
+          />
+          <Stack.Screen
+            name="SolicitudesEdicion"
+            component={SolicitudesEdicion}
+            options={{ title: 'Solicitudes Edicion' }}
           />
           <Stack.Screen
             name="Legajos"

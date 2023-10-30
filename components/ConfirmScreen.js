@@ -8,7 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 export default function ConfirmScreen({ navigation, params }) {
     // obtengo y creo los valores title, message, action, data de params
-    const { title, message, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput} = params;
+    const { title, message, message2, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput, textField} = params;
 
     const [inputCounter, setInputCounter] = useState(0);
 
@@ -98,11 +98,12 @@ export default function ConfirmScreen({ navigation, params }) {
         <View style={[container, visible]}>
             <Text style={[styles.title, {marginBottom: (message.length) ? 0 : 10}]}>{title}</Text>
             <Text style={[styles.message, {display: (message.length) ? 'flex' : 'none'}]}>{message}</Text>
+            <Text style={[styles.message, {display: (message2?.length) ? 'flex' : 'none', marginBottom: 10, marginTop: 0 }]}>{message2}</Text>
             <View style={[styles.inputContainer, {display: (typeable) ? 'flex' : 'none'}]}>
                 <View style={styles.passwordInputContainer}>
                     <TextInput
                         style={styles.userInput}
-                        placeholder="  Motivos de la edición"
+                        placeholder={textField?.length ? textField : " Motivos de la edición"}
                         placeholderTextColor="#C3C3C3"
                         multiline={true}
                         onChangeText={(value) => handleInternalInput(value)}
