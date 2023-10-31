@@ -67,7 +67,6 @@ export default function FormView({ navigation }) {
                     }
                 }
             }
-            console.log('array: ', JSON.stringify(array))
         }
         setReglones(array)
 

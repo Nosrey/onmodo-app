@@ -131,6 +131,111 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
                 setInputsValues(array)
             }
+        } else if (cardToCheck.title === "Chequeo de uso de EPP" && inputsValues.length === 0) {
+            let array = []
+
+            let meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+            let opciones = ["Ropa de trabajo", "Calzado de Seguridad", "Guantes", "Protección Ocular", "Protección Facial", "Protección Auditiva", "Protección Respiratoria", "Protección de Tronco", "Otro"]
+
+            array[0] = { value: objectToCheck.mes?.toLowerCase() }
+            array[1] = { value: objectToCheck.año }
+            array[2] = { value: objectToCheck.empleado }
+            array[3] = { value: objectToCheck.sector }
+            array[4] = { value: objectToCheck.puesto }
+            array[6] = { value: objectToCheck.observaciones }
+
+            let indexMes = meses.findIndex((element) => element === objectToCheck.mes?.toLowerCase())
+            array[5] = { value: [] }
+            array[5].value[objectToCheck.año - 2023] = []
+            array[5].value[objectToCheck.año - 2023][indexMes] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][0] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][1] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][2] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][3] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][4] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][5] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][6] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][7] = []
+            array[5].value[objectToCheck.año - 2023][indexMes][8] = []
+
+            let arrayDeCheckBox = [...objectToCheck.inputs[0]?.meses[0].array];
+            let count = 0
+            while (arrayDeCheckBox.length < 9) {
+                if (arrayDeCheckBox[count].name === "Ropa de trabajo") count++
+                // si no es el caso, en la posicion 0 agrego un objeto {name: "Ropa de trabajo", array: []}
+                else {
+                    arrayDeCheckBox.splice(0, 0, { name: "Ropa de trabajo", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Calzado de Seguridad") count++
+                else {
+                    arrayDeCheckBox.splice(1, 0, { name: "Calzado de Seguridad", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Guantes") count++
+                else {
+                    arrayDeCheckBox.splice(2, 0, { name: "Guantes", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Protección Ocular") count++
+                else {
+                    arrayDeCheckBox.splice(3, 0, { name: "Protección Ocular", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Protección Facial") count++
+                else {
+                    arrayDeCheckBox.splice(4, 0, { name: "Protección Facial", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Protección Auditiva") count++
+                else {
+                    arrayDeCheckBox.splice(5, 0, { name: "Protección Auditiva", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Protección Respiratoria") count++
+                else {
+                    arrayDeCheckBox.splice(6, 0, { name: "Protección Respiratoria", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Protección de Tronco") count++
+                else {
+                    arrayDeCheckBox.splice(7, 0, { name: "Protección de Tronco", array: [] })
+                    count = 0
+                    continue
+                }
+                if (arrayDeCheckBox[count].name === "Otro") count++
+                else {
+                    arrayDeCheckBox.splice(8, 0, { name: "Otro", array: [] })
+                    count = 0
+                    continue
+                }
+            }
+
+            console.log(' arrayDeCheckBox', arrayDeCheckBox)
+            // un for 31 veces
+            for (let h = 0; h < arrayDeCheckBox.length; h++) {
+                console.log('h', h)
+                for (let i = 0; i < 31; i++) {
+                    let boolean = false
+                    if (arrayDeCheckBox[h].array[i] == true) boolean = true
+                    array[5].value[objectToCheck.año - 2023][indexMes][h][i] = boolean
+                }
+            }
+
+
+
+            
+
+            setInputsValues(array)
+            console.log('objectToCheck: ', JSON.stringify(objectToCheck))
+            console.log('array', array)
         }
     }, [])
 
@@ -161,7 +266,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             let manejadorValue = inputsValues[indexManejador]?.value
             let subManejadorValue = null
             if (cardToCheck.inputs[indexSubManejador].name === "Mes") {
-                subManejadorValue = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element.toLowerCase() === inputsValues[indexSubManejador]?.value.toLowerCase())
+                subManejadorValue = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element?.toLowerCase() === inputsValues[indexSubManejador]?.value?.toLowerCase())
             }
             else {
                 subManejadorValue = inputsValues[indexSubManejador]?.value
@@ -186,7 +291,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             let subManejadorValue = null;
             if (cardToCheck.inputs[indexSubManejador].name === "Mes") {
                 // indexSubManejador = 
-                subManejadorValue = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element.toLowerCase() === inputsValues[indexSubManejador]?.value.toLowerCase())
+                subManejadorValue = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element?.toLowerCase() === inputsValues[indexSubManejador]?.value?.toLowerCase())
             } else {
                 subManejadorValue = inputsValues[indexSubManejador]?.value;
             }
@@ -252,7 +357,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
         let monthIndex = null
 
         if (cardToCheck.inputs[indexSubManejador]?.name === "Mes") {
-            monthIndex = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element.toLowerCase() === inputsValues[indexSubManejador]?.value.toLowerCase())
+            monthIndex = cardToCheck.inputs[indexSubManejador].options.findIndex((element) => element?.toLowerCase() === inputsValues[indexSubManejador]?.value?.toLowerCase())
         } else {
             monthIndex = inputsValues[indexSubManejador]?.value
         }
@@ -426,14 +531,15 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                             <Text style={styles.normalText}>{input.name}</Text>
                             <Picker
                                 selectedValue={inputsValues[index]?.value}
+                                editable={false}
                                 onValueChange={(itemValue) => {
                                     let array = [...inputsValues];
                                     array[index] = { value: itemValue };
-                                    setInputsValues(array);
+                                    // setInputsValues(array);
                                 }}
                                 style={styles.userInput}>
                                 {input.options.map((option) => (
-                                    <Picker.Item key={option} label={option} value={option.toLowerCase()} />
+                                    <Picker.Item key={option} label={option} value={option?.toLowerCase()} />
                                 ))}
                             </Picker>
                         </View>
@@ -550,7 +656,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                         <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
-                                selectedValue={inputsValues[index]?.value.toLowerCase()}
+                                selectedValue={inputsValues[index]?.value?.toLowerCase()}
                                 style={styles.userInput}
                                 editable={input.disabled ? false : true}
                                 onValueChange={(itemValue, itemIndex) => {
@@ -561,7 +667,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                             >
                                 {input.options.map((option, index) => {
                                     return (
-                                        <Picker.Item key={index} label={option.toLowerCase()} value={option} />
+                                        <Picker.Item key={index} label={option?.toLowerCase()} value={option} />
                                     )
                                 })}
                             </Picker>
