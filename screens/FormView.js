@@ -40,28 +40,40 @@ export default function FormView({ navigation }) {
         let array = []
         for (let i = 0; i < formulario.inputs?.length; i++) {
             if (formulario.inputs[i].tipo === "row") {
-                let item = objectToCheck.inputs?.find((input) => input.name === formulario.inputs[i].name)
-                array[i] = []
-                for (let j = 0; j < item?.value.length; j++) {
-                    array[i].push({values: item?.value[j]})
+                let item
+                if (formulario.exception2) {
+                    item = objectToCheck.inputs
+                    // item es igual  {"cantidad": "1", "causa": "Otras Causas", "fecha": "2023-10-30T18:28:31.479Z", "id": 0, "productoDecomisado": "1", "turno": "Turno Noche"}
+
+                    let itemTemp = []
+                    for (let j = 0; j < item?.length; j++) {
+                        itemTemp[j] = {
+                            values: [
+                                { name: "fecha", value: item[j].fecha },
+                                { name: "turno", value: item[j].turno },
+                                { name: "productoDecomisado", value: item[j].productoDecomisado },
+                                { name: "cantidad", value: item[j].cantidad },
+                                { name: "causa", value: item[j].causa }
+                            ]
+                        }
+                    }
+                    array[i] = itemTemp
+                } 
+                else {
+                    item = objectToCheck.inputs?.find((input) => input.name === formulario.inputs[i].name)
+                    array[i] = []
+                    for (let j = 0; j < item?.value.length; j++) {
+                        array[i].push({values: item?.value[j]})
+                    }
                 }
             }
+            console.log('array: ', JSON.stringify(array))
         }
         setReglones(array)
-        // console.log("array de reglones:", JSON.stringify(array))
 
-    //     [null,null,null,null,null,null,null,null,null,[{"values":[{"name":"Fecha de Carga","value":""},{"name":"Fecha de Recepción","value":""},{"name":"Proveedor","value":""},{"name":"Producto","value":""},{"name":"Cantidad Comprada","value":""},{"name":"Cantidad Recibida","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"Dentro de vida útil","value":""},{"name":"Nro. lote","value":""},{"name":"Fecha vto.","value":""},{"name":"Recibido","value":""},{"name":"Motivo del rechazo","value":""}]},{"values":[{"name":"Fecha de Carga","value":""},{"name":"Fecha de Recepción","value":""},{"name":"Proveedor","value":""},{"name":"Producto","value":""},{"name":"Cantidad Comprada","value":""},{"name":"Cantidad Recibida","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"Dentro de vida útil","value":""},{"name":"Nro. lote","value":""},{"name":"Fecha vto.","value":""},{"name":"Recibido","value":""},{"name":"Motivo del rechazo","value":""}]}]]
+        // array:  [[{"values":[{"name":"Fecha","value":"2023-10-30T14:33:42.495Z"},{"name":"Vegetal a desinfectar","value":"1"},{"name":"Lavado","value":"No"},{"name":"Concentración","value":"No"},{"name":"Minutos","value":"2"},{"name":"Enjuague","value":"No"},{"name":"Acciones de correción","value":"3"},{"name":"Responsable","value":"4"}]}]]
 
-    //     [
-    //         [{"name":"Fecha de Carga","value":""},{"name":"Fecha de Recepción","value":""},{"name":"Proveedor","value":""},{"name":"Producto","value":""},{"name":"Cantidad Comprada","value":""},{"name":"Cantidad Recibida","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"Dentro de vida útil","value":""},{"name":"Nro. lote","value":""},{"name":"Fecha vto.","value":""},{"name":"Recibido","value":""},{"name":"Motivo del rechazo","value":""}],[{"name":"Fecha de Carga","value":""},{"name":"Fecha de Recepción","value":""},{"name":"Proveedor","value":""},{"name":"Producto","value":""},{"name":"Cantidad Comprada","value":""},{"name":"Cantidad Recibida","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"T° de Carga","value":""},{"name":"T° de Recepcion","value":""},{"name":"Dentro de vida útil","value":""},{"name":"Nro. lote","value":""},{"name":"Fecha vto.","value":""},{"name":"Recibido","value":""},{"name":"Motivo del rechazo","value":""}]
-    //     ]
-
-    //     {"_id":"652605c690091cdad581d830","respTermografo":[],"inputs":
-    //     [{"name":"Estado sanitario:","value":"Cumple"},{"name":"Patente térmico","value":""},{"name":"Habilitación SENASA","value":""},{"name":"N° Precinto lateral","value":""},{"name":"N° Precinto trasero","value":""},{"name":"Termógrafo:","value":"SI"},{"name":"Resp. lectura termógrafo","value":""},{"name":"Observaciones","value":""},{"name":"Carga/ Recepción","value":
-
-  
-
-    // }],"status":"","rol":"2","nombre":"joaquin giorgis","businessName":"test","idUser":["64a0bc8a3de38bb95eb1717d"],"createdAt":"2023-10-11T02:17:42.867Z","updatedAt":"2023-10-11T02:17:42.867Z","__v":0} 
+        // array:  [[{"values":[{"name":"cantidad","value":"1"},{"name":"causa","value":"Otras Causas"},{"name":"fecha","value":"2023-10-30T18:28:31.479Z"},{"name":"id","value":0},{"name":"productoDecomisado","value":"1"},{"name":"turno","value":"Turno Noche"}]}]]
 
     }, [])
 

@@ -136,7 +136,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
 
 
-    
+
 
     function updateData(index) {
         if (cardToCheck.inputs[index].subManejador === true || cardToCheck.inputs[index].manejador === true) {
@@ -319,7 +319,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                 objetoFinal.inputs = arrayFinal
                 let indexObservaciones = cardToCheck.inputs.findIndex((element) => element.name === "Observaciones")
                 objetoFinal.observaciones = inputsValues[indexObservaciones]?.value
-            } else {                
+            } else {
                 // SOLO FUNCIONA SI HAY UN SOLO CHECKBOX
 
                 let indexCheckBox = cardToCheck.inputs.findIndex((element) => element.tipo === "checkBox")
@@ -357,7 +357,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                     let objeto = {}
                     objeto.name = cardToCheck.inputs[i].name
                     objeto.value = inputsValues[i]?.value
-                    objetoFinal[objeto.name] = { value: objeto.value}    
+                    objetoFinal[objeto.name] = { value: objeto.value }
                 }
             }
             // console.log('objetoFinal: ', objetoFinal)
@@ -369,7 +369,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(objetoFinal),                
+                body: JSON.stringify(objetoFinal),
             })
                 .then(response => response.json())
                 .then(data => {
@@ -480,7 +480,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                     return (
                         <View key={index} style={{ marginVertical: 40 }}>
                             {/* creo una tabla, primero creare una fila que sera la cabecera de la tabla y tendra los numeros del 1 al 31 */}
-             
+
                             <ScrollView horizontal={true}>
 
                                 <View style={{ flexDirection: 'column', width: "100%" }}>

@@ -198,6 +198,9 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                 }
                 else if (input.tipo === "row") return (
                     <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+                        <TouchableOpacity onPress={() => console.log('soy reglones', reglones)}>
+                            <Text>Prueba</Text>
+                        </TouchableOpacity>
                         <Text style={styles.normalText}>{input.name + ':'}</Text>
 
                         <View style={styles.reglon}>
