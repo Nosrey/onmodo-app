@@ -11,6 +11,7 @@ import { AntDesign } from '@expo/vector-icons';
 import dotGreen from '../assets/dotGreen.png'
 import dotOrange from '../assets/dotOrange.png'
 import dotRed from '../assets/dotRed.png'
+import * as ImagePicker from 'expo-image-picker';
 
 export default function CrearServicio({ navigation, params }) {
     const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked } = params
@@ -236,6 +237,31 @@ export default function CrearServicio({ navigation, params }) {
         }
     }
 
+    const pickImage = async (index) => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images, // Solo imágenes
+            allowsEditing: true,            
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            let copiaInputsValueRow = [...inputsValueRow]
+            copiaInputsValueRow[index].value = result.assets[0].uri
+            console.log('resultado: ', result.assets[0])
+            setInputsValueRow(copiaInputsValueRow)
+        }
+    }
+
+    const buttonFooterStyle = {
+        width: '48%',
+        marginHorizontal: '1%',
+        height: 50,
+        backgroundColor: '#7BC100',
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    };
+
     return (
         <View style={[styles.container, visibleStyle]} onPress={() => {
             let visibleCopia = [...visible];
@@ -383,6 +409,24 @@ export default function CrearServicio({ navigation, params }) {
                                         )
                                     })}
                                 </Picker>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "imagePicker") {
+                        return (
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+        
+                                    <Text style={{ marginBottom: 5, display: (inputsValueRow[index]?.value ? 'flex' : 'none')} }>{
+                                        (inputsValueRow[index]?.value ? inputsValueRow[index]?.value.split("/")[inputsValueRow[index]?.value.split("/").length - 1] : '')
+                                        }</Text>
+                                    <TouchableOpacity onPress={() => pickImage(index)} style={[buttonFooterStyle, { width: "40%" }]}>
+                                        <Text style={[styles.buttonText]}>{(inputsValueRow[index]?.value ? "Cambiar Imagen" : "Cargar Imagen")}</Text>
+                                    </TouchableOpacity>
+
+                                </TouchableOpacity>
+
                             </View>
                         )
                     }
@@ -590,6 +634,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontFamily: "GothamRoundedMedium"
     },
     buttonFormText: {
         color: '#fff',

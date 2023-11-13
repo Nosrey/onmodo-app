@@ -22,8 +22,8 @@ export default function Login({ navigation }) {
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false
     // const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña2eKgjc19
     // const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
-    const [passwordInput, setPasswordInput] = useState('2eKgjc19'); // Estado para guardar el valor del input de contraseña
-    const [legajoInput, setLegajoInput] = useState('10012'); // Estado para guardar el valor del input de legajo
+    const [passwordInput, setPasswordInput] = useState('123'); // Estado para guardar el valor del input de contraseña
+    const [legajoInput, setLegajoInput] = useState('3986722'); // Estado para guardar el valor del input de legajo
     const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),

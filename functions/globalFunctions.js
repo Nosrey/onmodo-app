@@ -244,6 +244,8 @@ export const API_URL = 'http://192.168.1.107:8080';
 // en modo online es https://api.onmodoapp.com
 // export const API_URL = 'https://api.onmodoapp.com';
 
+const URL_API = API_URL
+
 // FORMULARIOS ----------------------------------------------------------------------------------------------
 
 export const formulariosData = [
@@ -415,8 +417,54 @@ export const formulariosData = [
 
     },
     {
-        "title": "Registro de Capacitación",
-        "rolNeeded": 2
+        title: "Registro de Capacitación",
+        rolNeeded: 2,
+        formType: 2,
+        url: API_URL + "api/registrocapacitacion",
+        exceptionForm2Cap: true, // necesito agregar el texto para los otros y la selecion de files pdf e imagenes
+        inputs: [
+            { name: "Fecha", tipo: "date" },
+            { name: "Hora", tipo: "time" },
+            // un subTitle que diga
+            // Tipo de capacitación (Selecciona la opción que corresponda)
+            { name: "Tipo de capacitación (Selecciona la opción que corresponda)", tipo: "subTitle" },
+            { name: "Inducción", tipo: "select", options: ["No", "Si"] },
+            { name: "Campaña", tipo: "select", options: ["No", "Si"] },
+            { name: "Entrenamiento Puesto de trabajo", tipo: "select", options: ["No", "Si"] },
+            { name: "Capacitaciones gubernamentales", tipo: "select", options: ["No", "Si"] },
+            { name: "Capacitación sobre Normas o Certificaciones", tipo: "select", options: ["No", "Si"] },
+            { name: "Cierre Auditoría", tipo: "select", options: ["No", "Si"] },
+            // un textGrande que diga Temas dados
+            { name: "Temas dados", tipo: "textGrande" },
+            // ahora mismo formato, un subtitle que diga Material didáctico Entregado
+            { name: "Material didáctico Entregado", tipo: "subTitle" },
+            // y ahora los si y no con estas opciones: Manual /instructivo, Folleto, Procedimiento, Otros
+            { name: "Manual /instructivo", tipo: "select", options: ["No", "Si"] },
+            { name: "Folleto", tipo: "select", options: ["No", "Si"] },
+            { name: "Procedimiento", tipo: "select", options: ["No", "Si"] },
+            { name: "Otros", tipo: "selectConText", options: ["No", "Si"], activador: "Si" },
+            // ahora subtitle Material didáctico Expuesto y los si y no con estas opciones: Video, Filminas, Disertación, Otros
+            { name: "Material didáctico Expuesto", tipo: "subTitle" },
+            { name: "Video", tipo: "select", options: ["No", "Si"] },
+            { name: "Filminas", tipo: "select", options: ["No", "Si"] },
+            { name: "Disertación", tipo: "select", options: ["No", "Si"] },
+            { name: "Otros", tipo: "selectConText", options: ["No", "Si"], activador: "Si" },
+            // un row que diga "ASISTENTES" y que tenga 3 inputs: DNI (text), Nombre y Apellido, Area/Lugar de trabajo, Resultado Evaluacion, Método de evaluación (solo este sera un select de Oral/Escrito)
+            {
+                name: "ASISTENTES", tipo: "row", options: [
+                    { name: "DNI", tipo: "text" },
+                    { name: "Nombre y Apellido", tipo: "text" },
+                    { name: "Area/Lugar de trabajo", tipo: "text" },
+                    { name: "Resultado Evaluacion", tipo: "text" },
+                    { name: "Método de evaluación", tipo: "select", options: ["Oral", "Escrito"] },
+                ]
+            },
+            // un textGrande que diga Observaciones
+            { name: "Observaciones", tipo: "textGrande" },
+            // un text que diga Instructor
+            { name: "Instructor", tipo: "text" },
+
+        ]
     },
     {
         title: "Planilla de Decomiso de Materias Primas",
@@ -573,11 +621,11 @@ export const formulariosData = [
                     { name: "Temp.", tipo: "textTop", cabecera: "4 hs." },
                     { name: "Temp.", tipo: "textTop", cabecera: "6 hs." },
                     { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Regeneración" }, { name: "Temp.", tipo: "textFooter" },
-                    { name: "Temp.", cabecera: "Inicio", titulo: "Mantenimiento en caliente", tipo: "textHeader" }, 
+                    { name: "Temp.", cabecera: "Inicio", titulo: "Mantenimiento en caliente", tipo: "textHeader" },
                     { name: "Temp.", tipo: "textTop", cabecera: "1 hs." },
                     { name: "Temp.", tipo: "textTop", cabecera: "2 hs." },
                     { name: "Acciones de corrección", tipo: "text" },
-                    
+
                 ]
             }
         ],
@@ -902,19 +950,321 @@ export const formulariosData = [
         ]
     },
     {
-        "title": "Entrega de Bidones de Aceite Usado",
-        "rolNeeded": 1
+        title: "Entrega de Bidones de Aceite Usado",
+        rolNeeded: 1,
+        formType: 2,
+        url: API_URL + "/api/entregabidones",
+        inputs: [
+            {
+                name: "Aceite Usado", tipo: "row", options: [
+                    // un Fecha
+                    { name: "Fecha", tipo: "date" },
+                    // text Cantidad de litros entregados
+                    { name: "Cantidad de litros entregados", tipo: "text" },
+                    // responsable de entrega
+                    { name: "Responsable de entrega", tipo: "text" },
+                    // responsable de retiro
+                    { name: "Responsable de retiro", tipo: "text" },
+                    { name: "Selecciona una foto de transporte", tipo: "imagePicker" },
+                    { name: "Selecciona una foto de disposición final", tipo: "imagePicker" },
+
+                ]
+            },
+        ]
     },
     {
-        "title": "Rechazo /  Devolución de Materias Primas",
-        "rolNeeded": 1
+        title: "Rechazo /  Devolución de Materias Primas",
+        rolNeeded: 1,
+        formType: 2,
+        url: API_URL + "/api/reporterechazo",
+        verMas: [
+            // title Rechazo de mercadería
+            { text: "Rechazo de mercadería", tipo: "title" },
+            { text: "Debe ser rechazado todo lote que:", tipo: "text" },
+            { text: "* Exceda durante la recepción las temperaturas máximas definidas por tipo de producto.", tipo: "text" },
+            { text: "* No informe claramente: Fecha de vencimiento, Habilitación(RNE / RNPA) y nombre de elaborador y producto.", tipo: "text" },
+            { text: "* Evidencie características organolépticas no conformes vinculadas con la inocuidad del alimento.", tipo: "text" },
+
+            { text: "Devolución de mercadería", tipo: "title" },
+            { text: "Cuando en la línea de producción se detecta un producto/lote no conforme, es retirado e identificado como “Producto no conforme” y almacenados en un área exclusiva para “Productos para devolución” al proveedor.", tipo: "text" },
+            // text Por cada rechazo/devolución se debe registrar un “Reporte de rechazo” del cual se generan dos copias, firmadas por ambos responsables:
+            { text: "Por cada rechazo/devolución se debe registrar un “Reporte de rechazo” del cual se generan dos copias, firmadas por ambos responsables:", tipo: "text" },
+            { text: "* Una constancia para el comedor.", tipo: "text" },
+            { text: "* Otra para el proveedor.", tipo: "text" },
+        ],
+        inputs: [
+            { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", tipo: "title" },
+            // subtitle Condiciones de entrega
+            { name: "Condiciones de entrega", tipo: "subTitle" },
+            // formato CT, significa un select llamado Atrasado con opciones No, Si y un text llamado Descripción de no conformidad
+            { name: "Atrasado", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            // otro CT de Adelantado
+            { name: "Adelantado", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            // subtitle Calidad
+            { name: "Calidad", tipo: "subTitle" },
+            // un CT de temperatura
+            { name: "Temperatura", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            // Muchos CT de lo siguiente: Temperatura, Vida útil, Embalaje, Rótulo, Calibre, Color, Signos de maduración, Consistencia/Textura, Olor
+            { name: "Vida útil", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Embalaje", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Rótulo", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Calibre", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Color", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Signos de maduración", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Consistencia/Textura", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Olor", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+
+            // subtitle Diferencias
+            { name: "Diferencias", tipo: "subTitle" },
+            // CT de Precio y Cantidad, no olvides los Descripcion
+            { name: "Precio", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Cantidad", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+
+            // subtitle de Transporte
+            { name: "Transporte", tipo: "subTitle" },
+            // Muchos CT de lo siguiente: Temperatura de la caja, Uniforme del proveedor, Predisposición/Conducta, Vehículo, Otras faltas
+            { name: "Temperatura de la caja", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Uniforme del proveedor", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Predisposición/Conducta", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Vehículo", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Otras faltas", tipo: "select", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "text" },
+
+            // subtitle MEDIDAS TOMADAS
+            { name: "MEDIDAS TOMADAS", tipo: "subTitle" },
+            // desde aca los CT seran iguales pero en vez de descripcion de no conformidad sera Cantidad
+            // un CT de Rechazo (en el momento de la recepción)
+            { name: "Rechazo (en el momento de la recepción)", tipo: "select", options: ["No", "Si"] },
+            { name: "Cantidad", tipo: "text" },
+            // un CT de Devolución (lotes ya ingresados) y otro de "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)"
+            { name: "Devolución (lotes ya ingresados)", tipo: "select", options: ["No", "Si"] },
+            { name: "Cantidad", tipo: "text" },
+            { name: "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)", tipo: "select", options: ["No", "Si"] },
+            { name: "Cantidad", tipo: "text" },
+
+        ],
     },
     {
-        "title": "Verificación Balanzas",
-        "rolNeeded": 1
+        title: "Verificación Balanzas",
+        rolNeeded: 1,
+        formType: 2,
+        url: API_URL + "/api/verificacionbalanza",
+        verMas: [
+            { text: "PROCEDIMIENTO", tipo: "title" },
+            { text: "Se tara la balanza y se coloca una masa patrón de 1 kg.(puede utilizarse algún producto envasado-lentejas, azúcar) en cada uno de los puntos establecidos.", tipo: "text" },
+            { text: "Para comedores certificados, usar las masas de referencias.", tipo: "text" },
+            { text: "DESVÍO PERMITIDO", tipo: "title" },
+            { text: "Balanza de producción:±10 gramos.", tipo: "text" },
+            { text: "Báscula de recepción:±200 gramos.", tipo: "text" },
+            { text: "ACCIONES DE CORRECCIÓN", tipo: "title" },
+            { text: "Si alguno de los puntos supera el desvío, la balanza se debe enviar a calibrar.", tipo: "text" },
+            { text: "FRECUENCIA: ANUAL", tipo: "text" },
+        ],
+        inputs: [
+            // fecha
+            { name: "Fecha", tipo: "date" },
+            // un select que diga Instrumento con opciones Báscula/Balanza
+            { name: "Instrumento", tipo: "select", options: ["Báscula", "Balanza"] },
+            {
+                name: "Identificación Balanza", tipo: "row", options: [
+                    // un text que diga Punto 0°C
+                    { name: "Código", tipo: "textTop", cabecera: "Identificación Termómetro" },
+                    // un select de opciones PIN o IR
+                    { name: "Tipo", tipo: "selectTop", options: ["BP", "BR"] },
+                    // text responsable del uso
+                    { name: "Responsable del uso", tipo: "textFooter" },
+                    // Área
+                    { name: "Área", tipo: "text" },
+                    // punto 0
+                    { name: "Peso Masa ref/Pto balanza", tipo: "text" },
+                    { name: "Peso real", tipo: "text" },
+                    // Desvío
+                    { name: "Desvío", tipo: "text" },
+                    { name: "Acciones de correción", tipo: "text" },
+                ]
+            },
+        ]
     },
     {
-        "title": "Verificación de Termómetros",
-        "rolNeeded": 1
+        title: "Verificación de Termómetros",
+        rolNeeded: 1,
+        url: API_URL + "/api/verificaciontermometros",
+        formType: 2,
+        verMas: [
+            { text: "Termómetro de Pinche", tipo: "title" },
+            { text: "Procedimiento:", tipo: "text" },
+            { text: "Punto 0°C: Se utiliza agua congelada en recipiente y se coloca en Baño María hasta fusión del hielo, hasta el momento de tener agua y hielo en partes iguales.", tipo: "text" },
+            { text: "Se introduce el Termómetro Evaluado.", tipo: "text" },
+            { text: "Punto 100°C: Se hierve agua y se deja en ebullición por 30 segundos.", tipo: "text" },
+            { text: "Se coloca el Termómetro a validar.", tipo: "text" },
+            { text: "Verificación con termómetro patrón: Evaluar en los puntos 18°C, 0°C, 10°C, 100°C y 65°C.", tipo: "text" },
+            { text: "Desvío permitido: ", tipo: "text" },
+            { text: "±1°C para ambos puntos", tipo: "text" },
+            { text: "Acciones de correción", tipo: "text" },
+            { text: "Si alguno de los puntos supera el desvío, el termómetro se debe reemplazar. Estas unidades no se calibran.", tipo: "text" },
+            { text: "Termómetro Infrarrojo", tipo: "title" },
+            { text: "Procedimiento:", tipo: "text" },
+            { text: "Validación en frío (PUNTO 0): Se localiza el láser hacia una solución de agua y hielo.", tipo: "text" },
+            { text: "Desvío permitido: ", tipo: "text" },
+            { text: "±2°C", tipo: "text" },
+            { text: "Acciones de correción", tipo: "text" },
+            { text: "Si alguno de los puntos supera el desvío, el termómetro se debe enviar a calibrar.", tipo: "text" },
+            { text: "Cámaras, antecámaras, heladeras y freezer", tipo: "title" },
+            { text: "Procedimiento:", tipo: "text" },
+            { text: "Se coloca en un mismo punto de la cámara el sensor de la cámara y el termómetro de pinche previamente validado. Se realiza la lectura después de 3 a 5 mínutos.", tipo: "text" },
+            { text: "Desvío permitido", tipo: "text" },
+            { text: "±1°C", tipo: "text" },
+            { text: "Acciones de correción", tipo: "text" },
+            { text: "Si alguno de los puntos supera el desvío, el termómetro se debe enviar a calibrar.", tipo: "text" },
+            { text: "", tipo: "text" },
+            { text: "* PIN(Termómetro de pinche) - IR (Termómetro infrarrojo)", tipo: "text" },
+        ],
+        inputs: [
+            // un fecha
+            { name: "Fecha", tipo: "date" },
+            // un text que diga Responsable de validación
+            { name: "Responsable de validación", tipo: "text" },
+            // row name TERMÓMETROS DE PINCHE/INFRARROJOS
+            {
+                name: "TERMÓMETROS DE PINCHE/INFRARROJOS", tipo: "row", options: [
+                    // un text que diga Punto 0°C
+                    { name: "Código", tipo: "textTop", cabecera: "Identificación Termómetro" },
+                    // un select de opciones PIN o IR
+                    { name: "Tipo", tipo: "selectTop", options: ["PIN", "IR"] },
+                    // text responsable del uso
+                    { name: "Responsable del uso", tipo: "textFooter" },
+                    // Área
+                    { name: "Área", tipo: "text" },
+                    // punto 0
+                    { name: "Punto 0", tipo: "text" },
+                    { name: "Desvío", tipo: "text" },
+                    { name: "Punto 100", tipo: "text" },
+                    // Desvío
+                    { name: "Desvío", tipo: "text" },
+                    { name: "Acciones de correción", tipo: "text" },
+                ]
+            },
+            // otro row con titulo TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER
+            {
+                name: "TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER", tipo: "row", options: [
+                    // un text que diga Punto 0°C
+                    { name: "Código", tipo: "textTop", cabecera: "Identificación Termómetro" },
+                    // un select de opciones PIN o IR
+                    // Área
+                    { name: "Área", tipo: "textFooter" },
+                    // punto 0
+                    { name: "Temp. termón referencia", tipo: "text" },
+                    { name: "Temp. termón evaluado", tipo: "text" },
+                    // Desvío
+                    { name: "Desvío", tipo: "text" },
+                    { name: "Acciones de correción", tipo: "text" },
+                ]
+            }
+
+        ]
+
     }
 ]
+
+export const registroCapacitacion = async (values, setSaving) => {
+    try {
+        const formData = new FormData();
+
+        // Agregar las propiedades de "values" al FormData
+        for (const key in values) {
+            if (Array.isArray(values[key])) {
+                // Si es un array, como propiedades que son arrays de objetos,
+                // puedes serializarlo a JSON y luego agregarlo al FormData
+                formData.append(key, JSON.stringify(values[key]));
+            } else if (key === 'firma') {
+                // Si es una propiedad de tipo "file", debes manejarla por separado
+                // Aquí asumo que "firma" es el nombre de la propiedad de tipo "file"
+                formData.append('firma', values[key]); // Puedes ajustar el índice según sea necesario
+            } else {
+                formData.append(key, values[key]);
+            }
+        }
+
+        // Agregar otras propiedades como businessName, rol, nombre, etc., al FormData
+        formData.append('businessName', localStorage.getItem('business'));
+        formData.append('rol', localStorage.getItem('rol'));
+        formData.append('nombre', localStorage.getItem('userName'));
+
+        const response = await fetch(`${API_URL}/api/registrocapacitacion`, {
+            method: 'POST',
+            body: formData,
+        });
+        const data = await response.json();
+        await setSaving(false);
+        return data;
+
+    } catch (error) {
+        console.error('Error', error);
+        setSaving(false);
+        throw error;
+    }
+};
+
+export const verificacionTermometros = (values) => {
+    let objetoFinal = {}
+    console.log('entrando a trabajar')
+    for (let i = 0; i < values.length; i++) {
+        if (values[i].name === "Fecha") objetoFinal = { ...objetoFinal, fecha: values[i].value }
+        else if (values[i].name === "Responsable de validación") objetoFinal = { ...objetoFinal, responsable: values[i].value }
+        else if (values[i].name === "TERMÓMETROS DE PINCHE/INFRARROJOS") {
+            let arraySemestral = []
+            for (let j = 0; j < values[i].value.length; j++) {
+                let tipoValue = "PIN"
+                if (values[i].value[j][1].value.length > 0) tipoValue = values[i].value[j][1].value                
+                let reglonIndividual = {
+                    codigo: values[i].value[j][0].value,
+                    tipo: tipoValue,
+                    responsable: values[i].value[j][2].value,
+                    area: values[i].value[j][3].value,
+                    punto0: values[i].value[j][4].value,
+                    desvio0: values[i].value[j][5].value,
+                    punto100: values[i].value[j][6].value,
+                    desvio100: values[i].value[j][7].value,
+                    acciones: values[i].value[j][8].value,
+                }
+                arraySemestral.push(reglonIndividual)
+            }
+            objetoFinal = { ...objetoFinal, inputsSemestral: arraySemestral }
+        }
+        // ahora con TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER hacia inputsSemestral
+        else if (values[i].name === "TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER") {
+            let arrayTrimestral = []
+            for (let j = 0; j < values[i].value.length; j++) {
+                let reglonIndividual = {
+                    codigo: values[i].value[j][0].value,
+                    area: values[i].value[j][1].value,
+                    termoReferencia: values[i].value[j][2].value,
+                    termoEvaluado: values[i].value[j][3].value,
+                    desvio: values[i].value[j][4].value,
+                    acciones: values[i].value[j][5].value,
+                }
+                arrayTrimestral.push(reglonIndividual)
+            }
+            objetoFinal = { ...objetoFinal, inputsTrimestral: arrayTrimestral }
+        }
+    }
+
+    return objetoFinal;
+};

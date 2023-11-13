@@ -1,13 +1,13 @@
 // creo un componente para formularios cargados
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl , Image, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, Image, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
-import Filtrador from '../components/Filtrador';
+import FiltradorFormCargados from '../components/FiltradorFormCargados';
 // importo getTitle de globalFunctions
 import { getTitle } from '../functions/globalFunctions';
 import ButtonBar from '../components/ButtonBar';
@@ -24,7 +24,14 @@ export default function FormulariosCargados({ navigation }) {
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [notif, setNotif] = useState({view: false, message: '', color: 'naranja'}); // notif es un booleano que indica si se muestra o no la notificacion
+    const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion
+
+    // estado para el FiltradorFormCargados
+    // el estado del filtro elegido
+    const [selectedOption, setSelectedOption] = useState('most-recent');
+    const [copiaCardsInicial, setCopiaCardsInicial] = useState([])
+
+
 
     function update() {
 
@@ -44,12 +51,14 @@ export default function FormulariosCargados({ navigation }) {
                         formularios.push({ title: key, entries: value });
                     }
                 }
+
                 // hago un dispatch que setee formularios con el valor de formularios
-                setNotif({view: true, message: '¡Actualizado correctamente!', color: 'verde'});
+                handleSort(selectedOption);
+                setNotif({ view: true, message: '¡Actualizado correctamente!', color: 'verde' });
                 dispatch({ type: 'counter/setFormularios', payload: formularios });
             })
             .catch((error) => {
-                setNotif({view: true, message: 'Ups, algo salio mal', color: 'naranja'});
+                setNotif({ view: true, message: 'Ups, algo salio mal', color: 'naranja' });
                 console.error('Error:', error);
             });
 
@@ -142,15 +151,15 @@ export default function FormulariosCargados({ navigation }) {
             __v: 0
         },
     ]
-    let cards2 = [{
-        title: 'PRUEBA',
-        onPress: () => {
-            dispatch({ type: 'counter/setCardToCheck', payload: { title: 'PRUEBA', entries: entriesTemp } });
-            navigation.navigate('FormDetails');
-        },
-        entries: entriesTemp,
-        date: '2023-08-01T20:17:51.036Z'
-    }]
+    // let cards2 = [{
+    //     title: 'PRUEBA',
+    //     onPress: () => {
+    //         dispatch({ type: 'counter/setCardToCheck', payload: { title: 'PRUEBA', entries: entriesTemp } });
+    //         navigation.navigate('FormDetails');
+    //     },
+    //     entries: entriesTemp,
+    //     date: '2023-08-01T20:17:51.036Z'
+    // }]
 
     let cards = []
     // let cards = formularios.map((item) => {
@@ -185,6 +194,45 @@ export default function FormulariosCargados({ navigation }) {
         { title: '| Formularios cargados', style: 'titleProfile' },
     ]
 
+    // funcion para el FiltradorFormCargados
+    const handleSort = (option) => {
+        let cardFoundCopy = [...copiaCardsInicial];
+        let sortedCards;
+    
+        switch (option) {
+            case 'a-z':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    if (a.title > b.title) return 1;
+                    if (a.title < b.title) return -1;
+                    return 0;
+                });
+                break;
+            case 'z-a':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    if (a.title > b.title) return -1;
+                    if (a.title < b.title) return 1;
+                    return 0;
+                });
+                break;
+            case 'most-recent':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    let recentA = a.entries && a.entries.length > 0 ? new Date(a.entries[a.entries.length - 1].updatedAt) : new Date(0);
+                    let recentB = b.entries && b.entries.length > 0 ? new Date(b.entries[b.entries.length - 1].updatedAt) : new Date(0);
+                    return recentB - recentA;
+                });
+                break;
+            case 'most-used':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    return b.entries.length - a.entries.length;
+                });
+                break;
+            default:
+                break;
+        }
+    
+        setCardsFound(sortedCards);
+    };
+
 
     const handleInputChange = (value) => {
         // guardo el valor del input en el estado inputValue
@@ -201,7 +249,7 @@ export default function FormulariosCargados({ navigation }) {
 
     // ejecuto un useEffect al cargar la pantalla para que se ejecute una sola vez
     useEffect(() => {
-       update()
+        update()
     }, []);
 
     // ejecuto update si retrocedo a esta pantalla
@@ -222,10 +270,12 @@ export default function FormulariosCargados({ navigation }) {
                     onPress: () => {
                         // creo un useDispatch para establecer cardToCheck 
                         // hago que payload sea formCoincidence pero con el entries de item   
-                        dispatch({ type: 'counter/setCardToCheck', payload: {
-                            ...formCoincidence,
-                            entries: item?.entries
-                        } });
+                        dispatch({
+                            type: 'counter/setCardToCheck', payload: {
+                                ...formCoincidence,
+                                entries: item?.entries
+                            }
+                        });
                         navigation.navigate('FormDetails');
                     },
                     entries: item.entries,
@@ -242,7 +292,8 @@ export default function FormulariosCargados({ navigation }) {
         })// add this line to reverse the order
 
         // unifico cards 2 encima de cards
-        cards = [...cards2, ...cards];
+        cards = [...cards];
+        setCopiaCardsInicial(cards)
         setCardsFound(cards)
     }, [formularios]);
 
@@ -251,9 +302,8 @@ export default function FormulariosCargados({ navigation }) {
             <Notification params={notif} notif={notif} setNotif={setNotif} />
             <Header cajaText={cajaText} unElemento={true} />
             <View style={{ marginBottom: 5 }}>
-
                 <Buscador inputValue={inputValue} handleInputChange={handleInputChange} />
-                <Filtrador states={cardsFound} setStates={setCardsFound} />
+                <FiltradorFormCargados states={cardsFound} setStates={setCardsFound} handleSortImported={handleSort} selectedOption={selectedOption} setSelectedOption={setSelectedOption} />
             </View>
 
             <ScrollView refreshControl={

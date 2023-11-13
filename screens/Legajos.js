@@ -10,8 +10,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import { Feather } from '@expo/vector-icons';
-// importo la imagen profileImg.png
-import profileImg from '../assets/profileImg.jpeg';
 // traigo useDispatch de react-redux
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonBar from '../components/ButtonBar';
