@@ -8,6 +8,8 @@ import TimePicker from './TimePickerView';
 // traigo el icon plussquareo la libreria AntDesign
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+// traigo de globalfunctions formulariosData
+import { formulariosData } from '../functions/globalFunctions'
 
 export default function FormType2View({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
@@ -20,11 +22,436 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
     const businessName = useSelector((state) => state.business);
     const rol = useSelector((state) => state.rol);
     const nombre = useSelector((state) => state.fullName);
+    const [reglonesVisibles, setReglonesVisibles] = useState([]);
+
+    // un useEffect donde si el valor de reglones cambia este se le asgina a reglonesVisibles
+    useEffect(() => {
+        setReglonesVisibles(reglones)
+    }, [reglones])
 
     useEffect(() => {
         if (cardToCheck.title === "Verificación de Termómetros") {
-           console.log("objectToCheck", objectToCheck)
-        } else {
+            let card = formulariosData.find((card) => card.title === "Verificación de Termómetros")
+            console.log('objectToCheck: ', JSON.stringify(objectToCheck))
+
+            // Establecer inputsValues
+
+
+            // Establecer reglones
+            let reglones2 = [null, null];
+            reglones2.push(objectToCheck.inputsSemestral.map(input => ({
+                values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
+            })));
+            reglones2.push(objectToCheck.inputsTrimestral.map(input => ({
+                values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
+            })));
+            console.log('reglones2: ', JSON.stringify(reglones2))
+            // aplico el setReglones(reglones2); medio segundo despues
+            setTimeout(() => {
+                setReglones(reglones2);
+            }, 0.1);
+
+            setInputsValues([
+                { name: "Fecha", value: objectToCheck.fecha },
+                { name: "Responsable de validación", value: objectToCheck.responsable },
+                { name: "TERMÓMETROS DE PINCHE/INFRARROJOS", value: "" },
+                { name: "TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER", value: "" }
+            ]);
+
+        }
+        else if (cardToCheck.title === "Verificación Balanzas") {
+            console.log('entre a balanzas')
+            let inputsValues = [
+                { name: "Fecha", value: objectToCheck.fecha },
+                { name: "Instrumento", value: objectToCheck.balanza },
+                { name: "Identificación Balanza", value: "" }
+            ];
+            setInputsValues(inputsValues);
+
+            if (objectToCheck.inputs?.length > 0) {
+                let reglones = [null, null];
+                reglones.push(objectToCheck.inputs.map(input => ({
+                    values: [
+                        { name: "Código", value: input.codigo },
+                        { name: "Tipo", value: input.tipo === "BP" ? "" : input.tipo },
+                        { name: "Responsable del uso", value: input.responsableUso },
+                        { name: "Área", value: input.area },
+                        { name: "Peso Masa ref/Pto balanza", value: input.pesoMasa },
+                        { name: "Peso real", value: input.pesoReal },
+                        { name: "Desvío", value: input.desvio },
+                        { name: "Acciones de correción", value: input.accionesCorrecion }
+                    ]
+                })));
+                setTimeout(() => {
+                    setReglones(reglones);
+                }, 0.1);
+            }
+        }
+        else if (cardToCheck.title === "Rechazo /  Devolución de Materias Primas") {
+            if (cardToCheck.title === "Rechazo /  Devolución de Materias Primas") {
+                if (objectToCheck) {
+                    let array = [
+                        { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", value: "" },
+                        { name: "Condiciones de entrega", value: "" },
+                        { name: "Atrasado", value: objectToCheck.condicionesEntrega[0]?.checked ? "Si" : "No" },
+                        { name: "Descripción de no conformidad", value: objectToCheck.condicionesEntrega[0]?.description },
+                        { name: "Adelantado", value: objectToCheck.condicionesEntrega[1]?.checked ? "Si" : "No" },
+                        { name: "Descripción de no conformidad", value: objectToCheck.condicionesEntrega[1]?.description },
+                        // Continúa con el resto de los campos...
+                        {
+                            "name": "Calidad",
+                            "value": ""
+                        },
+                        {
+                            "name": "Temperatura",
+                            "value": objectToCheck.calidad[0]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[0]?.description
+                        },
+                        {
+                            "name": "Vida útil",
+                            "value": objectToCheck.calidad[1]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[1]?.description
+                        },
+                        {
+                            "name": "Embalaje",
+                            "value": objectToCheck.calidad[2]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[2]?.description
+                        },
+                        {
+                            "name": "Rótulo",
+                            "value": objectToCheck.calidad[3]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[3]?.description
+                        },
+                        {
+                            "name": "Calibre",
+                            "value": objectToCheck.calidad[4]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[4]?.description
+                        },
+                        {
+                            "name": "Color",
+                            "value": objectToCheck.calidad[5]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[5]?.description
+                        },
+                        {
+                            "name": "Signos de maduración",
+                            "value": objectToCheck.calidad[6]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[6]?.description
+                        },
+                        {
+                            "name": "Consistencia/Textura",
+                            "value": objectToCheck.calidad[7]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[7]?.description
+                        },
+                        {
+                            "name": "Olor",
+                            "value": objectToCheck.calidad[8]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.calidad[8]?.description
+                        },
+                        {
+                            "name": "Diferencias",
+                            "value": ""
+                        },
+                        {
+                            "name": "Precio",
+                            "value": objectToCheck.diferencias[0]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.diferencias[0]?.description
+                        },
+                        {
+                            "name": "Cantidad",
+                            "value": objectToCheck.diferencias[1]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.diferencias[1]?.description
+                        },
+                        {
+                            "name": "Transporte",
+                            "value": ""
+                        },
+                        {
+                            "name": "Temperatura de la caja",
+                            "value": objectToCheck.transporte[0]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.transporte[0]?.description
+                        },
+                        {
+                            "name": "Uniforme del proveedor",
+                            "value": objectToCheck.transporte[1]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.transporte[1]?.description
+                        },
+                        {
+                            "name": "Predisposición /Conducta",
+                            "value": objectToCheck.transporte[2]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.transporte[2]?.description
+                        },
+                        {
+                            "name": "Vehículo",
+                            "value": objectToCheck.transporte[3]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.transporte[3]?.description
+                        },
+                        {
+                            "name": "Otras Faltas",
+                            "value": objectToCheck.transporte[4]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Descripción de no conformidad",
+                            "value": objectToCheck.transporte[4]?.description
+                        },
+                        {
+                            "name": "MEDIDAS TOMADAS",
+                            "value": ""
+                        },
+                        {
+                            "name": "Rechazo (en el momento de la recepción)",
+                            "value": objectToCheck.medidasTomadas[0]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Cantidad",
+                            "value": objectToCheck.medidasTomadas[0]?.description
+                        },
+                        {
+                            "name": "Devolución (lotes ya ingresados)",
+                            "value": objectToCheck.medidasTomadas[1]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Cantidad",
+                            "value": objectToCheck.medidasTomadas[1]?.description
+                        },
+                        {
+                            "name": "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)",
+                            "value": objectToCheck.medidasTomadas[2]?.checked ? "Si" : "No"
+                        },
+                        {
+                            "name": "Cantidad",
+                            "value": objectToCheck.medidasTomadas[2]?.description
+                        }
+                    ]
+                    setInputsValues(array);
+                }
+            }
+        }
+        else if (cardToCheck.title === "Entrega de Bidones de Aceite Usado") {
+            if (objectToCheck) {
+                console.log('entre a bidones')
+                let array = objectToCheck.inputs.map(input => ({
+                    values: [
+                        { name: "Fecha", value: input.fecha },
+                        { name: "Cantidad de litros entregados", value: input.cantidaddelitrosentregados },
+                        { name: "Responsable de entrega", value: input.responsabledeentrega },
+                        { name: "Responsable de retiro", value: input.responsablederetiro },
+                        { name: "Selecciona una foto de transporte", value: input.transporte },
+                        { name: "Selecciona una foto de disposición final", value: input.disposiciónfinal },
+                    ]
+                }));
+                // hago que esto se aplique 0.1s despues
+                setTimeout(() => {
+                    setReglones([array]);
+                }, 0.1);
+            }
+        }
+        else if (cardToCheck.title === "Registro de Capacitación") {
+            let parsedObject = {};
+
+            for (let [key, value] of Object.entries(objectToCheck)) {
+                if (key !== 'firma' && key !== "updatedAt" && key !== "createdAt" && key !== "idUser" && key !== "businessName" && key !== "nombre" && key !== "status" && key !== "_id") {
+                    try {
+                        parsedObject[key] = JSON.parse(value);
+                    } catch (error) {
+                        console.error(`Error parsing key ${key}: ${error}`);
+                        parsedObject[key] = value;
+                    }
+                } else {
+                    parsedObject[key] = value;
+                }
+            }
+
+            // Ahora puedes usar parsedObject
+            console.log("parsed: ", parsedObject);
+
+            const data = parsedObject;
+            
+            // data es asi: {
+            //     "__v": 0,
+            //     "_id": "655eb31889767525ecaa9132",
+            //     "asistentes": [
+            //         {
+            //             "area": "F",
+            //             "dni": "D",
+            //             "metodo": "Oral",
+            //             "nombre": "E",
+            //             "resultado": "G"
+            //         }
+            //     ],
+            //     "businessName": "test",
+            //     "checkboxes": [
+            //         {
+            //             "check": "Si",
+            //             "label": "Inducción"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Campaña"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Entrenamiento Puesto de trabajo"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Capacitaciones gubernamentales"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Capacitación sobre Normas o Certificaciones"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Cierre Auditoría"
+            //         }
+            //     ],
+            //     "createdAt": "2023-11-23T02:04:09.038Z",
+            //     "fecha": "2023-11-23T01:03:00.126Z",
+            //     "firma": "https://capacitacion-onmodo.s3.us-east-2.amazonaws.com/71d3b092793d4791e7a70e9d9f7523c3",
+            //     "idUser": [
+            //         "65511179c66bd0041901aa5b"
+            //     ],
+            //     "instructor": "I",
+            //     "materialEntregado": [
+            //         {
+            //             "check": "Si",
+            //             "label": "Manual /instructivo"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Folleto"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Procedimiento"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Otros",
+            //             "text": "B"
+            //         }
+            //     ],
+            //     "materialExpuesto": [
+            //         {
+            //             "check": "Si",
+            //             "label": "Video"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Filminas"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Disertación"
+            //         },
+            //         {
+            //             "check": "Si",
+            //             "label": "Otros",
+            //             "text": "C"
+            //         }
+            //     ],
+            //     "nombre": "Luana ",
+            //     "observaciones": "H",
+            //     "rol": 2,
+            //     "status": "",
+            //     "temas": "A",
+            //     "tiempoDuracion": "2023-11-23T02:03:01.457Z",
+            //     "updatedAt": "2023-11-23T02:04:09.038Z"
+            // }
+
+            const inputsValues2 =
+                [
+                    { "name": "Fecha", "value": data.fecha },
+                    { "name": "Hora", "value": data.tiempoDuracion },
+                    { "name": "Tipo de capacitación (Selecciona la opción que corresponda)", "value": "" },
+                    { "name": "Inducción", "value": data.checkboxes[0].check },
+                    { "name": "Campaña", "value": data.checkboxes[1].check },
+                    { "name": "Entrenamiento Puesto de trabajo", "value": data.checkboxes[2].check },
+                    { "name": "Capacitaciones gubernamentales", "value": data.checkboxes[3].check },
+                    { "name": "Capacitación sobre Normas o Certificaciones", "value": data.checkboxes[4].check },
+                    { "name": "Cierre Auditoría", "value": data.checkboxes[5].check },
+                    { "name": "Temas dados", "value": data.temas },
+                    { "name": "Material didáctico Entregado", "value": "" },
+                    { "name": "Manual /instructivo", "value": data.materialEntregado[0].check },
+                    { "name": "Folleto", "value": data.materialEntregado[1].check },
+                    { "name": "Procedimiento", "value": data.materialEntregado[2].check },
+                    { "name": "Otros", "value": data.materialEntregado[3].check, value2: data.materialEntregado[3].text },
+                    { "name": "Material didáctico Expuesto", "value": "" },
+                    { "name": "Video", "value": data.materialExpuesto[0].check },
+                    { "name": "Filminas", "value": data.materialExpuesto[1].check },
+                    { "name": "Disertación", "value": data.materialExpuesto[2].check },
+                    { "name": "Otros", "value": data.materialExpuesto[3].check, value2: data.materialExpuesto[3].text },
+                    { "name": "ASISTENTES", "value": "" },
+                    { "name": "Observaciones", "value": data.observaciones },
+                    { "name": "Instructor", "value": data.instructor },
+                    { "name": "Firma de los participantes", "value": data.firma }
+                ]
+
+            setInputsValues(inputsValues2);
+
+            const reglones2 = [
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                // Aquí mapeas los valores de "asistentes" a su correspondiente entrada en "reglones"
+                data.asistentes.map(asistente => ({
+                    values: [
+                        { name: "DNI", value: asistente.dni },
+                        { name: "Nombre y Apellido", value: asistente.nombre },
+                        { name: "Area/Lugar de trabajo", value: asistente.area },
+                        { name: "Resultado Evaluacion", value: asistente.resultado },
+                        { name: "Método de evaluación", value: asistente.metodo }
+                    ]
+                }))
+            ];
+
+            setReglones(reglones2);
+
+        }
+        else {
             if (objectToCheck.inputs?.length > 0) {
                 let array = [];
                 for (let i = 0; i < cardToCheck.inputs.length; i++) {
@@ -170,8 +597,8 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
     function traducirHora(hora) {
         // traduzco esta hora 2023-10-11T03:27:28.079Z
         if (hora?.length) {
-            let horaTexto = hora.slice(11, 16)
-            return horaTexto
+            let horaTexto = new Date(hora).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })
+            return horaTexto;
         } else return 'vacio'
     }
 
@@ -191,6 +618,14 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                 </View>
             </TouchableOpacity>
 
+            <TouchableOpacity onPress={() => {
+                console.log('inputsValues: ', JSON.stringify(inputsValues))
+                console.log('reglones: ', JSON.stringify(reglones))
+                
+            }}>
+                <Text>Prueba</Text>
+            </TouchableOpacity>
+
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "date") {
                     return (
@@ -202,15 +637,11 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                 }
                 else if (input.tipo === "row") return (
                     <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
-                        <TouchableOpacity onPress={() => console.log('soy reglones', reglones)}>
-                            <Text>Prueba</Text>
-                        </TouchableOpacity>
                         <Text style={styles.normalText}>{input.name + ':'}</Text>
-
                         <View style={styles.reglon}>
                             <View style={styles.fila}>
-                                {reglones.length ? (
-                                    reglones[index]?.map((reglon, index2) => {
+                                {reglonesVisibles.length ? (
+                                    reglonesVisibles[index]?.map((reglon, index2) => {
                                         return (
                                             <View key={index2}>
                                                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>

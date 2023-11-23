@@ -8,8 +8,8 @@ import TimePicker from './TimePicker';
 // traigo el icon plussquareo la libreria AntDesign
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { API_URL, registroCapacitacion, verificacionTermometros } from '../functions/globalFunctions'
-
+import { API_URL, registroCapacitacion, verificacionTermometros, verificacionBalanzas, reporterechazo, entregabidones } from '../functions/globalFunctions'
+import * as DocumentPicker from 'expo-document-picker';
 
 export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
@@ -21,6 +21,8 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
     const businessName = useSelector((state) => state.business);
     const rol = useSelector((state) => state.rol);
     const nombre = useSelector((state) => state.fullName);
+
+    const [image, setImage] = useState(null);
 
     useEffect(() => {
         if (cardToCheck.inputs?.length > 0) {
@@ -35,6 +37,26 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
             setInputsValues(array);
         }
     }, [cardToCheck])
+
+    // CREA LA funcion que DocumentPicker para que traiga archivos pdf e imagenes
+    // para la api expo-document-picker creo la cfuncion selectDoc
+    const selectDoc = async (index) => {
+        try {
+            const res = await DocumentPicker.getDocumentAsync({ type: ['application/pdf', 'image/*'] })
+            console.log(res)
+            if (res.canceled === false) {
+                let inputsCopy = [...inputsValues]
+                // inputsCopy[index].value = res
+                // haz que sea un file object, con la propiedad path y name adecuadas, este es el formato  {"assets": [{"mimeType": "image/jpeg", "name": "IMG-20210328-WA0016.jpg", "size": 84176, "uri": "file:///data/user/0/host.exp.exponent/cache/DocumentPicker/ecae440f-de45-468e-b68e-5dc0ea484b15.jpg"}], "canceled": false} que recibiras
+                inputsCopy[index].value = res.assets[0]
+                
+                setInputsValues(inputsCopy)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     function setInputsGlobal(index, enteredValue) {
         let array = [...inputsValues];
@@ -67,7 +89,139 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
             if (saving) return; // si saving es true, no hago nada
             else if (cardToCheck.exceptionForm2Cap === true) {
                 setSaving(true);
-                registroCapacitacion(inputsValues, setSaving)
+                let inputsFinal = {
+                    "fecha": inputsValues[0]?.value,
+                    "tiempoDuracion": inputsValues[1]?.value,
+                    "checkboxes": [
+                        {
+                            "label": "Inducción",
+                            "check": inputsValues[3]?.value
+                        },
+                        {
+                            label: "Campaña",
+                            check: inputsValues[4]?.value
+                        },
+                        {
+                            label: "Entrenamiento Puesto de trabajo",
+                            check: inputsValues[5]?.value
+                        },
+                        {
+                            label: "Capacitaciones gubernamentales",
+                            check: inputsValues[6]?.value
+                        },
+                        {
+                            label: "Capacitación sobre Normas o Certificaciones",
+                            check: inputsValues[7]?.value
+                        },
+                        {
+                            label: "Cierre Auditoría",
+                            check: inputsValues[8]?.value
+                        },
+
+                    ],
+                    "temas": inputsValues[9]?.value,
+                    "materialEntregado": [
+                        {
+                            "label": "Manual /instructivo",
+                            "check": inputsValues[11]?.value
+                        },
+                        {
+                            "label": "Folleto",
+                            "check": inputsValues[12]?.value
+                        },
+                        {
+                            "label": "Procedimiento",
+                            "check": inputsValues[13]?.value
+                        },
+                        {
+                            "label": "Otros",
+                            "check": inputsValues[14]?.value,
+                            "text": inputsValues[14]?.value2
+                        },
+                    ],
+                    "materialExpuesto": [
+                        {
+                            "label": "Video",
+                            "check": inputsValues[16]?.value
+                        },
+                        {
+                            "label": "Filminas",
+                            "check": inputsValues[17]?.value
+                        },
+                        {
+                            "label": "Disertación",
+                            "check": inputsValues[18]?.value
+                        },
+                        {
+                            "label": "Otros",
+                            "check": inputsValues[19]?.value,
+                            "text": inputsValues[19]?.value2
+                        },
+                    ],
+                    "asistentes": [],
+                    "observaciones": inputsValues[21]?.value,
+                    "instructor": inputsValues[22]?.value,
+                    "firma": inputsValues[23]?.value,
+                }
+
+                console.log('inputsValues: ', JSON.stringify(inputsValues))
+                console.log('reglones: ', JSON.stringify(reglones))
+
+                if (reglones[20]?.length > 0) {
+                    for (let i = 0; i < reglones[20].length; i++) {
+                        console.log('vuelta ', i)
+                        inputsFinal.asistentes.push(
+                            {
+                                "dni": reglones[20][i].values[0]?.value,
+                                "nombre": reglones[20][i].values[1]?.value,
+                                "area": reglones[20][i].values[2]?.value,
+                                "resultado": reglones[20][i].values[3]?.value,
+                                "metodo": reglones[20][i].values[4]?.value,
+                            },
+                        )
+                    }
+                }
+
+                let example2 = {
+                    "fecha": "",
+                    "tiempoDuracion": "",
+                    "checkboxes": [
+                        {}
+                    ],
+                    "temas": "",
+                    "materialEntregado": [
+                        {}
+                    ],
+                    "materialExpuesto": [
+                        {}
+                    ],
+                    "asistentes": [],
+                    "observaciones": "",
+                    "instructor": "",
+                    "firma": {
+                        "path": "_04c2d993-6e2d-454a-b1cc-1d427958cae2.jpeg"
+                    },
+                    "idUser": "65511179c66bd0041901aa5b"
+                }
+
+                console.log('inputsFinal:', inputsFinal)
+
+                registroCapacitacion(inputsFinal, setSaving, rol, id, businessName, nombre, inputsValues[23].value)
+                setNotif({ view: true, message: "¡Formulario creado exitosamente!", color: "verde" })
+
+                if (cardToCheck.inputs?.length > 0) {
+                    let array = [];
+                    for (let i = 0; i < cardToCheck.inputs.length; i++) {
+                        if (cardToCheck.inputs[i].tipo !== "select") {
+                            array.push({ name: cardToCheck.inputs[i].name, value: '' })
+                        } else {
+                            array.push({ name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] })
+                        }
+                    }
+
+                    setInputsValues(array);
+                    setReglones([]);
+                }
             }
             else {
                 console.log('entre')
@@ -111,11 +265,43 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
 
                 if (cardToCheck.title === "Verificación de Termómetros") {
-                    console.log('copiaInputsValue', JSON.stringify(copiaInputsValue))
                     objeto = verificacionTermometros(copiaInputsValue)
-                    console.log('objeto: ', JSON.stringify(objeto))
                     objeto = {
                         ...objeto,
+                        idUser: id,
+                        rol: rol,
+                        nombre: nombre,
+                        businessName: businessName,
+                    }
+                }
+
+                if (cardToCheck.title === "Verificación Balanzas") {
+                    console.log('copiaInputsValue: ', JSON.stringify(copiaInputsValue))
+                    objeto = verificacionBalanzas(copiaInputsValue)
+                    objeto = {
+                        ...objeto,
+                        idUser: id,
+                        rol: rol,
+                        nombre: nombre,
+                        businessName: businessName,
+                    }
+                }
+
+                if (cardToCheck.title === "Rechazo /  Devolución de Materias Primas") {
+                    objeto = reporterechazo(inputsValues)
+                    objeto = {
+                        ...objeto,
+                        idUser: id,
+                        rol: rol,
+                        nombre: nombre,
+                        businessName: businessName,
+                    }
+                }
+
+                if (cardToCheck.title === "Entrega de Bidones de Aceite Usado") {
+                    let inputs = entregabidones(reglones[0])
+                    objeto = {
+                        inputs: inputs,
                         idUser: id,
                         rol: rol,
                         nombre: nombre,
@@ -188,10 +374,12 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => {
-                pickFile()
+                console.log('inputsValues: ', JSON.stringify(inputsValues))
+                console.log('reglones: ', JSON.stringify(reglones))
             }}>
                 <Text>Prueba</Text>
             </TouchableOpacity>
+
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "date") {
                     return (
@@ -253,6 +441,21 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                                         setInputsValues(array);
                                     }}
                                 />
+                            </View>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "fileUpload") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 10 }}>{input.name}</Text>
+                            <Text style={{ marginBottom: 5, display: (inputsValues[index]?.value?.uri ? 'flex' : 'none') }}>{
+                                (inputsValues[index]?.value?.uri ? inputsValues[index]?.value?.uri.split("/")[inputsValues[index]?.value?.uri.split("/").length - 1] : '')
+                            }</Text>
+                            <View style={styles.buttonFooterStyle}>
+                                <TouchableOpacity onPress={() => selectDoc(index)}>
+                                    <Text style={styles.buttonText}>Subir archivo</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     )

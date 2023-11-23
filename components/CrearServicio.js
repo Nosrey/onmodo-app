@@ -348,7 +348,7 @@ export default function CrearServicio({ navigation, params }) {
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
-                                            dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index)
+                                            (cardToCheck?.title === "Planilla de Recepción" ? input?.name === "Alimento" ? dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index) : null : dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index));
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
                                             setInputsValueRow(array);
@@ -415,7 +415,7 @@ export default function CrearServicio({ navigation, params }) {
                     else if (input.tipo === "imagePicker") {
                         return (
                             <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
-                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{"Selecciona una " + row[index].name}</Text>
                                 <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
         
                                     <Text style={{ marginBottom: 5, display: (inputsValueRow[index]?.value ? 'flex' : 'none')} }>{
@@ -492,7 +492,7 @@ export default function CrearServicio({ navigation, params }) {
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
-                                            dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index)
+                                            (cardToCheck?.title === "Planilla de Recepción" ? input?.name === "Alimento" ? dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index) : null : dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index));
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
                                             setInputsValueRow(array);
@@ -538,7 +538,7 @@ export default function CrearServicio({ navigation, params }) {
                                         placeholder={row[index].name}
                                         value={inputsValueRow[index]?.value || ''}
                                         onChangeText={(value) => {
-                                            dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index)
+                                            (cardToCheck?.title === "Planilla de Recepción" ? input?.name === "Alimento" ? dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index) : null : dotSelect(value, (cardToCheck?.exceptionR1 === true ? inputsValueRow[2]?.value : inputsValueRow[0]?.value), index));
                                             let array = [...inputsValueRow];
                                             array[index].value = value;
                                             setInputsValueRow(array);

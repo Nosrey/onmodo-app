@@ -53,7 +53,7 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
                 {inputReceived.name + ':'}
             </Text>
             <Text style={[styles.normalText, { fontSize: 14 }]}>
-                {(inputsValues[index]?.value) ? (inputsValues[index]?.value.getHours() < 10 ? '0' + inputsValues[index]?.value.getHours() : inputsValues[index]?.value.getHours()) + ':' + (inputsValues[index]?.value.getMinutes() < 10 ? '0' + inputsValues[index]?.value.getMinutes() : inputsValues[index]?.value.getMinutes()) : 'Sin Hora'}
+                {(inputsValues[index]?.value) ? inputsValues[index]?.value.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false }) : 'Sin Hora'}
             </Text>
             <View style={styles.buttonFooterStyle}>
                 <TouchableOpacity key={index} onPress={showMode}>
@@ -68,6 +68,7 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
                         textColor={"#ffffff"}
                         display='spinner'
                         is24Hour={true}
+                        timeZoneOffsetInMinutes={-180}
                         onChange={(event, selectedDate) => onChange(event, selectedDate)}
                     />
                 )}

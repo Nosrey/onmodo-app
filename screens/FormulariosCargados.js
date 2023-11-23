@@ -30,11 +30,11 @@ export default function FormulariosCargados({ navigation }) {
     // el estado del filtro elegido
     const [selectedOption, setSelectedOption] = useState('most-recent');
     const [copiaCardsInicial, setCopiaCardsInicial] = useState([])
+    const [cardsFiltered, setCardsFiltered] = useState([])
 
 
 
     function update() {
-
         fetch(`${API_URL}/api/business/${id}`, {
             method: 'GET',
             headers: {
@@ -53,7 +53,7 @@ export default function FormulariosCargados({ navigation }) {
                 }
 
                 // hago un dispatch que setee formularios con el valor de formularios
-                handleSort(selectedOption);
+   
                 setNotif({ view: true, message: '¡Actualizado correctamente!', color: 'verde' });
                 dispatch({ type: 'counter/setFormularios', payload: formularios });
             })
@@ -240,17 +240,19 @@ export default function FormulariosCargados({ navigation }) {
         let inputLocal = value;
         // convierto el inputLocal en minusculas
         inputLocal = inputLocal.toLowerCase();
+        inputLocal = inputLocal.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         // creo un array donde guardaré los buttons que coincidan con el valor del input al filtrar
-        setCardsFound(cards.filter((item) => {
+        setCardsFiltered(cardsFound.filter((item) => {
             let itemTitle = item.title.toLowerCase();
+            itemTitle = itemTitle.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
             if (itemTitle.includes(inputLocal)) return item
         }))
     }
 
-    // ejecuto un useEffect al cargar la pantalla para que se ejecute una sola vez
-    useEffect(() => {
-        update()
-    }, []);
+    // // ejecuto un useEffect al cargar la pantalla para que se ejecute una sola vez
+    // useEffect(() => {
+    //     update()
+    // }, []);
 
     // ejecuto update si retrocedo a esta pantalla
     useEffect(() => {
@@ -285,11 +287,10 @@ export default function FormulariosCargados({ navigation }) {
                 return undefined
             }
         }).filter((item) => item !== undefined).sort((a, b) => {
-            if (typeof a.date === 'string' && typeof b.date === 'string') {
-                return new Date(b.date) - new Date(a.date);
-            }
-            return 0;
-        })// add this line to reverse the order
+            let recentA = a.entries && a.entries.length > 0 ? new Date(a.entries[a.entries.length - 1].updatedAt) : new Date(0);
+            let recentB = b.entries && b.entries.length > 0 ? new Date(b.entries[b.entries.length - 1].updatedAt) : new Date(0);
+            return recentB - recentA;
+        })
 
         // unifico cards 2 encima de cards
         cards = [...cards];
@@ -313,7 +314,7 @@ export default function FormulariosCargados({ navigation }) {
                     {/* si cardFound.length es 0, muestro un mensaje de que no hay resultados */}
                     {cardsFound.length == 0 ? <Text style={[styles.title, styles.notFoundMsg]}>No hay resultados</Text>
                         : (
-                            cardsFound.map((boton, i) => {
+                            (inputValue.length ? cardsFiltered : cardsFound).map((boton, i) => {
                                 if (boton.entries?.length) {
                                     return (
                                         <TouchableOpacity key={i} style={styles.box} onPress={boton.onPress}>

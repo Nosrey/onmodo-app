@@ -57,6 +57,8 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
                         mode={'date'}
                         textColor={"#ffffff"}
                         display='spinner'
+                        // pongo timeZone para argentina
+                        timeZoneOffsetInMinutes={-180}                        
 
                         onChange={(event, selectedDate) => {
                             if (cardToCheck.exceptionP1 && inputReceived.name === "Fecha") setAllowSaveCaseProcess(true)
