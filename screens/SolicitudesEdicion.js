@@ -24,6 +24,7 @@ export default SolicitudesEdicion = ({ navigation }) => {
     // traigo business de redux
     const business = useSelector(state => state.business);
     const rol = useSelector(state => state.rol);
+    const fullName = useSelector(state => state.fullName);
 
     const [viewEdit, setViewEdit] = useState(false);
     const [viewDelete, setViewDelete] = useState(false);
@@ -56,9 +57,44 @@ export default SolicitudesEdicion = ({ navigation }) => {
         }));
     }
 
+    function sendEdit(respuesta) {
+        let aprobado = (respuesta === 'yes' ? 'approved' : 'denied');
+        let objFinal = {
+            status: aprobado,
+            motivo: internalInput,
+            editEnabled: (aprobado === 'approved' ? true : false),
+            whoApproved: fullName,
+        }
+        let form = legajosFound[indexSelected].name
+        let formId = legajosFound[indexSelected].value._id
+        let url = API_URL + '/api/' + form + '/' + formId;
+
+        // un fetch "PUT"
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            // envio el objeto final
+            body: JSON.stringify(objFinal)
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                let legajosFoundCopy = [...legajosFound];
+                // busco el item con el id de formId
+                let index = legajosFoundCopy.findIndex((item) => item?.value?._id === formId);
+                // cambio el item.value.status por el nuevo status en base a aprobado
+                legajosFoundCopy[index].value.status = aprobado;
+                setLegajosFound(legajosFoundCopy);
+            })
+            .catch((error) => console.error(error));
+    }
+
     useEffect(() => {
         // http://localhost:8080/api/pendingedition/:businessName
         let url = API_URL + '/api/pendingedition/' + business;
+        console.log('url:',  url)
         fetch(url, {
             method: 'GET',
             headers: {
@@ -90,6 +126,17 @@ export default SolicitudesEdicion = ({ navigation }) => {
                     }
                 })
 
+                // lo ordeno en base a la fecha de creacion de mas nuevo a mas viejo, esta en item.value?.createdAt
+                arrayTemp.sort((a, b) => {
+                    if (a.value.createdAt < b.value.createdAt) {
+                        return 1;
+                    }
+                    if (a.value.createdAt > b.value.createdAt) {
+                        return -1;
+                    }
+                    return 0;
+                });
+
                 arrayFinal = arrayTemp;
 
                 setLegajosFound(arrayFinal);
@@ -102,12 +149,13 @@ export default SolicitudesEdicion = ({ navigation }) => {
         <View>
             <View style={[itemListContainer, {
                 backgroundColor: (
-                    (item.value.status === 'pending') ? '#FFB82F1A' : ((item.value.status === 'approved') ? 'white' : (item.value.status === 'denied' ? '#FF2E111A' : 'white'))
+                    (item.value.status === 'pending') ? '#FFB82F1A' : ((item.value.status === 'approved') ? '#7BC1001A' : (item.value.status === 'denied' ? '#FF2E111A' : 'white'))
                 )
             }]}>
                 {/* en la propiedad item.createdAt hay una fecha en formato 2023-08-01T19:37:43.071Z y yo creare de ahi un texto en formato 12/04/24 sacado de esa informacion y otro en formato 14:54 hs sacado de esa informacion tambien*/}
                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.value.createdAt.slice(8, 10) + '/' + item.value.createdAt.slice(5, 7) + '/' + item.value.createdAt.slice(2, 4)}</Text>
-                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.value.createdAt.slice(11, 13) + ':' + item.value.createdAt.slice(14, 16) + ' hs'}</Text>
+ 
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{new Date(item?.value?.createdAt).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}</Text>
                 {/* ahora hago una comparacion, si el id del elemento item.id es igual a la id que traje del redux entonces muestro el nombre que tengo en fullName */}
                 <Text style={[styles.textEditables, { width: "25%", textAlign: 'left', color: (item.value.status === 'approved' ? '#7BC100' : ((item.value.status === 'pending') ? '#FFB82F' : (item.value.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item.value.status === 'approved' ? 'Aprobado' : ((item.value.status === 'pending') ? 'Pendiente' : ((item.value.status === 'denied') ? 'Denegado' : '')))}</Text>
                 {/* agrego un boton para desplegar mas opciones, el que es como una V hacia abajo de icons */}
@@ -178,7 +226,8 @@ export default SolicitudesEdicion = ({ navigation }) => {
         viewWindow: viewEdit,
         textField: ' Motivos de la decisión',
         setViewWindow: setViewEdit,
-        action: '',
+        action: sendEdit,
+        botonSendParams: true,
         data: '',        
         botonNo: "Denegar",
         botonYes: "Aprobar",

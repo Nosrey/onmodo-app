@@ -41,6 +41,7 @@ export default function Formularios({ navigation }) {
             onPress: () => {
                 // creo un useDispatch para establecer cardToCheck    
                 dispatch({ type: 'counter/setCardToCheck', payload: item });
+                dispatch({ type: 'counter/setEditMode', payload: false });
                 navigation.navigate('FormCreate');
             },
         }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -294,115 +294,59 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             let parsedObject = {};
 
             for (let [key, value] of Object.entries(objectToCheck)) {
-                if (key !== 'firma' && key !== "updatedAt" && key !== "createdAt" && key !== "idUser" && key !== "businessName" && key !== "nombre" && key !== "status" && key !== "_id") {
+                if (key !== 'firma' && key !== "updatedAt" && key !== "createdAt" && key !== "idUser" && key !== "businessName" && key !== "nombre" && key !== "status" && key !== "_id" && key !== "temas" && key !== "observaciones" && key !== "instructor" && key !== "fecha" && key !== "tiempoDuracion")  {
                     try {
                         parsedObject[key] = JSON.parse(value);
                     } catch (error) {
                         console.error(`Error parsing key ${key}: ${error}`);
                         parsedObject[key] = value;
                     }
-                } else {
+                } else if (key === 'fecha') {
+                    if (value === '') parsedObject[key] = ''
+                    else parsedObject[key] = value;
+                }
+                else {
                     parsedObject[key] = value;
                 }
             }
 
             // Ahora puedes usar parsedObject
             console.log("parsed: ", parsedObject);
-
-            const data = parsedObject;
             
-            // data es asi: {
-            //     "__v": 0,
-            //     "_id": "655eb31889767525ecaa9132",
-            //     "asistentes": [
-            //         {
-            //             "area": "F",
-            //             "dni": "D",
-            //             "metodo": "Oral",
-            //             "nombre": "E",
-            //             "resultado": "G"
-            //         }
-            //     ],
-            //     "businessName": "test",
-            //     "checkboxes": [
-            //         {
-            //             "check": "Si",
-            //             "label": "Inducción"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Campaña"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Entrenamiento Puesto de trabajo"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Capacitaciones gubernamentales"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Capacitación sobre Normas o Certificaciones"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Cierre Auditoría"
-            //         }
-            //     ],
-            //     "createdAt": "2023-11-23T02:04:09.038Z",
-            //     "fecha": "2023-11-23T01:03:00.126Z",
-            //     "firma": "https://capacitacion-onmodo.s3.us-east-2.amazonaws.com/71d3b092793d4791e7a70e9d9f7523c3",
-            //     "idUser": [
-            //         "65511179c66bd0041901aa5b"
-            //     ],
-            //     "instructor": "I",
-            //     "materialEntregado": [
-            //         {
-            //             "check": "Si",
-            //             "label": "Manual /instructivo"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Folleto"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Procedimiento"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Otros",
-            //             "text": "B"
-            //         }
-            //     ],
-            //     "materialExpuesto": [
-            //         {
-            //             "check": "Si",
-            //             "label": "Video"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Filminas"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Disertación"
-            //         },
-            //         {
-            //             "check": "Si",
-            //             "label": "Otros",
-            //             "text": "C"
-            //         }
-            //     ],
-            //     "nombre": "Luana ",
-            //     "observaciones": "H",
-            //     "rol": 2,
-            //     "status": "",
-            //     "temas": "A",
-            //     "tiempoDuracion": "2023-11-23T02:03:01.457Z",
-            //     "updatedAt": "2023-11-23T02:04:09.038Z"
-            // }
+            // recibire fecha asi 2023-11-23 pero quiero que se vea asi 2023-11-23T17:41:50.449Z (la informacion que no tienes ponla en 0)
+            let newFecha = ''
+            if (parsedObject.fecha !== '') newFecha = parsedObject.fecha + "T00:00:00.000Z"
+            // recibire tiempoDuracion asi 17:41 pero quiero que se vea asi 2023-11-23T17:41:50.449Z (la informacion que no tienes ponla en 0)
+            let newTiempoDuracion = "2023-11-23T" + parsedObject.tiempoDuracion + ":00.000Z"
+            if (parsedObject.tiempoDuracion === '') newTiempoDuracion = 'Sin hora'
+
+            // recorro checkboxes de parsedObject y si el check es true entonces le asigno el valor "Si" y si es false le asigno "No"
+            for (let i = 0; i < parsedObject.checkboxes.length; i++) {
+                if (parsedObject.checkboxes[i].check === true) {
+                    parsedObject.checkboxes[i].check = "Si"
+                } else {
+                    parsedObject.checkboxes[i].check = "No"
+                }
+            }
+
+            // ahora con materialEntregado y materialExpuesto hago lo mismo
+            for (let i = 0; i < parsedObject.materialEntregado.length; i++) {
+                if (parsedObject.materialEntregado[i].check === true) {
+                    parsedObject.materialEntregado[i].check = "Si"
+                } else {
+                    parsedObject.materialEntregado[i].check = "No"
+                }
+            }
+
+            for (let i = 0; i < parsedObject.materialExpuesto.length; i++) {
+                if (parsedObject.materialExpuesto[i].check === true) {
+                    parsedObject.materialExpuesto[i].check = "Si"
+                } else {
+                    parsedObject.materialExpuesto[i].check = "No"
+                }
+            }
+
+            const data = { ...parsedObject, fecha: newFecha, tiempoDuracion: newTiempoDuracion }
 
             const inputsValues2 =
                 [
@@ -420,12 +364,12 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                     { "name": "Manual /instructivo", "value": data.materialEntregado[0].check },
                     { "name": "Folleto", "value": data.materialEntregado[1].check },
                     { "name": "Procedimiento", "value": data.materialEntregado[2].check },
-                    { "name": "Otros", "value": data.materialEntregado[3].check, value2: data.materialEntregado[3].text },
+                    { "name": "Otros", "value": data.materialEntregado[3].check, value2: data.materialEntregado[3].desc },
                     { "name": "Material didáctico Expuesto", "value": "" },
                     { "name": "Video", "value": data.materialExpuesto[0].check },
                     { "name": "Filminas", "value": data.materialExpuesto[1].check },
                     { "name": "Disertación", "value": data.materialExpuesto[2].check },
-                    { "name": "Otros", "value": data.materialExpuesto[3].check, value2: data.materialExpuesto[3].text },
+                    { "name": "Otros", "value": data.materialExpuesto[3].check, value2: data.materialExpuesto[3].desc },
                     { "name": "ASISTENTES", "value": "" },
                     { "name": "Observaciones", "value": data.observaciones },
                     { "name": "Instructor", "value": data.instructor },
@@ -434,21 +378,29 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
             setInputsValues(inputsValues2);
 
-            const reglones2 = [
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                // Aquí mapeas los valores de "asistentes" a su correspondiente entrada en "reglones"
-                data.asistentes.map(asistente => ({
-                    values: [
-                        { name: "DNI", value: asistente.dni },
-                        { name: "Nombre y Apellido", value: asistente.nombre },
-                        { name: "Area/Lugar de trabajo", value: asistente.area },
-                        { name: "Resultado Evaluacion", value: asistente.resultado },
-                        { name: "Método de evaluación", value: asistente.metodo }
-                    ]
-                }))
-            ];
+            let reglon = data.asistentes.map(asistente => ({
+                values: [
+                    { name: "DNI", value: asistente.dni },
+                    { name: "Nombre y Apellido", value: asistente.nombre },
+                    { name: "Area/Lugar de trabajo", value: asistente.area },
+                    { name: "Resultado Evaluacion", value: asistente.resultado },
+                    { name: "Método de evaluación", value: asistente.metodo }
+                ]
+            }))
 
-            setReglones(reglones2);
+            console.log('reglon: ', JSON.stringify(reglon))
+
+            const reglones2 = [
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, reglon
+                // Aquí mapeas los valores de "asistentes" a su correspondiente entrada en "reglones"
+                
+            ];            
+
+            // espero 0.1 segundo
+            setTimeout(() => {
+                setReglones(reglones2);
+            }, 0.1);
+                
 
         }
         else {
@@ -596,10 +548,18 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
     function traducirHora(hora) {
         // traduzco esta hora 2023-10-11T03:27:28.079Z
-        if (hora?.length) {
-            let horaTexto = new Date(hora).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })
-            return horaTexto;
-        } else return 'vacio'
+        if (cardToCheck.title === "Registro de Capacitación") {
+            if (hora?.length) {
+                let horaTexto = hora.slice(11, 16)
+                return horaTexto;
+            } else return 'vacio'
+
+        } else {
+            if (hora?.length) {
+                let horaTexto = new Date(hora).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })
+                return horaTexto;
+            } else return 'vacio'
+        }
     }
 
 
@@ -631,7 +591,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                     return (
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirFecha(inputsValues[index]?.value)}</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{(inputsValues[index]?.value.length && inputsValues[index]?.value !== 'Sin fecha' ? traducirFecha(inputsValues[index]?.value) : 'Sin fecha')}</Text>
                         </View>
                     )
                 }
@@ -707,7 +667,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                     return (
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirHora(inputsValues[index]?.value)}</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{(inputsValues[index]?.value && inputsValues[index]?.value !== 'Sin hora' ? traducirHora(inputsValues[index]?.value) : 'Sin hora')}</Text>
                         </View>
                     )
                 }
@@ -741,6 +701,27 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                                     )
                                 })}
                             </Picker>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "fileUpload") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20, alignItems: 'center' }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 10 }}>{input.name}</Text>
+                            <Image
+                                source={{ uri: inputsValues[index]?.value }}
+                                style={
+                                    {
+                                        width: 200,
+                                        height: 200,
+                                        marginBottom: 10,
+                                        display: (inputsValues[index]?.value ? 'flex' : 'none'),
+                                    }
+                                } />
+                            <Text style={{ marginBottom: 5, display: (inputsValues[index]?.value ? 'flex' : 'none') }}>{
+                                (inputsValues[index]?.value ? inputsValues[index]?.value?.split("/")[inputsValues[index]?.value?.split("/").length - 1] : '')
+                            }</Text>
+                
                         </View>
                     )
                 }

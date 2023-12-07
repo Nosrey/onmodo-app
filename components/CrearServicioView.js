@@ -296,6 +296,7 @@ export default function CrearServicio({ navigation, params }) {
                     } else if (input.tipo === "time") {
                         return (
                             <View key={index}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirHora(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )

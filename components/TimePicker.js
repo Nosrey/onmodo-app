@@ -4,8 +4,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function TimePicker({ inputReceived, index, setInputsGlobal, gris, inputsValues }) {
-    const [time, setTime] = useState({ hora: new Date(), texto: 'Sin Hora' });
+    const [time, setTime] = useState({ hora: new Date(), texto: 'Sin hora' });
     const [show, setShow] = useState();
+
+    const editMode = useSelector(state => state.editMode)
 
     const horaATexto = (hora) => {
         // recibira una hora en este formato 2023-09-12T23:30:52.044Z y debo retornarla en un formato legible en un formato asi: 4:30 pm
@@ -25,6 +27,7 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
         if (event.type === 'set') {
             const currentHour = selectedDate || inputsValues[index]?.value;
             setShow(false)
+            console.log('currentHour: ', currentHour)
             setInputsGlobal(index, currentHour)
         } else {
             setShow(false)
@@ -42,9 +45,28 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
         paddingTop: gris ? 5 : 0,
     }
 
-    const container ={
+    const container = {
         marginTop: !gris ? 5 : 0,
         marginBottom: !gris ? 20 : 0,
+    }
+
+    function ajustarHora(value) {
+        // recibo una hora pero en hora le pongo siempre 1am
+        if (value) {
+            if (value === 'Sin hora') value = new Date()
+            console.log('soy value: ', value)
+            let hora = new Date(value)
+            hora.setFullYear(2020)
+            hora.setMonth(1)
+            hora.setDate(1)
+            return hora
+        } else {
+            let hora = new Date()
+            hora.setFullYear(2020)
+            hora.setMonth(1)
+            hora.setDate(1)
+            return hora
+        }
     }
 
     return (
@@ -53,7 +75,7 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
                 {inputReceived.name + ':'}
             </Text>
             <Text style={[styles.normalText, { fontSize: 14 }]}>
-                {(inputsValues[index]?.value) ? inputsValues[index]?.value.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false }) : 'Sin Hora'}
+                {(inputsValues[index]?.value) && (inputsValues[index]?.value !== 'Sin hora') ? new Date(inputsValues[index]?.value).toLocaleTimeString({ hour12: false }) : 'Sin hora'}
             </Text>
             <View style={styles.buttonFooterStyle}>
                 <TouchableOpacity key={index} onPress={showMode}>
@@ -63,12 +85,11 @@ export default function TimePicker({ inputReceived, index, setInputsGlobal, gris
                 </TouchableOpacity>
                 {(show === true) && (
                     <DateTimePicker
-                        value={inputsValues[index]?.value || new Date()}
-                        mode={'time'}
-                        textColor={"#ffffff"}
-                        display='spinner'
-                        is24Hour={true}
-                        timeZoneOffsetInMinutes={-180}
+                    mode={'time'}
+                    textColor={"#ffffff"}
+                    display='spinner'
+                    is24Hour={true}                    
+                    value={ajustarHora(inputsValues[index]?.value) || ajustarHora()}
                         onChange={(event, selectedDate) => onChange(event, selectedDate)}
                     />
                 )}

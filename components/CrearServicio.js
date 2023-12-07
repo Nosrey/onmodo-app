@@ -23,7 +23,7 @@ export default function CrearServicio({ navigation, params }) {
 
     // un useEffect que se ejecute una sola vez y establezca row
     useEffect(() => {
-        setRow(cardToCheck.inputs[index].options)
+        setRow(cardToCheck.inputs[index].options)    
     }, [])
 
     useEffect(() => {
@@ -95,7 +95,6 @@ export default function CrearServicio({ navigation, params }) {
             copiaReglones[index][reglonPicked] = {
                 values: inputsValueRow,
             }
-            console.log('guardado: ', copiaReglones)
             setReglones(copiaReglones)
             setEditionMode(false)
         }
@@ -242,6 +241,8 @@ export default function CrearServicio({ navigation, params }) {
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // Solo imágenes
             allowsEditing: true,            
             quality: 1,
+            // tamaño cuadrado
+            aspect: [1, 1],
         });
 
         if (!result.canceled) {
@@ -268,6 +269,11 @@ export default function CrearServicio({ navigation, params }) {
             visibleCopia[index] = false;
             setVisible(visibleCopia)
         }}>
+            <TouchableOpacity onPress={() => {
+                console.log('inputsValueRow: ', inputsValueRow)
+            }}>
+                <Text>Prueba</Text>
+            </TouchableOpacity>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                 <Text style={styles.titleForm}>Agregar:</Text>
                 <TouchableOpacity>
@@ -418,9 +424,7 @@ export default function CrearServicio({ navigation, params }) {
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{"Selecciona una " + row[index].name}</Text>
                                 <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
         
-                                    <Text style={{ marginBottom: 5, display: (inputsValueRow[index]?.value ? 'flex' : 'none')} }>{
-                                        (inputsValueRow[index]?.value ? inputsValueRow[index]?.value.split("/")[inputsValueRow[index]?.value.split("/").length - 1] : '')
-                                        }</Text>
+                                    <Image source={{ uri: (inputsValueRow[index]?.value.length ? inputsValueRow[index]?.value : null) }} style={{ width: 200, height: 200, marginVertical: 10, marginBottom: 20, display: (inputsValueRow[index]?.value ? 'flex' : 'none') }} />
                                     <TouchableOpacity onPress={() => pickImage(index)} style={[buttonFooterStyle, { width: "40%" }]}>
                                         <Text style={[styles.buttonText]}>{(inputsValueRow[index]?.value ? "Cambiar Imagen" : "Cargar Imagen")}</Text>
                                     </TouchableOpacity>

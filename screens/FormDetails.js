@@ -18,7 +18,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
-import { API_URL } from '../functions/globalFunctions'
+import { API_URL, formulariosData } from '../functions/globalFunctions'
 
 export default FormDetails = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -33,7 +33,9 @@ export default FormDetails = ({ navigation }) => {
     // obtengo id y fullName
     const id = useSelector((state) => state.id);
     const fullName = useSelector((state) => state.fullName);
+    const rol = useSelector((state) => state.rol);
     const [targetId, setTargetId] = useState(0);
+    const [statusPicked, setStatusPicked] = useState('');
 
     const { title, entries } = cardToCheck;
 
@@ -67,13 +69,18 @@ export default FormDetails = ({ navigation }) => {
         // else if (cardToCheck?.title === 'controlproceso') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
         // else return API_URL + "/api/" + cardToCheck.title + "/" + id;
         console.log('url: ', cardToCheck.url + "/" + id)
-        return cardToCheck.url + "/" + id;
+        let url = cardToCheck.url + "/" + id;
+        // if (url.includes("/controlprocesos")) {
+        //     url = url.replace("/controlprocesos", "/controlproceso")
+        // }
+        return url
     }
 
     function handleSpectButton(id) {
         let item = cardToCheck?.entries?.find((element) => element._id === id);
         // hago dispactch a objectToCheck con item
         dispatch({ type: 'counter/setObjectToCheck', payload: item });
+        dispatch({ type: 'counter/setEditMode', payload: false });
         // hago navigate a FormView
         navigation.navigate('FormView');
     }
@@ -109,20 +116,47 @@ export default FormDetails = ({ navigation }) => {
             });
     }
 
+    function goToEdit(id) {
+        url = getUrl(id)        
+        let item = entries?.find((element) => element._id === id);
+
+        // hago dispactch a objectToCheck con item
+        dispatch({ type: 'counter/setObjectToCheck', payload: item });
+        
+        if (cardToCheck.title !== "Uso y Cambio de Aceite en Freidora" && cardToCheck.title !== "Chequeo de uso de EPP") {
+            if (item?.editEnabled) {
+                dispatch({ type: 'counter/setEditMode', payload: true });
+                navigation.navigate('FormCreate');
+            } else {
+                dispatch({ type: 'counter/setEditMode', payload: false })
+                navigation.navigate('FormView');
+            }
+        } else if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora" || cardToCheck.title === "Chequeo de uso de EPP") {
+            if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora") {
+                navigation.navigate('FormView');
+            }
+            else {
+                if (item?.editEnabled) {
+                    dispatch({ type: 'counter/setEditMode', payload: true });
+                    navigation.navigate('FormView');
+                } else {
+                    dispatch({ type: 'counter/setEditMode', payload: false });
+                    navigation.navigate('FormView');
+                }
+            }
+
+        }
+    }
 
 
     function handleEdit(id, reason) {
         let url = getUrl(id)
-        // reviso url y si contiene "/controlprocesos" entonces lo cambio por "/controlproceso
-        if (url.includes("/controlprocesos")) {
-            url = url.replace("/controlprocesos", "/controlproceso")
-        }
         fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ status: "pending", motivoPeticion: reason }),
+            body: JSON.stringify({ status: "pending", motivoPeticion: reason, rol: rol }),
         })
             .then((response) => {
                 if (response.status === 200) {
@@ -175,6 +209,11 @@ export default FormDetails = ({ navigation }) => {
         botonYes: "Eliminar",
     }
 
+    function editHandler(id) {
+        let item = entries?.find((element) => element?._id === id);
+        (item?.status === 'free' || item?.status === 'approved' ? goToEdit(id) : handleEditButton(id))
+    }
+
     function handleEditButton(id) {
         setTargetId(id)
         setViewEdit(true)
@@ -222,7 +261,7 @@ export default FormDetails = ({ navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton(item?._id) }} />
+                        <Feather name="edit-3" size={20} color="black" onPress={() => { editHandler(item?._id)}} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>

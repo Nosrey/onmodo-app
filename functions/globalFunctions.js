@@ -348,7 +348,7 @@ export const formulariosData = [
     },
     {
         title: "Chequeo de uso de EPP",
-        rolNeeded: 2,
+        rolNeeded: 1,
         formType: 3,
         url: API_URL + "/api/chequeoepp",
         verMas: [
@@ -1234,22 +1234,32 @@ export const registroCapacitacion = async (values, setSaving, rol, id, businessN
         let formData = new FormData();
         // Agregar las propiedades de "values" al FormData
         // {"assets": [{"mimeType": "image/jpeg", "name": "IMG-20210328-WA0016.jpg", "size": 84176, "uri": "file:///data/user/0/host.exp.exponent/cache/DocumentPicker/cd7383c1-47a0-4a23-9111-05985ea8912f.jpg"}], "canceled": false}
-
-        let fileUri = values['firma'].uri;
-        let fileType = values['firma'].mimeType; // Asume que el archivo es una imagen JPEG
-        let fileName = values['firma'].name; // Asume que el nombre del archivo es 'firma.jpeg'
+        let fileUri
+        let fileType
+        let fileName
+        if (values?.firma?.uri) {
+            console.log('aplicando firma')
+            fileUri = values['firma'].uri;
+            fileType = values['firma'].mimeType; // Asume que el archivo es una imagen JPEG
+            fileName = values['firma'].name; // Asume que el nombre del archivo es 'firma.jpeg'
+        }
 
         let fileResponse = await fetch(fileUri);
         let fileBlob = await fileResponse.blob();
 
         for (const key in values) {
-            if (key === 'firma') {
+            if (key === 'firma' && values.firma) {
                 formData.append('firma', { uri: fileUri, type: fileType, name: fileName });
-            } else {
+                // si es array
+            } else if (Array.isArray(values[key])) {
+                // Si es un array, como propiedades que son arrays de objetos,
+                // puedes serializarlo a JSON y luego agregarlo al FormData
                 formData.append(key, JSON.stringify(values[key]));
+            } else {
+                formData.append(key, values[key]);
             }
         }
-        
+
         // Agregar otras propiedades como businessName, rol, nombre, etc., al FormData
         formData.append('idUser', id);
         formData.append('businessName', businessName);

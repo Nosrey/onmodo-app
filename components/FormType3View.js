@@ -35,6 +35,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const objectToCheck = useSelector((state) => state.objectToCheck);
+    const editMode = useSelector((state) => state.editMode);
     const id = useSelector((state) => state.id);
     const businessName = useSelector((state) => state.business);
     const rol = useSelector((state) => state.rol);
@@ -398,6 +399,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             setSaving(true); // si saving es false, lo pongo en true
 
             let objetoFinal = {
+                ...objectToCheck,
                 idUser: id,
                 rol: rol,
                 nombre: nombre,
@@ -463,6 +465,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                 }
 
                 objetoFinal.inputs = arrayFinal
+                objetoFinal.editEnabled = false
                 // let indexObservaciones = cardToCheck.inputs.findIndex((element) => element.name === "Observaciones")
                 // objetoFinal.observaciones = inputsValues[indexObservaciones]?.value
 
@@ -471,15 +474,15 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                     let objeto = {}
                     objeto.name = cardToCheck.inputs[i].name
                     objeto.value = inputsValues[i]?.value
-                    objetoFinal[objeto.name] = { value: objeto.value }
+                    objetoFinal[objeto.name.toLowerCase()] = objeto.value
                 }
             }
             // console.log('objetoFinal: ', objetoFinal)
             console.log("🚀 ~ file: FormType3.js:330 ~ handleSaveButton ~ objetoFinal:", JSON.stringify(objetoFinal))
 
             // hago fetch a la url de cardToCheck.url y le paso los inputsValues en bod
-            fetch(cardToCheck.url, {
-                method: 'POST',
+            fetch(cardToCheck.url + 'edit/' + objectToCheck._id, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -507,6 +510,11 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
                     setSaving(false);
 
+                    setTimeout(() => {
+                        // voy a formularios cargados
+                        navigation.navigate('FormulariosCargados');
+                    }, 1000);
+
                     // si la respuesta es exitosa, muestro un mensaje de exito
                     // y vuelvo a la pantalla anterior
                 })
@@ -531,6 +539,13 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                         color: '#1976D2',
                     }}>VER MÁS</Text>
                 </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => {
+                console.log('inputsValues', inputsValues)
+                
+            }}>
+                <Text>Prueba</Text>
             </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {
@@ -559,6 +574,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                         <View key={index} style={{ marginVertical: 20 }}>
                             <Text style={[styles.normalText, { marginVertical: 5 }]}>{input.name}</Text>
                             <TextInput
+                                editable={(!editMode ? false : true)}
                                 style={[styles.userInput, { height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: '#3b3b3b', borderRadius: 10, padding: 10 }]}
                                 multiline={true}
                                 numberOfLines={4}
@@ -578,6 +594,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
                             <View style={styles.passwordInputContainer}>
                                 <TextInput
+                                    editable={(!editMode ? false : true)}
                                     style={styles.userInput}
                                     placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
                                     value={inputsValues[index]?.value}
@@ -646,9 +663,9 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                                                     }]}>
                                                         <Checkbox
                                                             style={{}}
-                                                            color={handleCheckColor(day, index, index2)}
+                                                            color={(editMode ? handleCheckColor(day, index, index2) : 'gray')}
                                                             value={handleCheckValue(day, index, index2)}
-                                                            onValueChange={(value) => handleCheckChange(value, day, index, index2)}
+                                                            onValueChange={(value) => (editMode ? handleCheckChange(value, day, index, index2) : null)}
                                                         />
                                                     </View>
                                                 ))}
@@ -662,15 +679,42 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                 }
                 else if (input.tipo === "select") {
                     return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                editable={(editMode && !input.disabled ? true : false)}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    if (editMode && !input.disabled) {
+                                        let array = [...inputsValues];
+                                        console.log('cambiando select')
+                                        array[index] = { name: input.name, value: itemValue };
+                                        console.log('array', array)
+                                        setInputsValues(array);
+                                    }
+                                }}
+                            >
+                                {input.options.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                        </View>
+                    )
+
+                    return (
                         <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 selectedValue={inputsValues[index]?.value?.toLowerCase()}
                                 style={styles.userInput}
-                                editable={input.disabled ? false : true}
+                                editable={true}
                                 onValueChange={(itemValue, itemIndex) => {
                                     let array = [...inputsValues];
-                                    array[index].value = itemValue;
+                                    array[index] = { name: input.name, value: itemValue };
+                                    console.log('array', array)
                                     setInputsValues(array);
                                 }}
                             >
@@ -689,10 +733,10 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
 
             {/* para guardar los datos */}
-            <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
-            <TouchableOpacity style={styles.buttonForm} onPress={handleSaveButton}>
+            <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20, display: (editMode ? 'flex' : 'none') }} />
+            <TouchableOpacity style={[styles.buttonForm, {display: (editMode ? 'flex' : 'none')}]} onPress={(() => handleSaveButton())}>
                 <Text style={styles.buttonFormText}>
-                    Guardar
+                    Actualizar
                 </Text>
             </TouchableOpacity>
         </View>
