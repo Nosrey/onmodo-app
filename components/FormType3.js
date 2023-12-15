@@ -327,7 +327,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                     let objeto = {}
                     objeto.name = cardToCheck.inputs[i].name
                     objeto.value = inputsValues[i]?.value
-                    objetoFinal[objeto.name] = { value: objeto.value}    
+                    objetoFinal[objeto.name.toLowerCase()] = objeto.value  
                 }
             }
             // console.log('objetoFinal: ', objetoFinal)
@@ -360,6 +360,8 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                     }
 
                     setInputsValues(array)
+                    // voy a la pagina anterior
+                    navigation.goBack();
 
                     setSaving(false);
 
