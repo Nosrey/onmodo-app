@@ -22,14 +22,18 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
     const nombre = useSelector((state) => state.fullName);
 
     useEffect(() => {
-        if (objectToCheck.inputs?.length > 0) {
-            let array = [];
-            for (let i = 0; i < cardToCheck.inputs.length; i++) {
-                // establezco inputsValue con los valores de objectToCheck
-                let item = objectToCheck.inputs?.find((input) => input.name === cardToCheck.inputs[i].name)
-                array.push({ name: cardToCheck.inputs[i].name, value: item?.value })
+        if (cardToCheck.title === "Verificación de Termómetros") {
+           console.log("objectToCheck", objectToCheck)
+        } else {
+            if (objectToCheck.inputs?.length > 0) {
+                let array = [];
+                for (let i = 0; i < cardToCheck.inputs.length; i++) {
+                    // establezco inputsValue con los valores de objectToCheck
+                    let item = objectToCheck.inputs?.find((input) => input.name === cardToCheck.inputs[i].name)
+                    array.push({ name: cardToCheck.inputs[i].name, value: item?.value })
+                }
+                setInputsValues(array);
             }
-            setInputsValues(array);
         }
     }, [cardToCheck])
 
@@ -78,7 +82,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         }
                         copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglonFinal })
 
-                    } else if (cardToCheck.inputs[i]?.tipo !== "subTitle") {
+                    } else if (cardToCheck.inputs[i]?.tipo !== "subTitle" && cardToCheck.inputs[i]?.tipo === "title") {
                         copiaInputsValue.push({ name: inputsValues[i]?.name, value: inputsValues[i]?.value })
                     }
                 }
@@ -281,6 +285,11 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         <Text key={index} style={[styles.normalText, { fontSize: 18, marginBottom: 10, marginTop: 15 }]}>{input.name}</Text>
                     )
                 }
+                else if (input.tipo === "title") {
+                    return (
+                        <Text key={index} style={[styles.normalText, { fontSize: 18, marginBottom: 10, marginTop: 15 }]}>{input.name}</Text>
+                    )
+                }
                 else if (input.tipo === "select") {
                     return (
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
@@ -325,6 +334,44 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                                 })}
                             </Picker>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{inputsValues[index]?.value || input.options[0]}</Text>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "selectConText") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                editable={false}
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValues];
+                                    array[index].value = itemValue;
+                                }}
+                            >
+                                {input.options.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+
+                            <View style={[styles.passwordInputContainer, { display: (input.activador === inputsValues[index]?.value ? 'flex' : 'none') },]}>
+                                <TextInput
+                                    editable={false}
+                                    style={[styles.userInput]}
+                                    placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
+                                    value={inputsValues[index]?.value2}
+                                    onChangeText={(value) => {
+                                        let array = [...inputsValues];
+                                        array[index].value2 = value;
+
+                                    }}
+                                />
+                            </View>
+
+
                         </View>
                     )
                 }

@@ -7,8 +7,6 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
-// importo la imagen profileImg.png
-import profileImg from '../assets/profileImg.jpeg';
 // traigo useDispatch de react-redux
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonBar from '../components/ButtonBar';
@@ -100,7 +98,7 @@ export default function CreateAccount({ navigation }) {
                 const data = await resp.json();
                 let provincias = data.provincias.sort((a, b) => a.nombre.localeCompare(b.nombre));
                 setProvincias(provincias);
-           
+
                 const resp2 = await fetch(`https://apis.datos.gob.ar/georef/api/municipios?provincia=${provincias[0].id}&campos=id,nombre&max=500`);
                 const data2 = await resp2.json();
                 let final = data2.municipios.sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -135,17 +133,17 @@ export default function CreateAccount({ navigation }) {
         if (profileInputs.nombre == '' || profileInputs.legajo == '' || profileInputs.telefono == '' || profileInputs.email == '' || profileInputs.puesto == '' || profileInputs.provincia == '' || profileInputs.localidad == '' || profileInputs.contratoComedor == '' || profileInputs.imagen == null) {
             setNotif({ view: true, message: "¡Ups! Faltan completar campos", color: "naranja" })
             // hago un console.log del elemento que falta
-                                                                        
-            console.log("Falta completar: ",                            
-              (profileInputs.nombre == '') ? "nombre" :                 
-              (profileInputs.legajo == '') ? "legajo" :                 
-              (profileInputs.telefono == '') ? "telefono" :             
-              (profileInputs.email == '') ? "email" :                   
-              (profileInputs.puesto == '') ? "puesto" :                 
-              (profileInputs.provincia == '') ? "provincia" :           
-              (profileInputs.localidad == '') ? "localidad" : 
-              (profileInputs.contratoComedor == '') ? "contratoComedor" :
-              (profileInputs.imagen == null) ? "imagen" : "validation complete")
+
+            console.log("Falta completar: ",
+                (profileInputs.nombre == '') ? "nombre" :
+                    (profileInputs.legajo == '') ? "legajo" :
+                        (profileInputs.telefono == '') ? "telefono" :
+                            (profileInputs.email == '') ? "email" :
+                                (profileInputs.puesto == '') ? "puesto" :
+                                    (profileInputs.provincia == '') ? "provincia" :
+                                        (profileInputs.localidad == '') ? "localidad" :
+                                            (profileInputs.contratoComedor == '') ? "contratoComedor" :
+                                                (profileInputs.imagen == null) ? "imagen" : "validation complete")
         }
         // verifico si el valor de email es un email valido usando una expresion regular
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileInputs.email)) {

@@ -8,7 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
 // importo la imagen profileImg.png
-import profileImg from '../assets/profileImg.jpg';
+import profileImg from '../assets/pi.jpg';
 // traigo useDispatch de react-redux
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonBar from '../components/ButtonBar';

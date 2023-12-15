@@ -8,6 +8,8 @@ import TimePicker from './TimePicker';
 // traigo el icon plussquareo la libreria AntDesign
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
+import { API_URL, registroCapacitacion, verificacionTermometros } from '../functions/globalFunctions'
+
 
 export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
@@ -63,6 +65,10 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
     function handleSaveButton() {
         if (allowSaveCaseProcess || !cardToCheck.exceptionP1) {
             if (saving) return; // si saving es true, no hago nada
+            else if (cardToCheck.exceptionForm2Cap === true) {
+                setSaving(true);
+                registroCapacitacion(inputsValues, setSaving)
+            }
             else {
                 console.log('entre')
                 setSaving(true); // si saving es false, lo pongo en true
@@ -82,7 +88,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         }
                         copiaInputsValue.push({ name: inputsValues[i]?.name, value: reglonFinal })
 
-                    } else if (cardToCheck.inputs[i]?.tipo !== "subTitle") {
+                    } else if (cardToCheck.inputs[i]?.tipo !== "subTitle" && cardToCheck.inputs[i]?.tipo !== "title") {
                         copiaInputsValue.push({ name: inputsValues[i]?.name, value: inputsValues[i]?.value })
                     }
                 }
@@ -103,8 +109,21 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     objeto.inputs = copiaInputsValue
                 }
 
-                console.log("🚀 ~ file: FormType2.js:98 ~ handleSaveButton ~ objeto:", JSON.stringify(objeto))
 
+                if (cardToCheck.title === "Verificación de Termómetros") {
+                    console.log('copiaInputsValue', JSON.stringify(copiaInputsValue))
+                    objeto = verificacionTermometros(copiaInputsValue)
+                    console.log('objeto: ', JSON.stringify(objeto))
+                    objeto = {
+                        ...objeto,
+                        idUser: id,
+                        rol: rol,
+                        nombre: nombre,
+                        businessName: businessName,
+                    }
+                }
+
+                console.log("🚀 ~ file: FormType2.js:98 ~ handleSaveButton ~ objeto:", JSON.stringify(objeto))
 
                 // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body
                 fetch(cardToCheck.url, {
@@ -155,7 +174,6 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
     }
 
 
-
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={handleInfoButton} style={{ display: (cardToCheck.verMas?.length ? 'flex' : 'none') }}>
@@ -169,15 +187,14 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     }}>VER MÁS</Text>
                 </View>
             </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
-                    console.log('inputsValue: ', inputsValues)
-                    console.log('reglones: ', JSON.stringify(reglones))
-                    }}>
-                    <Text>Prueba</Text>
-                </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+                pickFile()
+            }}>
+                <Text>Prueba</Text>
+            </TouchableOpacity>
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "date") {
-                    return (                        
+                    return (
                         <DatePicker key={index} inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValues} setAllowSaveCaseProcess={setAllowSaveCaseProcess} allowSaveCaseProcess={allowSaveCaseProcess} />
                     )
                 }
@@ -265,6 +282,11 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 }
                 else if (input.tipo === "subTitle") {
                     return (
+                        <Text key={index} style={[styles.normalText, { fontSize: 18, marginBottom: 10, marginTop: 15, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }]}>{input.name}</Text>
+                    )
+                }
+                else if (input.tipo === "title") {
+                    return (
                         <Text key={index} style={[styles.normalText, { fontSize: 18, marginBottom: 10, marginTop: 15 }]}>{input.name}</Text>
                     )
                 }
@@ -275,7 +297,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                             <Picker
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
-                                onValueChange={(itemValue, itemIndex) => {                                 
+                                onValueChange={(itemValue, itemIndex) => {
                                     let array = [...inputsValues];
                                     array[index].value = itemValue;
                                     setInputsValues(array);
@@ -287,6 +309,43 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                                     )
                                 })}
                             </Picker>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "selectConText") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValues];
+                                    array[index].value = itemValue;
+                                    setInputsValues(array);
+                                }}
+                            >
+                                {input.options.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+
+                            <View style={[styles.passwordInputContainer, { display: (input.activador === inputsValues[index]?.value ? 'flex' : 'none') },]}>
+                                <TextInput
+                                    style={[styles.userInput]}
+                                    placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
+                                    value={inputsValues[index]?.value2}
+                                    onChangeText={(value) => {
+                                        let array = [...inputsValues];
+                                        array[index].value2 = value;
+                                        setInputsValues(array);
+                                    }}
+                                />
+                            </View>
+
+
                         </View>
                     )
                 }
