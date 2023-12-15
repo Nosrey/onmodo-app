@@ -105,8 +105,6 @@ export default function FormCreate({ navigation }) {
                 setEditionMode(false)
             }} />
 
-
-
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "row") {
                     return (

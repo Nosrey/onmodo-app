@@ -348,7 +348,7 @@ export const formulariosData = [
     },
     {
         title: "Chequeo de uso de EPP",
-        rolNeeded: 2,
+        rolNeeded: 1,
         formType: 3,
         url: API_URL + "/api/chequeoepp",
         verMas: [
@@ -420,7 +420,7 @@ export const formulariosData = [
         title: "Registro de Capacitación",
         rolNeeded: 2,
         formType: 2,
-        url: API_URL + "api/registrocapacitacion",
+        url: API_URL + "/api/registrocapacitacion",
         exceptionForm2Cap: true, // necesito agregar el texto para los otros y la selecion de files pdf e imagenes
         inputs: [
             { name: "Fecha", tipo: "date" },
@@ -463,6 +463,7 @@ export const formulariosData = [
             { name: "Observaciones", tipo: "textGrande" },
             // un text que diga Instructor
             { name: "Instructor", tipo: "text" },
+            { name: "Firma de los participantes", tipo: "fileUpload" }
 
         ]
     },
@@ -903,7 +904,7 @@ export const formulariosData = [
                 ]
             },
             { name: "Verificado por", tipo: "text" },
-            { name: "Fecha", tipo: "date" },
+            { name: "Fecha de Verificacion", tipo: "date" },
             { name: "Hora", tipo: "time" },
         ]
     },
@@ -965,8 +966,8 @@ export const formulariosData = [
                     { name: "Responsable de entrega", tipo: "text" },
                     // responsable de retiro
                     { name: "Responsable de retiro", tipo: "text" },
-                    { name: "Selecciona una foto de transporte", tipo: "imagePicker" },
-                    { name: "Selecciona una foto de disposición final", tipo: "imagePicker" },
+                    { name: "foto de transporte", tipo: "imagePicker" },
+                    { name: "foto de disposición final", tipo: "imagePicker" },
 
                 ]
             },
@@ -1183,48 +1184,105 @@ export const formulariosData = [
     }
 ]
 
-export const registroCapacitacion = async (values, setSaving) => {
-    try {
-        const formData = new FormData();
+// export const registroCapacitacion = async (values, setSaving, rol, businessName, nombre) => {
+//     try {
+//         console.log('values: ', JSON.stringify(values))
+//         const formData = new FormData();
 
+//         // Agregar las propiedades de "values" al FormData
+//         for (const key in values) {
+//             if (Array.isArray(values[key])) {
+//                 // Si es un array, como propiedades que son arrays de objetos,
+//                 // puedes serializarlo a JSON y luego agregarlo al FormData
+//                 formData.append(key, values[key]);
+//             }
+//             else if (key === 'firma') {
+//                 // Si es una propiedad de tipo "file", debes manejarla por separado
+//                 // Aquí asumo que "firma" es el nombre de la propiedad de tipo "file"
+//                 formData.append('firma', values[key]); // Puedes ajustar el índice según sea necesario
+//             }
+//             else {
+//                 formData.append(key, values[key]);
+//             }
+//         }
+
+//         // Agregar otras propiedades como businessName, rol, nombre, etc., al FormData
+//         formData.append('businessName', businessName);
+//         formData.append('rol', rol);
+//         formData.append('nombre', nombre);
+
+//         console.log('formData', formData)
+
+//         const response = await fetch(`${API_URL}/api/registrocapacitacion`, {
+//             method: 'POST',
+//             body: formData,
+//         });
+//         const data = await response.json();
+//         await setSaving(false);
+//         console.log('Success interno:', data);
+//         return data;
+
+//     } catch (error) {
+//         console.error('Error', error);
+//         setSaving(false);
+//         throw error;
+//     }
+// };
+
+export const registroCapacitacion = async (values, setSaving, rol, id, businessName, nombre, firma) => {
+    try {
+        let formData = new FormData();
         // Agregar las propiedades de "values" al FormData
+        // {"assets": [{"mimeType": "image/jpeg", "name": "IMG-20210328-WA0016.jpg", "size": 84176, "uri": "file:///data/user/0/host.exp.exponent/cache/DocumentPicker/cd7383c1-47a0-4a23-9111-05985ea8912f.jpg"}], "canceled": false}
+        let fileUri
+        let fileType
+        let fileName
+        if (values?.firma?.uri) {
+            console.log('aplicando firma')
+            fileUri = values['firma'].uri;
+            fileType = values['firma'].mimeType; // Asume que el archivo es una imagen JPEG
+            fileName = values['firma'].name; // Asume que el nombre del archivo es 'firma.jpeg'
+        }
+
+        let fileResponse = await fetch(fileUri);
+        let fileBlob = await fileResponse.blob();
+
         for (const key in values) {
-            if (Array.isArray(values[key])) {
+            if (key === 'firma' && values.firma) {
+                formData.append('firma', { uri: fileUri, type: fileType, name: fileName });
+                // si es array
+            } else if (Array.isArray(values[key])) {
                 // Si es un array, como propiedades que son arrays de objetos,
                 // puedes serializarlo a JSON y luego agregarlo al FormData
                 formData.append(key, JSON.stringify(values[key]));
-            } else if (key === 'firma') {
-                // Si es una propiedad de tipo "file", debes manejarla por separado
-                // Aquí asumo que "firma" es el nombre de la propiedad de tipo "file"
-                formData.append('firma', values[key]); // Puedes ajustar el índice según sea necesario
             } else {
                 formData.append(key, values[key]);
             }
         }
 
         // Agregar otras propiedades como businessName, rol, nombre, etc., al FormData
-        formData.append('businessName', localStorage.getItem('business'));
-        formData.append('rol', localStorage.getItem('rol'));
-        formData.append('nombre', localStorage.getItem('userName'));
+        formData.append('idUser', id);
+        formData.append('businessName', businessName);
+        formData.append('rol', rol);
+        formData.append('nombre', nombre);
 
-        const response = await fetch(`${API_URL}/api/registrocapacitacion`, {
+        const response = await fetch(`${URL_API}/api/registrocapacitacion`, {
             method: 'POST',
             body: formData,
         });
         const data = await response.json();
-        await setSaving(false);
+        setSaving(false);
         return data;
 
     } catch (error) {
+        setSaving(false)
         console.error('Error', error);
-        setSaving(false);
         throw error;
     }
 };
 
 export const verificacionTermometros = (values) => {
     let objetoFinal = {}
-    console.log('entrando a trabajar')
     for (let i = 0; i < values.length; i++) {
         if (values[i].name === "Fecha") objetoFinal = { ...objetoFinal, fecha: values[i].value }
         else if (values[i].name === "Responsable de validación") objetoFinal = { ...objetoFinal, responsable: values[i].value }
@@ -1232,7 +1290,7 @@ export const verificacionTermometros = (values) => {
             let arraySemestral = []
             for (let j = 0; j < values[i].value.length; j++) {
                 let tipoValue = "PIN"
-                if (values[i].value[j][1].value.length > 0) tipoValue = values[i].value[j][1].value                
+                if (values[i].value[j][1].value.length > 0) tipoValue = values[i].value[j][1].value
                 let reglonIndividual = {
                     codigo: values[i].value[j][0].value,
                     tipo: tipoValue,
@@ -1268,3 +1326,204 @@ export const verificacionTermometros = (values) => {
 
     return objetoFinal;
 };
+
+export const verificacionBalanzas = (values) => {
+    let objetoFinal = {}
+
+    for (let i = 0; i < values.length; i++) {
+        if (values[i].name === "Fecha") objetoFinal = { ...objetoFinal, fecha: values[i].value }
+        else if (values[i].name === "Instrumento") objetoFinal = { ...objetoFinal, balanza: values[i].value }
+        else if (values[i].name === "Identificación Balanza") {
+            let inputTemp = values[i].value.map((inputGroup, index) => {
+                let temp = {};
+                inputGroup.forEach((input) => {
+                    if (input.name === "Código") temp.codigo = input.value;
+                    else if (input.name === "Tipo") temp.tipo = input.value === "" ? "BP" : input.value;
+                    else if (input.name === "Responsable del uso") temp.responsableUso = input.value;
+                    else if (input.name === "Área") temp.area = input.value;
+                    else if (input.name === "Peso Masa ref/Pto balanza") temp.pesoMasa = input.value;
+                    else if (input.name === "Peso real") temp.pesoReal = input.value;
+                    else if (input.name === "Desvío") temp.desvio = input.value;
+                    else if (input.name === "Acciones de correción") temp.accionesCorrecion = input.value;
+                    temp.id = index;
+                });
+                return temp;
+            });
+            objetoFinal = { ...objetoFinal, inputs: inputTemp }
+        }
+    }
+
+    return objetoFinal;
+};
+
+export const reporterechazo = (values) => {
+    let objetoFinal = {
+        dia: "",
+        proveedor: "",
+        producto: "",
+        nroLote: "",
+        condicionesEntrega: [
+            {
+                checked: values[2]?.value === "Si" ? true : false,
+                name: "Atrasado",
+                description: values[3]?.value
+            },
+            {
+                checked: values[4]?.value === "Si" ? true : false,
+                name: "Adelantado",
+                description: values[5]?.value
+            }
+        ],
+        calidad: [
+            {
+                checked: values[7]?.value === "Si" ? true : false,
+                name: "Temperatura",
+                description: values[8]?.value,
+            },
+            {
+                checked: values[9]?.value === "Si" ? true : false,
+                name: "Vida útil",
+                description: values[10]?.value
+            },
+            {
+                checked: values[11]?.value === "Si" ? true : false,
+                name: "Embalaje",
+                description: values[12]?.value,
+            },
+            {
+                checked: values[13]?.value === "Si" ? true : false,
+                name: "Rótulo",
+                description: values[14]?.value
+            },
+            {
+                checked: values[15]?.value === "Si" ? true : false,
+                name: "Calibre",
+                description: values[16]?.value
+            },
+            {
+                checked: values[17]?.value === "Si" ? true : false,
+                name: "Color",
+                description: values[18]?.value
+            },
+            {
+                checked: values[19]?.value === "Si" ? true : false,
+                name: "Signos de maduración",
+                description: values[20]?.value,
+            },
+            {
+                checked: values[21]?.value === "Si" ? true : false,
+                name: "Consistencia/Textura",
+                description: values[22]?.value
+            },
+            {
+                checked: values[23]?.value === "Si" ? true : false,
+                name: "Olor",
+                description: values[24]?.value
+            }
+        ],
+        diferencias: [
+            {
+                checked: values[26]?.value === "Si" ? true : false,
+                name: "Precio",
+                description: values[27]?.value
+            },
+            {
+                checked: values[28]?.value === "Si" ? true : false,
+                name: "Cantidad",
+                description: values[29]?.value
+            }
+        ],
+        transporte: [
+            {
+                checked: values[31]?.value === "Si" ? true : false,
+                name: "Temperatura de la caja",
+                description: values[32]?.value,
+            },
+            {
+                checked: values[33]?.value === "Si" ? true : false,
+                name: "Uniforme del proveedor",
+                description: values[34]?.value,
+            },
+            {
+                checked: values[35]?.value === "Si" ? true : false,
+                name: "Predisposición /Conducta",
+                description: values[36]?.value,
+            },
+            {
+                checked: values[37]?.value === "Si" ? true : false,
+                name: "Vehículo",
+                description: values[38]?.value,
+            },
+            {
+                checked: values[39]?.value === "Si" ? true : false,
+                name: "Otras Faltas",
+                description: values[40]?.value,
+            }
+        ],
+        medidasTomadas: [
+            {
+                checked: values[42]?.value === "Si" ? true : false,
+                name: "Rechazo  (en el momento de la recepción)",
+                description: values[43]?.value,
+            },
+            {
+                checked: values[44]?.value === "Si" ? true : false,
+                name: "Devolución (lotes ya ingresados)",
+                description: values[45]?.value,
+            },
+            {
+                checked: values[46]?.value === "Si" ? true : false,
+                name: "Aceptado condicional",
+                description: values[47]?.value,
+            }
+        ],
+    }
+    return objetoFinal
+}
+
+export const entregabidones = (values) => {
+    // recibo este array de objetos que
+    // 
+
+    // [
+    //     { "values": [{ "name": "Fecha", "value": "2023-11-15T18:28:58.001Z" }, { "name": "Cantidad de litros entregados", "value": "1" }, { "name": "Responsable de entrega", "value": "2" }, { "name": "Responsable de retiro", "value": "3" }, { "name": "Selecciona una foto de transporte", "value": "4" }, { "name": "Selecciona una foto de disposición final", "value": "5" }] },
+    //     { "values": [{ "name": "Fecha", "value": "" }, { "name": "Cantidad de litros entregados", "value": "" }, { "name": "Responsable de entrega", "value": "2" }, { "name": "Responsable de retiro", "value": "2" }, { "name": "Selecciona una foto de transporte", "value": "" }, { "name": "Selecciona una foto de disposición final", "value": "" }] }
+    // ]
+
+
+    // y por cada objeto de ese array, tengo que crear un objeto con las propiedades que necesito que son asi y mas, dependiendo de la cantidad de objetos que tenga el array
+    // [
+    //     {
+    //         "fecha": "2023-11-15T18:28:58.001Z",
+    //         "cantidaddelitrosentregados": "1",
+    //         "responsabledeentrega": "2",
+    //         "responsablederetiro": "3"
+    //         "transporte": "4",
+    //         "disposiciónfinal": "5"
+    //     },
+    //     {
+    //         fecha: "",
+    //         cantidaddelitrosentregados: "",
+    //         responsabledeentrega: "2",
+    //         responsablederetiro: "2",
+    //         transporte: "",
+    //         disposiciónfinal: ""
+    //     }
+    // ]
+
+    let objetoFinal = []
+    for (let i = 0; i < values.length; i++) {
+        let objetoIndividual = {}
+        for (let j = 0; j < values[i].values.length; j++) {
+            if (values[i].values[j].name === "Fecha") objetoIndividual = { ...objetoIndividual, fecha: values[i].values[j].value }
+            else if (values[i].values[j].name === "Cantidad de litros entregados") objetoIndividual = { ...objetoIndividual, cantidaddelitrosentregados: values[i].values[j].value }
+            else if (values[i].values[j].name === "Responsable de entrega") objetoIndividual = { ...objetoIndividual, responsabledeentrega: values[i].values[j].value }
+            else if (values[i].values[j].name === "Responsable de retiro") objetoIndividual = { ...objetoIndividual, responsablederetiro: values[i].values[j].value }
+            else if (values[i].values[j].name === "Selecciona una foto de transporte") objetoIndividual = { ...objetoIndividual, transporte: values[i].values[j].value }
+            else if (values[i].values[j].name === "Selecciona una foto de disposición final") objetoIndividual = { ...objetoIndividual, disposiciónfinal: values[i].values[j].value }
+        }
+        objetoFinal.push(objetoIndividual)
+    }
+
+    return Object.values(objetoFinal);
+}

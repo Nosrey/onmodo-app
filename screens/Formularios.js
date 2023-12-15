@@ -41,6 +41,7 @@ export default function Formularios({ navigation }) {
             onPress: () => {
                 // creo un useDispatch para establecer cardToCheck    
                 dispatch({ type: 'counter/setCardToCheck', payload: item });
+                dispatch({ type: 'counter/setEditMode', payload: false });
                 navigation.navigate('FormCreate');
             },
         }
@@ -58,9 +59,13 @@ export default function Formularios({ navigation }) {
         let inputLocal = value;
         // convierto el inputLocal en minusculas
         inputLocal = inputLocal.toLowerCase();
+        // elimino los acentos de inputLocal
+        inputLocal = inputLocal.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         // creo un array donde guardaré los buttons que coincidan con el valor del input al filtrar
         setCardsFound(cards.filter((item) => {
             let itemTitle = item.title.toLowerCase();
+            // elimino los acentos de itemTitle
+            itemTitle = itemTitle.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
             if (itemTitle.includes(inputLocal)) return item
         }))
     }

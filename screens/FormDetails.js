@@ -18,7 +18,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
-import { API_URL } from '../functions/globalFunctions'
+import { API_URL, formulariosData } from '../functions/globalFunctions'
 
 export default FormDetails = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -33,7 +33,9 @@ export default FormDetails = ({ navigation }) => {
     // obtengo id y fullName
     const id = useSelector((state) => state.id);
     const fullName = useSelector((state) => state.fullName);
+    const rol = useSelector((state) => state.rol);
     const [targetId, setTargetId] = useState(0);
+    const [statusPicked, setStatusPicked] = useState('');
 
     const { title, entries } = cardToCheck;
 
@@ -66,13 +68,19 @@ export default FormDetails = ({ navigation }) => {
         // if (cardToCheck?.title === 'controlvidrio') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
         // else if (cardToCheck?.title === 'controlproceso') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
         // else return API_URL + "/api/" + cardToCheck.title + "/" + id;
-        return cardToCheck.url + "/" + id;
+        console.log('url: ', cardToCheck.url + "/" + id)
+        let url = cardToCheck.url + "/" + id;
+        // if (url.includes("/controlprocesos")) {
+        //     url = url.replace("/controlprocesos", "/controlproceso")
+        // }
+        return url
     }
 
     function handleSpectButton(id) {
         let item = cardToCheck?.entries?.find((element) => element._id === id);
         // hago dispactch a objectToCheck con item
         dispatch({ type: 'counter/setObjectToCheck', payload: item });
+        dispatch({ type: 'counter/setEditMode', payload: false });
         // hago navigate a FormView
         navigation.navigate('FormView');
     }
@@ -108,20 +116,47 @@ export default FormDetails = ({ navigation }) => {
             });
     }
 
+    function goToEdit(id) {
+        url = getUrl(id)        
+        let item = entries?.find((element) => element._id === id);
+
+        // hago dispactch a objectToCheck con item
+        dispatch({ type: 'counter/setObjectToCheck', payload: item });
+        
+        if (cardToCheck.title !== "Uso y Cambio de Aceite en Freidora" && cardToCheck.title !== "Chequeo de uso de EPP") {
+            if (item?.editEnabled) {
+                dispatch({ type: 'counter/setEditMode', payload: true });
+                navigation.navigate('FormCreate');
+            } else {
+                dispatch({ type: 'counter/setEditMode', payload: false })
+                navigation.navigate('FormView');
+            }
+        } else if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora" || cardToCheck.title === "Chequeo de uso de EPP") {
+            if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora") {
+                navigation.navigate('FormView');
+            }
+            else {
+                if (item?.editEnabled) {
+                    dispatch({ type: 'counter/setEditMode', payload: true });
+                    navigation.navigate('FormView');
+                } else {
+                    dispatch({ type: 'counter/setEditMode', payload: false });
+                    navigation.navigate('FormView');
+                }
+            }
+
+        }
+    }
 
 
     function handleEdit(id, reason) {
         let url = getUrl(id)
-        // reviso url y si contiene "/controlprocesos" entonces lo cambio por "/controlproceso
-        if (url.includes("/controlprocesos")) {
-            url = url.replace("/controlprocesos", "/controlproceso")
-        }
         fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ status: "pending", motivoPeticion: reason }),
+            body: JSON.stringify({ status: "pending", motivoPeticion: reason, rol: rol }),
         })
             .then((response) => {
                 if (response.status === 200) {
@@ -174,6 +209,11 @@ export default FormDetails = ({ navigation }) => {
         botonYes: "Eliminar",
     }
 
+    function editHandler(id) {
+        let item = entries?.find((element) => element?._id === id);
+        (item?.status === 'free' || item?.status === 'approved' ? goToEdit(id) : handleEditButton(id))
+    }
+
     function handleEditButton(id) {
         setTargetId(id)
         setViewEdit(true)
@@ -198,37 +238,37 @@ export default FormDetails = ({ navigation }) => {
                 )
             }]}>
                 {/* en la propiedad item.createdAt hay una fecha en formato 2023-08-01T19:37:43.071Z y yo creare de ahi un texto en formato 12/04/24 sacado de esa informacion y otro en formato 14:54 hs sacado de esa informacion tambien*/}
-                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.createdAt.slice(8, 10) + '/' + item.createdAt.slice(5, 7) + '/' + item.createdAt.slice(2, 4)}</Text>
-                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.createdAt.slice(11, 13) + ':' + item.createdAt.slice(14, 16) + ' hs'}</Text>
-                {/* ahora hago una comparacion, si el id del elemento item.id es igual a la id que traje del redux entonces muestro el nombre que tengo en fullName */}
-                {item.idUser[0] === id ? <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "30%" }}>{fullName}</Text> : <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{"No encontrado"}</Text>}
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item?.createdAt.slice(8, 10) + '/' + item?.createdAt.slice(5, 7) + '/' + item?.createdAt.slice(2, 4)}</Text>                
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{new Date(item?.createdAt).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}</Text>
+                {/* ahora hago una comparacion, si el id del elemento item?.id es igual a la id que traje del redux entonces muestro el nombre que tengo en fullName */}
+                {item?.idUser[0] === id ? <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "30%" }}>{fullName}</Text> : <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{"No encontrado"}</Text>}
                 {/* agrego un boton para desplegar mas opciones, el que es como una V hacia abajo de icons */}
-                <TouchableOpacity onPress={() => { handleViewButton(item._id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "25%", position: 'relative' }}>
+                <TouchableOpacity onPress={() => { handleViewButton(item?._id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "25%", position: 'relative' }}>
                     <Icon name="arrow-down" size={15} color="black" style={{ position: 'absolute', right: 25 }} />
                 </TouchableOpacity>
 
             </View>
             {/* si el estado de la propiedad activado es true entonces muestro el contenido */}
-            {listaEstados.find((element) => element.id === item._id)?.activado
+            {listaEstados.find((element) => element.id === item?._id)?.activado
                 ? <View style={[itemListContainer, {
                     backgroundColor: (
-                        (item.status === 'pending') ? '#FFB82F1A' : ((item.status === 'approved') ? '#7BC1001A' : ((item.status === 'denied') ? '#FF2E111A' : 'white'))
+                        (item?.status === 'pending') ? '#FFB82F1A' : ((item?.status === 'approved') ? '#7BC1001A' : ((item?.status === 'denied') ? '#FF2E111A' : 'white'))
                     ),
 
                 }]}>
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="eye" size={20} color="black" onPress={() => { handleSpectButton(item._id) }} />
+                        <Feather name="eye" size={20} color="black" onPress={() => { handleSpectButton(item?._id) }} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="edit-3" size={20} color="black" onPress={() => { handleEditButton(item._id) }} />
+                        <Feather name="edit-3" size={20} color="black" onPress={() => { editHandler(item?._id)}} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(item._id) }} />
+                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(item?._id) }} />
                     </TouchableOpacity>
 
-                    <Text style={[styles.textEditables, { width: "25%", color: (item.status === 'approved' ? '#7BC100' : ((item.status === 'pending') ? '#FFB82F' : (item.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item.status === 'approved' ? 'Aprobado' : ((item.status === 'pending') ? 'Pendiente' : ((item.status === 'denied') ? 'Denegado' : '')))}</Text>
+                    <Text style={[styles.textEditables, { width: "25%", color: (item?.status === 'approved' ? '#7BC100' : ((item?.status === 'pending') ? '#FFB82F' : (item?.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item?.status === 'approved' ? 'Aprobado' : ((item?.status === 'pending') ? 'Pendiente' : ((item?.status === 'denied') ? 'Denegado' : '')))}</Text>
                 </View>
                 : null}
             <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1 }} />
@@ -265,7 +305,7 @@ export default FormDetails = ({ navigation }) => {
             <FlatList
                 data={entriesFound}
                 renderItem={renderItem}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item) => item?._id}
             />
 
 

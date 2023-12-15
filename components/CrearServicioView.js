@@ -296,6 +296,7 @@ export default function CrearServicio({ navigation, params }) {
                     } else if (input.tipo === "time") {
                         return (
                             <View key={index}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{traducirHora(inputsValueRow[index]?.value)}</Text>
                             </View>
                         )
@@ -449,6 +450,18 @@ export default function CrearServicio({ navigation, params }) {
                             </View>
                         )
                     }
+                    else if (input.tipo === "imagePicker") {
+                        return (
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
+
+                                <Text style={{ marginBottom: 5, display: (inputsValueRow[index]?.value ? 'flex' : 'none') }}>{
+                                    (inputsValueRow[index]?.value ? inputsValueRow[index]?.value.split("/")[inputsValueRow[index]?.value.split("/").length - 1] : '')
+                                }</Text>
+
+                            </View>
+                        )
+                    }
                     else if (input.tipo === "textFooter") {
                         return (
                             <View key={index} style={{ marginBottom: 30, backgroundColor: "#f0f0f0", padding: 10 }} >
@@ -539,18 +552,7 @@ export default function CrearServicio({ navigation, params }) {
                                 editable={false}
                                 selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                 style={styles.userInput}
-                                onValueChange={(itemValue, itemIndex) => {
-                                    if (cardToCheck.exceptionR1 === true) dotSelect(inputsValueRow[5]?.value, itemValue, index)
-                                    else if (cardToCheck?.exceptionP1 === true) {
-                                        for (let i = 0; i < inputsValueRow.length; i++) {
-                                            if (inputsValueRow[i]?.name === "Temp.") dotSelect(inputsValueRow[i]?.value, itemValue, i)
-                                        }
-                                    }
-
-                                    let array = [...inputsValueRow];
-                                    array[index].value = itemValue;
-
-                                }}
+                               
                             >
                                 {input.options.map((option, index) => {
                                     return (

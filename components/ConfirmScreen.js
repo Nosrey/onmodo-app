@@ -8,7 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 export default function ConfirmScreen({ navigation, params }) {
     // obtengo y creo los valores title, message, action, data de params
-    const { title, message, message2, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput, textField} = params;
+    const { title, message, message2, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput, textField, botonSendParams} = params;
 
     const [inputCounter, setInputCounter] = useState(0);
 
@@ -37,14 +37,17 @@ export default function ConfirmScreen({ navigation, params }) {
                 action(data)
             }
         } else {
-            action()
+            if (botonSendParams) action('yes')
+            else action()
         }
+
         if (setInternalInput) setInternalInput('')
         setViewWindow(false)
     }
 
     const handleNoButton = () => {
         // vuelvo a la pantalla anterior
+        if (botonSendParams) action('no')
         if (setInternalInput) setInternalInput('')
         setViewWindow(false)
     }

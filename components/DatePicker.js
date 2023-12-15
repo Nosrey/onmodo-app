@@ -12,8 +12,9 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
     const cardToCheck = useSelector((state) => state.cardToCheck);
 
     const fechaATexto = (fecha) => {
+        fecha = new Date(fecha)
         fecha = fecha.toISOString()
-        // recibira una fecha en este formato 2023-09-12T23:30:52.044Z y debo retornarla en un formato legible en un formato asi: 12/sept/2023
+
         let dia = fecha.slice(8, 10)
         let mes = fecha.slice(5, 7)
         let anio = fecha.slice(0, 4)
@@ -26,7 +27,8 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
         if (event.type === 'set') {
             const currentDate = selectedDate || inputsValues[index]?.value;
             setShow(false)
-            setInputsGlobal(index, currentDate)
+            console.log('currentDDate: ', currentDate)
+            setInputsGlobal(index, new Date(currentDate))
         } else {
             setShow(false)
         }
@@ -36,6 +38,20 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
         setShow(true)
     };
 
+    function ajustarFecha(value) {
+        // recibo una fecha pero en hora le pongo siempre 1am
+        if (value) {
+            if (value === 'Sin fecha') value = new Date()
+            let fecha = new Date(value)
+            fecha.setHours(1)
+            return fecha
+        } else {
+            let fecha = new Date()
+            fecha.setHours(1)
+            return fecha
+        }
+    }
+
 
     return (
         <View key={index} style={styles.container}>
@@ -43,7 +59,7 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
                 {inputReceived.name + ':'}
             </Text>
             <Text style={[styles.normalText, { fontSize: 14 }]}>
-                {inputsValues[index]?.value ? fechaATexto(inputsValues[index]?.value) : "Sin fecha"}
+                {inputsValues[index]?.value && inputsValues[index]?.value !== 'Sin fecha' ? fechaATexto(inputsValues[index]?.value) : "Sin fecha"}
             </Text>
             <View style={styles.buttonFooterStyle}>
                 <TouchableOpacity key={index} onPress={() => showMode('date')}>
@@ -53,10 +69,11 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
                 </TouchableOpacity>
                 {(show === true) && (
                     <DateTimePicker
-                        value={inputsValues[index]?.value || new Date()}
+                        value={ajustarFecha(inputsValues[index]?.value) || ajustarFecha()}
                         mode={'date'}
                         textColor={"#ffffff"}
                         display='spinner'
+                        // pongo timeZone para argentina                    
 
                         onChange={(event, selectedDate) => {
                             if (cardToCheck.exceptionP1 && inputReceived.name === "Fecha") setAllowSaveCaseProcess(true)

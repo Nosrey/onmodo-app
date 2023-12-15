@@ -9,7 +9,9 @@ export default function FormType1({ navigation, setNotif }) {
     const dispatch = useDispatch();
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const id = useSelector((state) => state.id);
-    
+    const editMode = useSelector((state) => state.editMode);
+    const objectToCheck = useSelector((state) => state.objectToCheck);
+
     const businessName = useSelector((state) => state.business);
     const rol = useSelector((state) => state.rol);
     const nombre = useSelector((state) => state.fullName);
@@ -35,10 +37,107 @@ export default function FormType1({ navigation, setNotif }) {
         }
     }, [cardToCheck])
 
+    useEffect(() => {
+        if (editMode) {
+            if (cardToCheck.title === 'Recuperación de Productos') {
+                let inputsValuesCopy = [...inputsValues]
+
+                console.log("objectToCheck 1: ", objectToCheck)
+
+                let subTitulos = 0
+
+                for (let i = 0; i < cardToCheck?.inputs?.length; i++) {
+                    console.log('entre al for ', i)
+                    if (cardToCheck.inputs[i].tipo === "subTitle") {
+                        console.log('entre al subTitle en la vuelta ', i)
+                        subTitulos = subTitulos + 1
+                    }
+                    else if (cardToCheck.inputs[i].tipo !== "subTitle" && cardToCheck.inputs[i].tipo !== "title") {
+                        console.log('entre al else en la vuelta ', i)
+                        inputsValuesCopy[i] = objectToCheck?.values[i - subTitulos];
+                    }
+                    console.log('sali de la vuelta, ', i)
+                }
+
+                console.log('inputsValuesCopy 2: ', inputsValuesCopy)
+                setInputsValues(inputsValuesCopy)
+            }
+        }
+    }, [])
+
     function setInputsGlobal(index, enteredValue) {
         let array = [...inputsValues];
-        array[index].value = enteredValue;
+        array[index] = { name: cardToCheck.inputs[index].name, value: enteredValue };
         setInputsValues(array);
+    }
+
+    function getUrl() {
+        let url = cardToCheck.url + "edit/" + objectToCheck._id;
+
+        return url
+    }
+
+
+    function handleUpdateButton() {
+        if (saving) return;
+        setSaving(true);
+
+        let objetoFinal = {}
+        let formData = new FormData();
+
+        let inputFinal = [];
+        for (let i = 0; i < cardToCheck.inputs.length; i++) {
+            if (cardToCheck.inputs[i].tipo !== "subTitle" && cardToCheck.inputs[i].tipo !== "title") {
+                inputFinal.push({
+                    "name": cardToCheck.inputs[i].name,
+                    "value": inputsValues[i]?.value
+                })
+            }
+        }
+
+        objetoFinal = {
+            ...objectToCheck,
+            values: inputFinal,
+        }
+
+        if (objectToCheck.status !== 'free') {
+            objetoFinal = {
+                ...objetoFinal,
+                editEnabled: false
+            }
+        }
+
+
+        let url = getUrl()
+
+
+        console.log('objetoFinal: ', JSON.stringify(objetoFinal))
+        fetch(url, {
+            method: 'PUT',
+            // aplica este header application/json; charset=utf-8
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(objetoFinal)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                setNotif({ view: true, message: "¡Formulario actualizado exitosamente!", color: "verde" })
+                setSaving(false);
+                // si la respuesta es exitosa, muestro un mensaje de exito
+                // y vuelvo a la pantalla anterior
+                // espero
+                setTimeout(() => {
+                    // voy a formularios cargados
+                    navigation.navigate('FormulariosCargados');
+                }, 1000);
+            })
+            .catch((error) => {
+                setSaving(false);
+                setNotif({ view: true, message: "¡Ups! Ocurrió un error", color: "naranja" })
+                console.error('Error:', error);
+            });
     }
 
     function handleSaveButton() {
@@ -128,7 +227,7 @@ export default function FormType1({ navigation, setNotif }) {
                                     value={inputsValues[index]?.value}
                                     onChangeText={(value) => {
                                         let array = [...inputsValues];
-                                        array[index].value = value;
+                                        array[index] = { name: input.name, value: value };
                                         setInputsValues(array);
                                     }}
                                 />
@@ -158,9 +257,12 @@ export default function FormType1({ navigation, setNotif }) {
 
             </View>
             <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20 }} />
-            <TouchableOpacity style={styles.buttonForm} onPress={() => handleSaveButton()}>
+            <TouchableOpacity style={styles.buttonForm} onPress={() => {
+                if (editMode) handleUpdateButton()
+                else handleSaveButton()
+            }}>
                 <Text style={styles.buttonFormText}>
-                    Guardar
+                    {editMode ? "Actualizar" : "Guardar"}
                 </Text>
             </TouchableOpacity>
         </View>

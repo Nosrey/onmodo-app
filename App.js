@@ -40,6 +40,7 @@ const initialState = {
   formularios: [],
   cardToCheck: {},
   objectToCheck: {},
+  editMode: false,
 }
 
 const counterSlice = createSlice({
@@ -56,6 +57,9 @@ const counterSlice = createSlice({
     // actions que editan token, rol e id con valores recibidos
     setToken(state, action) {
       state.token = action.payload;
+    },
+    setEditMode(state, action) {
+      state.editMode = action.payload;
     },
     setRol(state, action) {
       state.rol = action.payload;
