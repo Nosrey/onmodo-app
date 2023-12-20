@@ -14,6 +14,7 @@ import ConfirmScreen from '../components/ConfirmScreen';
 import InfoScreen from '../components/InfoScreen';
 import Notification from '../components/Notification';
 import { formulariosData } from '../functions/globalFunctions';
+import { Feather } from '@expo/vector-icons';
 
 export default function FormView({ navigation }) {
     // traigo del redux el state cardToCheck
@@ -34,6 +35,7 @@ export default function FormView({ navigation }) {
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const objectToCheck = useSelector((state) => state.objectToCheck);
     const rol = useSelector((state) => state.rol);
+    const editMode = useSelector((state) => state.editMode);
     const formulario = formulariosData.find((form) => form.title === cardToCheck.title)
 
     useEffect(() => {
@@ -176,7 +178,23 @@ export default function FormView({ navigation }) {
             }                  
 
             <ScrollView>
-                <Text style={styles.titleForm}>{cardToCheck.title}</Text>
+                {/* <Text style={styles.titleForm}>{cardToCheck.title}</Text> */}
+
+                <View style={[styles.titleForm, {
+                    // que sea en horizontal
+                    flexDirection: 'row',
+                    // que se esten lo mas opuestos uno de otro
+                    justifyContent: 'space-between',
+                }]}>
+                    <Text style={{
+                        fontSize: 18,
+                        fontFamily: "GothamRoundedBold",
+                    }}>{cardToCheck.title}</Text>
+                    <Feather name={editMode ? "edit-3" : "eye"} size={25} style={{
+                        paddingRight: 20,                        
+                    }} color="black" onPress={() => { handleEditButton(item?._id) }} />
+                </View>
+
                 {cardToCheck.formType === 1 ? (
                     <FormType1View navigation={navigation} setNotif={setNotif}/>
                 ) : cardToCheck.formType === 2 ? (

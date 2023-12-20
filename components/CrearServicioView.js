@@ -76,7 +76,7 @@ export default function CrearServicio({ navigation, params }) {
                 copiaReglones[index].push({ values: inputsValueRow })
             } else {
                 copiaReglones[index] = [{ values: inputsValueRow }]
-            }   
+            }
             setReglones(copiaReglones)
         } else {
             let copiaReglones = [...reglones];
@@ -453,11 +453,18 @@ export default function CrearServicio({ navigation, params }) {
                     else if (input.tipo === "imagePicker") {
                         return (
                             <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
-                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{row[index].name}</Text>
-
-                                <Text style={{ marginBottom: 5, display: (inputsValueRow[index]?.value ? 'flex' : 'none') }}>{
-                                    (inputsValueRow[index]?.value ? inputsValueRow[index]?.value.split("/")[inputsValueRow[index]?.value.split("/").length - 1] : '')
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 10 }}>{
+                                    // hago que el primer valor se reemplaze por una mayuscula
+                                    row[index].name.charAt(0).toUpperCase() + row[index].name.slice(1)
                                 }</Text>
+
+                                {/* una imagen con el src inputsValueRow[index]?.value */}
+                                {
+                                    inputsValueRow[index]?.value
+                                        ? <Image source={{ uri: inputsValueRow[index]?.value }} style={{ width: 200, height: 200, margin: 0, alignSelf: 'center' }} />
+                                        : null
+                                }
+
 
                             </View>
                         )
@@ -552,7 +559,7 @@ export default function CrearServicio({ navigation, params }) {
                                 editable={false}
                                 selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                 style={styles.userInput}
-                               
+
                             >
                                 {input.options.map((option, index) => {
                                     return (

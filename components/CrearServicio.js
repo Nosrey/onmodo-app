@@ -246,10 +246,10 @@ export default function CrearServicio({ navigation, params }) {
         });
 
         if (!result.canceled) {
-            let copiaInputsValueRow = [...inputsValueRow]
-            copiaInputsValueRow[index].value = result.assets[0].uri
-            console.log('resultado: ', result.assets[0])
-            setInputsValueRow(copiaInputsValueRow)
+            console.log('result: ', result.assets[0])
+            let copiaInputsValueRow = [...inputsValueRow];
+            copiaInputsValueRow[index] = {...copiaInputsValueRow[index], value: result.assets[0].uri, objeto: result.assets[0] };
+            setInputsValueRow(copiaInputsValueRow);
         }
     }
 
@@ -423,6 +423,7 @@ export default function CrearServicio({ navigation, params }) {
                             <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{"Selecciona una " + row[index].name}</Text>
                                 <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                    <Text>{inputsValueRow[index]?.value}</Text>
         
                                     <Image source={{ uri: (inputsValueRow[index]?.value.length ? inputsValueRow[index]?.value : null) }} style={{ width: 200, height: 200, marginVertical: 10, marginBottom: 20, display: (inputsValueRow[index]?.value ? 'flex' : 'none') }} />
                                     <TouchableOpacity onPress={() => pickImage(index)} style={[buttonFooterStyle, { width: "40%" }]}>

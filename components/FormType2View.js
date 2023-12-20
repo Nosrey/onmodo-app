@@ -274,14 +274,14 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
         else if (cardToCheck.title === "Entrega de Bidones de Aceite Usado") {
             if (objectToCheck) {
                 console.log('entre a bidones')
-                let array = objectToCheck.inputs.map(input => ({
+                let array = objectToCheck.inputs.map((input, index) => ({
                     values: [
                         { name: "Fecha", value: input.fecha },
                         { name: "Cantidad de litros entregados", value: input.cantidaddelitrosentregados },
                         { name: "Responsable de entrega", value: input.responsabledeentrega },
                         { name: "Responsable de retiro", value: input.responsablederetiro },
-                        { name: "Selecciona una foto de transporte", value: input.transporte },
-                        { name: "Selecciona una foto de disposición final", value: input.disposiciónfinal },
+                        { name: "foto de transporte", value: objectToCheck.certificadoTransporte[index] },
+                        { name: "foto de disposición final", value: objectToCheck.certificadoDisposicion[index] },
                     ]
                 }));
                 // hago que esto se aplique 0.1s despues

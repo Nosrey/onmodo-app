@@ -44,6 +44,10 @@ export default function Inicio({ navigation }) {
                 title: 'Documentación',
                 onPress: () => console.log('cambiando de pagina')
             },
+            {
+                title: 'Recordatorios',
+                onPress: () => navigation.navigate('Recordatorios')
+            },
         ];
     } else if (rol == '2') {
         cards = [
@@ -61,7 +65,7 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Recordatorios',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Recordatorios')
             },
             {
                 title: 'Solicitudes de Edición',

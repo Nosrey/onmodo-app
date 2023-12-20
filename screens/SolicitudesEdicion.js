@@ -67,7 +67,13 @@ export default SolicitudesEdicion = ({ navigation }) => {
         }
         let form = legajosFound[indexSelected].name
         let formId = legajosFound[indexSelected].value._id
+
+        if (form === 'controlVidrio') {
+            form = 'controlvidrios'
+        }
+
         let url = API_URL + '/api/' + form + '/' + formId;
+        console.log('going to edit ', url)
 
         // un fetch "PUT"
         fetch(url, {
@@ -79,7 +85,6 @@ export default SolicitudesEdicion = ({ navigation }) => {
             // envio el objeto final
             body: JSON.stringify(objFinal)
         })
-            .then((response) => response.json())
             .then((json) => {
                 let legajosFoundCopy = [...legajosFound];
                 // busco el item con el id de formId
@@ -88,7 +93,7 @@ export default SolicitudesEdicion = ({ navigation }) => {
                 legajosFoundCopy[index].value.status = aprobado;
                 setLegajosFound(legajosFoundCopy);
             })
-            .catch((error) => console.error(error));
+            .catch((error) => console.error('algo salio mal: ', error));
     }
 
     useEffect(() => {
@@ -126,12 +131,12 @@ export default SolicitudesEdicion = ({ navigation }) => {
                     }
                 })
 
-                // lo ordeno en base a la fecha de creacion de mas nuevo a mas viejo, esta en item.value?.createdAt
+                // lo ordeno en base a la fecha de creacion de mas nuevo a mas viejo, esta en item.value?.updatedAt
                 arrayTemp.sort((a, b) => {
-                    if (a.value.createdAt < b.value.createdAt) {
+                    if (a.value.updatedAt < b.value.updatedAt) {
                         return 1;
                     }
-                    if (a.value.createdAt > b.value.createdAt) {
+                    if (a.value.updatedAt > b.value.updatedAt) {
                         return -1;
                     }
                     return 0;
@@ -152,10 +157,10 @@ export default SolicitudesEdicion = ({ navigation }) => {
                     (item.value.status === 'pending') ? '#FFB82F1A' : ((item.value.status === 'approved') ? '#7BC1001A' : (item.value.status === 'denied' ? '#FF2E111A' : 'white'))
                 )
             }]}>
-                {/* en la propiedad item.createdAt hay una fecha en formato 2023-08-01T19:37:43.071Z y yo creare de ahi un texto en formato 12/04/24 sacado de esa informacion y otro en formato 14:54 hs sacado de esa informacion tambien*/}
-                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.value.createdAt.slice(8, 10) + '/' + item.value.createdAt.slice(5, 7) + '/' + item.value.createdAt.slice(2, 4)}</Text>
+                {/* en la propiedad item.updatedAt hay una fecha en formato 2023-08-01T19:37:43.071Z y yo creare de ahi un texto en formato 12/04/24 sacado de esa informacion y otro en formato 14:54 hs sacado de esa informacion tambien*/}
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.value.updatedAt.slice(8, 10) + '/' + item.value.updatedAt.slice(5, 7) + '/' + item.value.updatedAt.slice(2, 4)}</Text>
  
-                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{new Date(item?.value?.createdAt).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}</Text>
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{new Date(item?.value?.updatedAt).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}</Text>
                 {/* ahora hago una comparacion, si el id del elemento item.id es igual a la id que traje del redux entonces muestro el nombre que tengo en fullName */}
                 <Text style={[styles.textEditables, { width: "25%", textAlign: 'left', color: (item.value.status === 'approved' ? '#7BC100' : ((item.value.status === 'pending') ? '#FFB82F' : (item.value.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item.value.status === 'approved' ? 'Aprobado' : ((item.value.status === 'pending') ? 'Pendiente' : ((item.value.status === 'denied') ? 'Denegado' : '')))}</Text>
                 {/* agrego un boton para desplegar mas opciones, el que es como una V hacia abajo de icons */}

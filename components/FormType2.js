@@ -378,6 +378,25 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 setInputsValues(inputsValuesCopy)
                 setReglones(reglonesCopy)
             }
+            else if (cardToCheck.title === "Entrega de Bidones de Aceite Usado") {
+                if (objectToCheck) {
+                    console.log('entre a bidones')
+                    let array = objectToCheck.inputs.map((input, index) => ({
+                        values: [
+                            { name: "Fecha", value: input.fecha },
+                            { name: "Cantidad de litros entregados", value: input.cantidaddelitrosentregados },
+                            { name: "Responsable de entrega", value: input.responsabledeentrega },
+                            { name: "Responsable de retiro", value: input.responsablederetiro },
+                            { name: "foto de transporte", value: objectToCheck.certificadoTransporte[index], objeto: objectToCheck.certificadoTransporte[index] },
+                            { name: "foto de disposición final", value: objectToCheck.certificadoDisposicion[index], objeto: objectToCheck.certificadoDisposicion[index] },
+                        ]
+                    }));
+                    // hago que esto se aplique 0.1s despues
+                    setTimeout(() => {
+                        setReglones([array]);
+                    }, 0.1);
+                }
+            }
             else {
                 let inputsValuesCopy = [...inputsValues]
                 let reglonesCopy = [...reglones]
@@ -472,12 +491,14 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         return url
     }
 
-    function handleUpdateButton() {
+    async function handleUpdateButton() {
         if (saving) return;
         setSaving(true);
 
         let objetoFinal = {}
         let formData = new FormData();
+
+        let bidonesUpdateo = false
 
         if (cardToCheck.title === "Registro de Capacitación") {
             let newFecha = ''
@@ -708,19 +729,6 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
         } else if (cardToCheck.title === 'Planilla de Decomiso de Materias Primas') {
             let inputFinal = [];
-            // inputFinal debe quedar asi        
-            // "inputs": [
-            //     {
-            //         "id": 0,
-            //         "fecha": "2023-12-04T05:20:58.973Z",
-            //         "turno": "Turno Tarde",
-            //         "productoDecomisado": "A",
-            //         "cantidad": "B",
-            //         "causa": "Desvíos de proceso"
-            //     }
-            // ]
-
-            // reglones: [[{"values":[{"name":"Fecha","value":"2023-12-04T05:20:58.973Z"},{"name":"Turno","value":"Turno Tarde"},{"name":"Producto decomisado","value":"A"},{"name":"Cantidad","value":"B"},{"name":"Causa","value":"Desvíos de proceso"}]},{"values":[{"name":"Fecha","value":"2023-12-05T05:54:10.259Z"},{"name":"Turno","value":"Turno Mañana"},{"name":"Producto decomisado","value":"C"},{"name":"Cantidad","value":"D"},{"name":"Causa","value":"Recall"}]}]]
 
             for (let i = 0; i < reglones[0].length; i++) {
                 inputFinal.push({
@@ -921,6 +929,18 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 inputsTrimestral: inputsTrimestralFinal,
                 editEnabled: false
             }
+        } else if (cardToCheck.title === "Entrega de Bidones de Aceite Usado") {
+            objetoFinal = await entregabidones(reglones, id)
+            objetoFinal = {
+                ...objetoFinal,
+                editEnabled: false,
+                idUser: id,
+                rol: rol,
+                nombre: nombre,
+                businessName: businessName,
+                editEnabled: false
+            }
+            bidonesUpdateo = true
         }
         else {
             let inputFinal = [];
@@ -939,10 +959,11 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     })
                 }
             }
-
-            objetoFinal = {
-                ...objectToCheck,
-                inputs: inputFinal,
+            if (bidonesUpdateo === false) {
+                objetoFinal = {
+                    ...objectToCheck,
+                    inputs: inputFinal,
+                }
             }
 
             if (objectToCheck.status !== 'free') {
@@ -956,7 +977,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         let url = getUrl()
 
         if (!imageChanged) {
-            console.log('objetoFinal: ', JSON.stringify(objetoFinal))
+            // console.log('objetoFinal: ', JSON.stringify(objetoFinal))
             fetch(url, {
                 method: 'PUT',
                 // aplica este header application/json; charset=utf-8
@@ -1008,7 +1029,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
         }
     }
 
-    function handleSaveButton() {
+    async function handleSaveButton() {
         if (allowSaveCaseProcess || !cardToCheck.exceptionP1) {
             if (saving) return; // si saving es true, no hago nada
             else if (cardToCheck.exceptionForm2Cap === true) {
@@ -1226,17 +1247,23 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 }
 
                 if (cardToCheck.title === "Entrega de Bidones de Aceite Usado") {
-                    let inputs = entregabidones(reglones[0])
+                    objeto = await entregabidones(reglones, id)
                     objeto = {
-                        inputs: inputs,
+                        ...objeto,
                         idUser: id,
                         rol: rol,
                         nombre: nombre,
                         businessName: businessName,
                     }
+                    console.log('objeto: ', {
+                        ...objeto,
+                        // los primeros 10 valores de certificadoTransporte
+                        certificadoTransporte: [objeto.certificadoTransporte[0].slice(0, 10)],
+                        certificadoDisposicion: [objeto.certificadoDisposicion[0].slice(0, 10)],
+                    })
                 }
 
-                console.log("🚀 ~ file: FormType2.js:98 ~ handleSaveButton ~ objeto:", JSON.stringify(objeto))
+                console.log("🚀 ~ file: FormType2.js:98 ~ handleSaveButton ~ objeto:", objeto)
 
                 // hago fetch a la url de cardToCheck.url y le paso los inputsValues en body
                 fetch(cardToCheck.url, {
