@@ -391,10 +391,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => console.log("inputsValues: ", JSON.stringify(inputsValues))}>
-                <Text>Prueba</Text>
-            </TouchableOpacity>
-
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "picker") {
                     return (

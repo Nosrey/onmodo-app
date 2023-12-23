@@ -269,11 +269,6 @@ export default function CrearServicio({ navigation, params }) {
             visibleCopia[index] = false;
             setVisible(visibleCopia)
         }}>
-            <TouchableOpacity onPress={() => {
-                console.log('inputsValueRow: ', inputsValueRow)
-            }}>
-                <Text>Prueba</Text>
-            </TouchableOpacity>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
                 <Text style={styles.titleForm}>Agregar:</Text>
                 <TouchableOpacity>

@@ -9,6 +9,8 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
+// traigo FontAwesome
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function Inicio({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -23,9 +25,21 @@ export default function Inicio({ navigation }) {
     // traigo igualmente token, id y rol
     const fullName = useSelector((state) => state.fullName);
     const rol = useSelector((state) => state.rol);
+    const listaRecordatorios = useSelector((state) => state.listaRecordatorios);
 
     // creo un estado para guardar el valor del input
     const [inputValue, setInputValue] = useState('');
+
+    function activarAlerta(lista) {
+        // recorro la lista de recordatorios obtenida y si algun elemento tiene el status "pendiente" retorno true
+        let valorFinal = false
+        for (let i = 0; i < lista.length; i++) {
+            if (lista[i]?.status == "pendiente" && lista[i]?.statusRecordatorio === 'En curso' && lista[i]?.realizado === false) {                
+                valorFinal = true
+            } 
+        }
+        return valorFinal
+    }
 
     // Definir las opciones del menú según el rol del usuario
     let cards = [];
@@ -46,7 +60,8 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Recordatorios',
-                onPress: () => navigation.navigate('Recordatorios')
+                onPress: () => navigation.navigate('Recordatorios'),
+                notificar: activarAlerta(listaRecordatorios)
             },
         ];
     } else if (rol == '2') {
@@ -65,7 +80,8 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Recordatorios',
-                onPress: () => navigation.navigate('Recordatorios')
+                onPress: () => navigation.navigate('Recordatorios'),
+                notificar: activarAlerta(listaRecordatorios)
             },
             {
                 title: 'Solicitudes de Edición',
@@ -137,6 +153,11 @@ export default function Inicio({ navigation }) {
     const [cardsFound, setCardsFound] = useState(cards);
 
     useEffect(() => {
+        // cuando se renderice el componente, guardo en cardsFound todos los buttons
+        setCardsFound(cards);
+    }, [listaRecordatorios]);
+
+    useEffect(() => {
         async function prepare() {
             await SplashScreen.preventAutoHideAsync();
         }
@@ -175,10 +196,26 @@ export default function Inicio({ navigation }) {
                 <View style={styles.containerBox}>
                     {/* creo estos buttons en base a los que tengo en el array cardsFound */}
                     {cardsFound.map((boton, i) => (
-                        <TouchableOpacity key={i} style={styles.box} onPress={boton.onPress}>
+                        <TouchableOpacity
+                            key={i}
+                            style={[
+                                styles.box,
+                                boton?.notificar ? { backgroundColor: "#7bc100", position: 'relative' } : null
+                            ]}
+                            onPress={boton.onPress}
+                        >
                             <Text style={styles.boxTitle}>
                                 {boton.title}
                             </Text>
+                            {boton?.notificar ?
+                                <FontAwesome
+                                    name="exclamation"
+                                    size={24}
+                                    color="white"
+                                    style={{ position: 'absolute', top: 0, right: 5, padding: 5 }}
+                                />
+                                : null
+                            }
                         </TouchableOpacity>
                     ))}
                 </View>

@@ -15,7 +15,11 @@ export default function BlackWindow({ visible, setVisible }) {
 
     return (
         <View style={[styles.container, size]}>
-            <TouchableOpacity style={{width: "100%", height: "100%"}} onPress={() => setVisible(false)}></TouchableOpacity>
+            <TouchableOpacity style={{width: "100%", height: "100%"}} onPress={() => {
+                if (setVisible !== null) {
+                    setVisible(false);
+                }
+            }}></TouchableOpacity>
         </View>
     )
 }
