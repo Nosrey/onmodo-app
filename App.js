@@ -7,6 +7,7 @@ import PasswordRecovery from './screens/PasswordRecovery';
 import PasswordCreate from './screens/PasswordCreate';
 import Loading from './screens/Loading';
 import Profile from './screens/Profile';
+import ProfileLegajos from './screens/ProfileLegajos';
 import FormulariosCargados from './screens/FormulariosCargados';
 import Formularios from './screens/Formularios';
 import FormDetails from './screens/FormDetails';
@@ -43,6 +44,7 @@ const initialState = {
   objectToCheck: {},
   editMode: false,
   listaRecordatorios: [],
+  legajoProfile: {},
 }
 
 const counterSlice = createSlice({
@@ -52,6 +54,9 @@ const counterSlice = createSlice({
     // creo una accion que cambie el estado logged a true o false dependiendo del valor recibido
     setLogged(state, action) {
       state.logged = action.payload;
+    },
+    setLegajoProfile(state, action) {
+      state.legajoProfile = action.payload;
     },
     setListaRecordatorios(state, action) {
       state.listaRecordatorios = action.payload;
@@ -172,6 +177,11 @@ export default function App() {
             name="Profile"
             component={Profile}
             options={{ title: 'Profile' }}
+          />
+          <Stack.Screen
+            name="ProfileLegajos"
+            component={ProfileLegajos}
+            options={{ title: 'Legajo' }}
           />
           <Stack.Screen
             name="CreateAccount"

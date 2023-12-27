@@ -18,18 +18,19 @@ import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
 
 
-export default function Profile({ navigation }) {
+export default function ProfileLegajos({ navigation }) {
     const dispatch = useDispatch();
     // preparo las constantes para fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor del redux
-    const fullName = useSelector(state => state.fullName);
-    const imgProfile = useSelector(state => state.imgProfile);
-    const legajo = useSelector(state => state.legajo);
-    const number = useSelector(state => state.number);
-    const puesto = useSelector(state => state.puesto);
-    const rol = useSelector(state => state.rol);
-    const provincia = useSelector(state => state.provincia);
-    const localidad = useSelector(state => state.localidad);
-    const contratoComedor = useSelector(state => state.contratoComedor);
+    // const fullName = useSelector(state => state.legajoProfile.fullName);
+    // const imgProfile = useSelector(state => state.legajoProfile.imgProfile);
+    // const legajo = useSelector(state => state.legajoProfile.legajo);
+    // const number = useSelector(state => state.legajoProfile.number);
+    // const puesto = useSelector(state => state.legajoProfile.puesto);
+    // const rol = useSelector(state => state.legajoProfile.rol);
+    // const provincia = useSelector(state => state.legajoProfile.provincia);
+    // const localidad = useSelector(state => state.legajoProfile.localidad);
+    // const contratoComedor = useSelector(state => state.legajoProfile.contratoComedor);
+    const { fullName = '', imgProfile = '', legajo = '', number = '', puesto = '', rol = '', provincia = '', localidad = '', contratoComedor = '' } = useSelector(state => state.legajoProfile);
     const [editable, setEditable] = useState(false); // Estado para habilitar/deshabilitar la edición de los inputs [true/false]
 
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false]
@@ -162,7 +163,7 @@ export default function Profile({ navigation }) {
         <View style={styles.container}>
             <BlackWindow visible={viewCloseSesion} setVisible={setViewCloseSesion} />
             <ConfirmScreen navigation={navigation} params={params}/>
-            <ScrollView>
+            <ScrollView style={{marginBottom: 24}}>
                 <Header cajaText={cajaText}/>
 
                 {/* <Image source={"imgProfile"} style={styles.profileImg} /> */}
@@ -268,21 +269,6 @@ export default function Profile({ navigation }) {
                     </View>
 
                 </View>
-
-
-                <View style={footerContainer}>
-                    <TouchableOpacity style={[buttonFooterStyle, editarBtn]} onPress={handleEditButton}>
-                        <Text style={[styles.buttonText, editarTextBtn]}>Editar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={buttonFooterStyle}>
-                        <Text style={styles.buttonText}>Guardar</Text>
-                    </TouchableOpacity>
-                </View>
-                {/* pongo una linea horizontal */}
-                <View style={{ borderBottomColor: '#A9A9A9', borderBottomWidth: 1, marginVertical: 20 }} />
-                <View style={styles.footer}>
-                    <Text style={styles.footerText} onPress={() => setViewCloseSesion(true)}>Cerrar sesión</Text>
-                </View>
             </ScrollView>
 
             <ButtonBar navigation={navigation}/>
@@ -316,7 +302,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 12,
         // padding top en 24px
-        paddingTop: 24,
+        paddingTop: 24, 
         backgroundColor: '#fff',
     },
     inputContainer: {
