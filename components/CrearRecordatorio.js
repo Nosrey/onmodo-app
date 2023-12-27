@@ -162,21 +162,21 @@ export default function CrearRecordatorio({ setBlackScreen, visible, setVisible,
                         selectedValue={tarea}
                         onValueChange={(itemValue, itemIndex) => setTarea(itemValue)}
                     >
-                        <Picker.Item label="Vencimiento de Limpieza de Tanques." value="Vencimiento de Limpieza de Tanques." />
-                        <Picker.Item label="Vencimiento de Limpieza de Cámaras Graseras." value="Vencimiento de Limpieza de Cámaras Graseras." />
-                        <Picker.Item label="Vencimiento de Libretas Sanitarias." value="Vencimiento de Libretas Sanitarias." />
-                        <Picker.Item label="Vencimiento de Cursos de Manipulador." value="Vencimiento de Cursos de Manipulador." />
-                        <Picker.Item label="Vencimiento de Matriz IPER." value="Vencimiento de Matriz IPER." />
-                        <Picker.Item label="Vencimientos de Análisis de Agua Fisicoquímicos." value="Vencimientos de Análisis de Agua Fisicoquímicos." />
-                        <Picker.Item label="Vencimientos de Análisis de Agua Bacteriológicos." value="Vencimientos de Análisis de Agua Bacteriológicos." />
-                        <Picker.Item label="Vencimiento de Extintores." value="Vencimiento de Extintores." />
-                        <Picker.Item label="Vencimiento de Medición de Puesta a Tierra." value="Vencimiento de Medición de Puesta a Tierra." />
-                        <Picker.Item label="Vencimiento de Evaluaciones Ergonómicos por Puesto." value="Vencimiento de Evaluaciones Ergonómicos por Puesto." />
-                        <Picker.Item label="Vencimiento de Medición de Ruido." value="Vencimiento de Medición de Ruido." />
-                        <Picker.Item label="Vencimiento de Medición de Carga Térmica." value="Vencimiento de Medición de Carga Térmica." />
-                        <Picker.Item label="Vencimiento de Medición de Iluminación." value="Vencimiento de Medición de Iluminación." />
-                        <Picker.Item label="Vencimiento de Estudio de Carga de Fuego." value="Vencimiento de Estudio de Carga de Fuego." />
-                        <Picker.Item label="Vencimiento de Fumigación." value="Vencimiento de Fumigación." />
+                        <Picker.Item label="Vencimiento de Limpieza de Tanques." value="0" />
+                        <Picker.Item label="Vencimiento de Limpieza de Cámaras Graseras." value="1" />
+                        <Picker.Item label="Vencimiento de Libretas Sanitarias." value="2" />
+                        <Picker.Item label="Vencimiento de Cursos de Manipulador." value="3" />
+                        <Picker.Item label="Vencimiento de Matriz IPER." value="4" />
+                        <Picker.Item label="Vencimientos de Análisis de Agua Fisicoquímicos." value="5" />
+                        <Picker.Item label="Vencimientos de Análisis de Agua Bacteriológicos." value="6" />
+                        <Picker.Item label="Vencimiento de Extintores." value="7" />
+                        <Picker.Item label="Vencimiento de Medición de Puesta a Tierra." value="8" />
+                        <Picker.Item label="Vencimiento de Evaluaciones Ergonómicos por Puesto." value="9" />
+                        <Picker.Item label="Vencimiento de Medición de Ruido." value="10" />
+                        <Picker.Item label="Vencimiento de Medición de Carga Térmica." value="11" />
+                        <Picker.Item label="Vencimiento de Medición de Iluminación." value="12" />
+                        <Picker.Item label="Vencimiento de Estudio de Carga de Fuego." value="13" />
+                        <Picker.Item label="Vencimiento de Fumigación." value="14" />
                         <Picker.Item label=" " value=" " />
                     </Picker>
                 </View>

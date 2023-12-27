@@ -34,9 +34,9 @@ export default function Inicio({ navigation }) {
         // recorro la lista de recordatorios obtenida y si algun elemento tiene el status "pendiente" retorno true
         let valorFinal = false
         for (let i = 0; i < lista.length; i++) {
-            if (lista[i]?.status == "pendiente" && lista[i]?.statusRecordatorio === 'En curso' && lista[i]?.realizado === false) {                
+            if (lista[i]?.status == "pendiente" && lista[i]?.statusRecordatorio === 'En curso' && lista[i]?.realizado === false) {
                 valorFinal = true
-            } 
+            }
         }
         return valorFinal
     }
