@@ -20,7 +20,7 @@ import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
 import { API_URL, formulariosData } from '../functions/globalFunctions'
 
-export default FormDetails = ({ navigation }) => {
+export default FormDetailsLegajos = ({ navigation }) => {
     const dispatch = useDispatch();
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
@@ -28,7 +28,7 @@ export default FormDetails = ({ navigation }) => {
     });
     const [viewEdit, setViewEdit] = useState(false);
     const [viewDelete, setViewDelete] = useState(false);
-    const formulariosLegajo = useSelector((state) => state.formulariosLegajo);
+    const cardToCheck = useSelector((state) => state.cardToCheck);
     const [internalInput, setInternalInput] = useState('');
     // obtengo id y fullName
     const id = useSelector((state) => state.id);
@@ -37,7 +37,7 @@ export default FormDetails = ({ navigation }) => {
     const [targetId, setTargetId] = useState(0);
     const [statusPicked, setStatusPicked] = useState('');
 
-    const { title, entries } = formulariosLegajo;
+    const { title, entries } = cardToCheck;
 
     const [listaEstados, setListaEstados] = useState(entries?.map((item) => {
         return { id: item._id, activado: false }
@@ -65,9 +65,14 @@ export default FormDetails = ({ navigation }) => {
     }
 
     function getUrl(id) {
-    
+        // if (cardToCheck?.title === 'controlvidrio') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
+        // else if (cardToCheck?.title === 'controlproceso') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
+        // else return API_URL + "/api/" + cardToCheck.title + "/" + id;
         console.log('url: ', cardToCheck.url + "/" + id)
         let url = cardToCheck.url + "/" + id;
+        // if (url.includes("/controlprocesos")) {
+        //     url = url.replace("/controlprocesos", "/controlproceso")
+        // }
         return url
     }
 

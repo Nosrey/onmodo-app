@@ -120,6 +120,22 @@ export default function Legajos({ navigation }) {
 
     }
 
+    function handleViewForms(item) {
+        let formulariosLegajos = { entries: [], title: "Formularios cargados de Legajo"};
+        // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
+        for (const [key, value] of Object.entries(item)) {
+            if (Array.isArray(value)) {
+                formulariosLegajos.entries = [...formulariosLegajos.entries, ...value]
+            }
+        }
+        
+
+
+        dispatch({ type: 'counter/setFormulariosLegajo', payload: formulariosLegajos });
+
+        navigation.navigate('FormDetailsLegajos');        
+    }
+
     function handleViewLegajo(item) {
         // seteo el legajoProfile en item
         let perfil = {
@@ -159,7 +175,7 @@ export default function Legajos({ navigation }) {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="file" size={20} color="black" onPress={() => { console.log('pruebaEdit') }} />
+                        <Feather name="file" size={20} color="black" onPress={() => { handleViewForms(item) }} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>

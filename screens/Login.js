@@ -135,9 +135,6 @@ export default function Login({ navigation }) {
                                     dispatch({ type: 'counter/setContratoComedor', payload: json2.response[0].contratoComedor });
                                     dispatch({ type: 'counter/setBusiness', payload: json2.response[0].business });
 
-
-
-
                                     // hago un fetch GET a la url de la api + /api/recordatorio/${business}
                                     let url = API_URL + '/api/recordatorio/' + json2.response[0].business;
                                     fetch(url)
@@ -331,7 +328,6 @@ export default function Login({ navigation }) {
                                         .finally(() => {
                                             console.log('finalizados los recordatorios')
                                         })
-
 
                                     // reviso json2.response[0] y a todos los elementos que sean un array los guardo en otro array llamado formularios que sera un let
                                     let formularios = [];
