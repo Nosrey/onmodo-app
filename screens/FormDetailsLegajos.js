@@ -19,6 +19,8 @@ import { Feather } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
 import { API_URL, formulariosData } from '../functions/globalFunctions'
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default FormDetailsLegajos = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -28,7 +30,7 @@ export default FormDetailsLegajos = ({ navigation }) => {
     });
     const [viewEdit, setViewEdit] = useState(false);
     const [viewDelete, setViewDelete] = useState(false);
-    const cardToCheck = useSelector((state) => state.cardToCheck);
+    const formulariosLegajo = useSelector((state) => state.formulariosLegajo);
     const [internalInput, setInternalInput] = useState('');
     // obtengo id y fullName
     const id = useSelector((state) => state.id);
@@ -37,7 +39,9 @@ export default FormDetailsLegajos = ({ navigation }) => {
     const [targetId, setTargetId] = useState(0);
     const [statusPicked, setStatusPicked] = useState('');
 
-    const { title, entries } = cardToCheck;
+
+
+    const { title, entries } = formulariosLegajo;
 
     const [listaEstados, setListaEstados] = useState(entries?.map((item) => {
         return { id: item._id, activado: false }
@@ -45,6 +49,11 @@ export default FormDetailsLegajos = ({ navigation }) => {
     let entriesCopy = [...entries];
 
     const [entriesFound, setEntriesFound] = useState(entriesCopy ? entriesCopy.reverse() : []);
+
+    const [paginaActual, setPaginaActual] = useState(1);
+    const elementsPerPage = 7
+    const [paginaTotal, setPaginaTotal] = useState(Math.ceil(entriesFound.length / elementsPerPage));
+
     const [inputValue, setInputValue] = useState('');
 
     const itemListContainer = {
@@ -52,6 +61,7 @@ export default FormDetailsLegajos = ({ navigation }) => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingVertical: 10,
+        paddingHorizontal: "1%",
     }
 
     function handleViewButton(id) {
@@ -65,20 +75,21 @@ export default FormDetailsLegajos = ({ navigation }) => {
     }
 
     function getUrl(id) {
-        // if (cardToCheck?.title === 'controlvidrio') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
-        // else if (cardToCheck?.title === 'controlproceso') return API_URL + "/api/" + cardToCheck?.title + "s/" + id;
-        // else return API_URL + "/api/" + cardToCheck.title + "/" + id;
-        console.log('url: ', cardToCheck.url + "/" + id)
-        let url = cardToCheck.url + "/" + id;
-        // if (url.includes("/controlprocesos")) {
-        //     url = url.replace("/controlprocesos", "/controlproceso")
-        // }
+        // if (formulariosLegajo?.title === 'controlvidrio') return API_URL + "/api/" + formulariosLegajo?.title + "s/" + id;
+        // else if (formulariosLegajo?.title === 'controlproceso') return API_URL + "/api/" + formulariosLegajo?.title + "s/" + id;
+        // else return API_URL + "/api/" + formulariosLegajo.title + "/" + id;
+        let item = formulariosLegajo?.entries?.find((element) => element._id === id);
+        let formulario = formulariosData.find((element) => element.title === getTitle(item?.tituloForm));
+        console.log('url: ', formulario.url + "/" + id)
+        let url = formulario.url + "/" + id;
         return url
     }
 
     function handleSpectButton(id) {
-        let item = cardToCheck?.entries?.find((element) => element._id === id);
+        let item = formulariosLegajo?.entries?.find((element) => element._id === id);
+        let formulario = formulariosData.find((element) => element.title === getTitle(item?.tituloForm));        
         // hago dispactch a objectToCheck con item
+        dispatch({ type: 'counter/setCardToCheck', payload: formulario });
         dispatch({ type: 'counter/setObjectToCheck', payload: item });
         dispatch({ type: 'counter/setEditMode', payload: false });
         // hago navigate a FormView
@@ -119,11 +130,13 @@ export default FormDetailsLegajos = ({ navigation }) => {
     function goToEdit(id) {
         url = getUrl(id)        
         let item = entries?.find((element) => element._id === id);
-
         // hago dispactch a objectToCheck con item
         dispatch({ type: 'counter/setObjectToCheck', payload: item });
+
+        let formulario = formulariosData.find((element) => element.title === getTitle(item?.tituloForm));
+        dispatch({ type: 'counter/setCardToCheck', payload: formulario });
         
-        if (cardToCheck.title !== "Uso y Cambio de Aceite en Freidora" && cardToCheck.title !== "Chequeo de uso de EPP") {
+        if (formulario.title !== "Uso y Cambio de Aceite en Freidora" && formulario.title !== "Chequeo de uso de EPP") {
             if (item?.editEnabled) {
                 dispatch({ type: 'counter/setEditMode', payload: true });
                 navigation.navigate('FormCreate');
@@ -131,8 +144,8 @@ export default FormDetailsLegajos = ({ navigation }) => {
                 dispatch({ type: 'counter/setEditMode', payload: false })
                 navigation.navigate('FormView');
             }
-        } else if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora" || cardToCheck.title === "Chequeo de uso de EPP") {
-            if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora") {
+        } else if (formulario.title === "Uso y Cambio de Aceite en Freidora" || formulario.title === "Chequeo de uso de EPP") {
+            if (formulario.title === "Uso y Cambio de Aceite en Freidora") {
                 dispatch({ type: 'counter/setEditMode', payload: true });
                 navigation.navigate('FormView');
             }
@@ -227,11 +240,13 @@ export default FormDetailsLegajos = ({ navigation }) => {
 
     useEffect(() => {
         navigation?.setOptions({
-            title: getTitle(cardToCheck?.title),
+            title: getTitle(formulariosLegajo?.title),
         });
     }, []);
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }) => {
+        // console.log('item: ', item)
+        return (
         <View>
             <View style={[itemListContainer, {
                 backgroundColor: (
@@ -239,12 +254,13 @@ export default FormDetailsLegajos = ({ navigation }) => {
                 )
             }]}>
                 {/* en la propiedad item.createdAt hay una fecha en formato 2023-08-01T19:37:43.071Z y yo creare de ahi un texto en formato 12/04/24 sacado de esa informacion y otro en formato 14:54 hs sacado de esa informacion tambien*/}
-                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item?.createdAt.slice(8, 10) + '/' + item?.createdAt.slice(5, 7) + '/' + item?.createdAt.slice(2, 4)}</Text>                
-                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{new Date(item?.createdAt).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}</Text>
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "29%", paddingRight: "1%" }}>{getTitle(item?.tituloForm)}</Text>                
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "20%" }}>{item?.createdAt.slice(8, 10) + '/' + item?.createdAt.slice(5, 7) + '/' + item?.createdAt.slice(2, 4)}</Text>                
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "20%" }}>{new Date(item?.createdAt).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}</Text>
                 {/* ahora hago una comparacion, si el id del elemento item?.id es igual a la id que traje del redux entonces muestro el nombre que tengo en fullName */}
-                {item?.idUser[0] === id ? <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "30%" }}>{fullName}</Text> : <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{"No encontrado"}</Text>}
+                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "20%" }}>{item?.nombre}</Text>
                 {/* agrego un boton para desplegar mas opciones, el que es como una V hacia abajo de icons */}
-                <TouchableOpacity onPress={() => { handleViewButton(item?._id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "25%", position: 'relative' }}>
+                <TouchableOpacity onPress={() => { handleViewButton(item?._id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "10%", position: 'relative' }}>
                     <Icon name="arrow-down" size={15} color="black" style={{ position: 'absolute', right: 25 }} />
                 </TouchableOpacity>
 
@@ -257,16 +273,16 @@ export default FormDetailsLegajos = ({ navigation }) => {
                     ),
 
                 }]}>
-                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
+                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", paddingHorizontal: "2.5%", }}>
                         <Feather name="eye" size={20} color="black" onPress={() => { handleSpectButton(item?._id) }} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="edit-3" size={20} color="black" onPress={() => { editHandler(item?._id)}} />
+                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", paddingHorizontal: "2.5%", }}>
+                        {/* <Feather name="edit-3" size={20} color="black" onPress={() => { editHandler(item?._id)}} /> */}
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(item?._id) }} />
+                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", paddingHorizontal: "2.5%", }}>
+                        {/* <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteButton(item?._id) }} /> */}
                     </TouchableOpacity>
 
                     <Text style={[styles.textEditables, { width: "25%", color: (item?.status === 'approved' ? '#7BC100' : ((item?.status === 'pending') ? '#FFB82F' : (item?.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item?.status === 'approved' ? 'Aprobado' : ((item?.status === 'pending') ? 'Pendiente' : ((item?.status === 'denied') ? 'Denegado' : '')))}</Text>
@@ -274,7 +290,7 @@ export default FormDetailsLegajos = ({ navigation }) => {
                 : null}
             <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1 }} />
         </View>
-    );
+    )};
 
     let cajaText = [
         { title: '| ' + getTitle(title), style: "titleProfile" },
@@ -294,20 +310,60 @@ export default FormDetailsLegajos = ({ navigation }) => {
             </View>
 
             <View style={{ display: 'flex', flexDirection: 'row', alignContent: 'center', justifyContent: 'space-between', marginTop: 15 }}>
-                <Text style={{ textAlign: 'left', fontSize: 12, width: "25%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Fecha</Text>
-                <Text style={{ textAlign: 'left', fontSize: 12, width: "25%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Hora</Text>
-                <Text style={{ textAlign: 'left', fontSize: 12, width: "25%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Usuario</Text>
-                <Text style={{ textAlign: 'left', fontSize: 12, width: "25%", fontFamily: "GothamRoundedMedium", color: "#636363" }}></Text>
+                <Text style={{ textAlign: 'left', fontSize: 12, width: "30%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Formulario</Text>
+                <Text style={{ textAlign: 'left', fontSize: 12, width: "20%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Fecha</Text>
+                <Text style={{ textAlign: 'left', fontSize: 12, width: "20%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Hora</Text>
+                <Text style={{ textAlign: 'left', fontSize: 12, width: "20%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Usuario</Text>
+                <Text style={{ textAlign: 'left', fontSize: 12, width: "10%", fontFamily: "GothamRoundedMedium", color: "#636363" }}></Text>
             </View>
             {/* creo una linea horizontal */}
             <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginTop: 10 }} />
 
 
             <FlatList
-                data={entriesFound}
+                data={entriesFound.slice((paginaActual - 1) * elementsPerPage, paginaActual * elementsPerPage)}
                 renderItem={renderItem}
                 keyExtractor={(item) => item?._id}
             />
+
+<View style={{
+                // los alineo horitozanlmente a cada extremo pero el tercero en el centro
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 10,
+                marginBottom: 10,
+
+            }}>
+                <TouchableOpacity style={[styles.buttonForm, {
+                    backgroundColor: (
+                        "#7BC100"
+                    ), marginTop: 5
+                }]} onPress={() => {
+                    paginaActual > 1 ? setPaginaActual(paginaActual - 1) : null
+                }
+                }>
+                    <FontAwesome5 name="arrow-left" size={24} color="white" />
+                </TouchableOpacity>
+
+                <Text style={{
+                    alignSelf: 'center',
+                    // lo alieno verticalmente
+                    textAlign: 'center',
+                    fontSize: 16,
+                }}>PAG {paginaActual}/{paginaTotal}</Text>
+
+                <TouchableOpacity style={[styles.buttonForm, {
+                    backgroundColor: (
+                        "#7BC100"
+                    ), marginTop: 5
+                }]} onPress={() => {
+                    paginaActual < paginaTotal ? setPaginaActual(paginaActual + 1) : null
+                }
+                }>
+                    {/* // pongo arrow-circle-right */}
+                    <FontAwesome5 name="arrow-right" size={24} color="white" />
+                </TouchableOpacity>
+            </View>
 
 
             <ButtonBar navigation={navigation} />
@@ -323,6 +379,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 12,
         fontFamily: "GothamRoundedBold",
+    },
+    buttonForm: {
+        marginVertical: 20,
+        backgroundColor: '#7BC100',
+        width: '20%',
+        marginHorizontal: '1%',
+        height: 50,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // lo alineo a la derecha
+        alignSelf: 'flex-end',
     },
     container: {
         flex: 1,

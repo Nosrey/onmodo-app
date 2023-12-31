@@ -216,10 +216,9 @@ export default function Login({ navigation }) {
                                                     if (!item.fechas?.length && !item.fechaInicio) {
                                                         let fecha = item.createdAt.split('T')[0].split('-');
                                                         fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
-                                                        console.log('item.createdAt: ', fecha)
                                                         return fecha
                                                     } else if (!item.fechas?.length && item.fechaInicio) {
-                                                        console.log('item.fechaInicio: ', item.fechaInicio)
+                                                      
                                                         return item.fechaInicio
                                                     } else {
                                                         // obtnego la fecha mas proxima con la propiedad ejecutado en false
@@ -227,10 +226,9 @@ export default function Login({ navigation }) {
                                                         if (!proxFecha && !item.fechaInicio) {
                                                             let fecha = item.createdAt.split('T')[0].split('-');
                                                             fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
-                                                            console.log('item.createdAt: ', fecha)
                                                             return fecha
                                                         } else if (!proxFecha && item.fechaInicio) {
-                                                            console.log('item.fechaInicio: ', item.fechaInicio)
+                                                           
                                                             return item.fechaInicio
                                                         } else {
                                                             // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023
@@ -323,12 +321,7 @@ export default function Login({ navigation }) {
                                         // si hay un error lo muestro en consola
                                         .catch((error) => {
                                             console.error('error en recordatorios: ', error)
-                                        })
-                                        // finalmente cierro el then
-                                        .finally(() => {
-                                            console.log('finalizados los recordatorios')
-                                        })
-
+                                        })                         
                                     // reviso json2.response[0] y a todos los elementos que sean un array los guardo en otro array llamado formularios que sera un let
                                     let formularios = [];
                                     // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios

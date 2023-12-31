@@ -431,13 +431,6 @@ export default function Recordatorios({ navigation }) {
                         CREAR NUEVO
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.buttonForm, { backgroundColor: "#7BC100", marginVertical: 10 }]} onPress={() => {
-                    console.log('listaTareas: ', listaTareas)
-                }}>
-                    <Text style={styles.buttonFormText}>
-                        Prueba
-                    </Text>
-                </TouchableOpacity>
 
                 <Text style={{ fontSize: 20, marginBottom: 15, fontFamily: 'GothamRoundedMedium' }}>Eventos</Text>
 

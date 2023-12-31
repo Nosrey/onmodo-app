@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // importo de react native el view, text, image, stylesheets, touchableOpacity
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard, ScrollView, Button, FlatList } from 'react-native';
 import Buscador from '../components/Buscador';
-import Filtrador from '../components/Filtrador';
+import FiltradorLegajos from '../components/FiltradorLegajos';
 import { Picker } from '@react-native-picker/picker';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -32,6 +32,7 @@ export default function Legajos({ navigation }) {
 
     const [inputValue, setInputValue] = useState('');
     const [legajosLista, setLegajosLista] = useState([]);
+    const [legajosListaOriginal, setLegajosListaOriginal] = useState([]);
     const [update, setUpdate] = useState(false);
 
     const [paginaActual, setPaginaActual] = useState(1);
@@ -64,6 +65,7 @@ export default function Legajos({ navigation }) {
                     return item;
                 });
                 setLegajosLista(listaLegajosTemp);
+                setLegajosListaOriginal(listaLegajosTemp);
 
                 //   setPaginaTotal(Math.ceil(arrayFinal.length / elementsPerPage));
                 setPaginaTotal(Math.ceil(listaLegajosTemp.length / elementsPerPage));
@@ -124,12 +126,17 @@ export default function Legajos({ navigation }) {
         let formulariosLegajos = { entries: [], title: "Formularios cargados de Legajo"};
         // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
         for (const [key, value] of Object.entries(item)) {
-            if (Array.isArray(value)) {
-                formulariosLegajos.entries = [...formulariosLegajos.entries, ...value]
+            if (Array.isArray(value) && key !== 'recordatorio') {
+          
+                let arrayEdited = value.map((item) => {
+                    return ({...item, tituloForm: key})
+                })
+
+                formulariosLegajos.entries = [...formulariosLegajos.entries, ...arrayEdited]
             }
         }
         
-
+        // console.log('formulariosLegajos', formulariosLegajos);
 
         dispatch({ type: 'counter/setFormulariosLegajo', payload: formulariosLegajos });
 
@@ -200,9 +207,8 @@ export default function Legajos({ navigation }) {
                 <Header cajaText={cajaTextoHeader} />
             </View>
 
-            <View style={{ marginVertical: 5 }}>
-                <Buscador inputValue={inputValue} handleInputChange={handleInputChange} />
-                <Filtrador states={legajosLista} setStates={setLegajosLista} />
+            <View style={{ marginVertical: 5 }}>                
+                <FiltradorLegajos states={legajosListaOriginal} setStates={setLegajosLista} />
             </View>
 
             <View style={{ display: 'flex', flexDirection: 'row', alignContent: 'center', justifyContent: 'space-between', marginTop: 15 }}>
