@@ -34,6 +34,8 @@ export default function Legajos({ navigation }) {
     const [legajosLista, setLegajosLista] = useState([]);
     const [legajosListaOriginal, setLegajosListaOriginal] = useState([]);
     const [update, setUpdate] = useState(false);
+    const [viewDeleteLegajo, setViewDeleteLegajo] = useState(false);
+    const [legajoSelected, setLegajoSelected] = useState({});
 
     const [paginaActual, setPaginaActual] = useState(1);
     const [paginaTotal, setPaginaTotal] = useState(1);
@@ -122,6 +124,13 @@ export default function Legajos({ navigation }) {
 
     }
 
+    function modalDelete(item) {
+        // seteo el viewDeleteLegajo en true
+        setViewDeleteLegajo(true);
+        // seteo el legajoSelected en item
+        setLegajoSelected(item);
+    }
+
     function handleViewForms(item) {
         let formulariosLegajos = { entries: [], title: "Formularios cargados de Legajo"};
         // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
@@ -186,7 +195,7 @@ export default function Legajos({ navigation }) {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
-                        <Feather name="trash-2" size={20} color="black" onPress={() => { handleDeleteLegajo(item) }} />
+                        <Feather name="trash-2" size={20} color="black" onPress={() => { modalDelete(item) }} />
                     </TouchableOpacity>
 
                     <Text style={{ width: "25%" }}></Text>
@@ -201,8 +210,21 @@ export default function Legajos({ navigation }) {
         { title: "| Legajos", style: "title" },
     ];
 
+    let params = {
+        title: '¿Estás seguro que deseas eliminar este legajo?',
+        message: 'Si así lo decides, se eliminará de manera permanante y no lo podrás recuperar.',
+        viewWindow: viewDeleteLegajo,
+        setViewWindow: setViewDeleteLegajo,
+        action: handleDeleteLegajo,
+        data: legajoSelected,
+        botonNo: "Cancelar",
+        botonYes: "Eliminar",
+    }
+
     return (
         <View style={styles.container}>
+            <BlackWindow visible={viewDeleteLegajo} setVisible={setViewDeleteLegajo} />
+            <ConfirmScreen navigation={navigation} params={params} />
             <View>
                 <Header cajaText={cajaTextoHeader} />
             </View>
