@@ -12,6 +12,7 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
     const cardToCheck = useSelector((state) => state.cardToCheck);
 
     const fechaATexto = (fecha) => {
+        console.log('fecha NUEVA: ', fecha)
         fecha = new Date(fecha)
         fecha = fecha.toISOString()
 

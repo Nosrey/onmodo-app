@@ -237,7 +237,17 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 let inputsValuesCopy = [...inputsValues]
                 let reglonesCopy = [...reglones]
 
-                inputsValuesCopy[0] = { name: "Fecha", value: new Date(objectToCheck?.fecha) }
+                let fechaTemp = new Date(objectToCheck?.fecha)
+                // checo si el resultado es una fecha
+                if (fechaTemp.toString() !== "Invalid Date") {
+                    console.log('fecha es valida -----------------')
+                    console.log('fechaTemp: ', fechaTemp)
+                } else {
+                    fechaTemp = 'Sin fecha'
+                    console.log('fecha es Invalida -----------------')
+                    console.log('fechaTemp: ', fechaTemp)
+                }
+                inputsValuesCopy[0] = { name: "Fecha", value: fechaTemp }
                 inputsValuesCopy[1] = { name: "Instrumento", value: objectToCheck?.balanza }
 
                 inputsValuesCopy[2] = { name: "Código", value: '' }
@@ -249,35 +259,35 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         values: [
                             {
                                 "name": "Código",
-                                "value": objectToCheck.inputs[i].codigo
+                                "value": objectToCheck.inputs[i].código
                             },
                             {
                                 "name": "Tipo",
-                                "value": objectToCheck.inputs[i].tipo
+                                "value": objectToCheck.inputs[i]["Tipo (BP/BR)"]
                             },
                             {
                                 "name": "Responsable del uso",
-                                "value": objectToCheck.inputs[i].responsableUso
+                                "value": objectToCheck.inputs[i].responsabledeluso
                             },
                             {
                                 "name": "Área",
-                                "value": objectToCheck.inputs[i].area
+                                "value": objectToCheck.inputs[i].área
                             },
                             {
                                 "name": "Peso Masa ref/Pto balanza",
-                                "value": objectToCheck.inputs[i].pesoMasa
+                                "value": objectToCheck.inputs[i]["pesomasaref/ptobalanza"]
                             },
                             {
                                 "name": "Peso real",
-                                "value": objectToCheck.inputs[i].pesoReal
+                                "value": objectToCheck.inputs[i].pesoreal
                             },
                             {
                                 "name": "Desvío",
-                                "value": objectToCheck.inputs[i].desvio
+                                "value": objectToCheck.inputs[i].desvío
                             },
                             {
                                 "name": "Acciones de correción",
-                                "value": objectToCheck.inputs[i].accionesCorrecion
+                                "value": objectToCheck.inputs[i]["Acciones de corrección"]
                             },
                         ]
                     })
@@ -301,82 +311,82 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
                 console.log('entrada hacia los reglones')
 
-                for (let i = 0; i < objectToCheck?.inputsSemestral?.length; i++) {
+                for (let i = 0; i < objectToCheck?.inputsTrimestral?.length; i++) {
                     reglonesCopy[2].push({
                         values: [
                             {
                                 "name": "Código",
-                                "value": objectToCheck?.inputsSemestral[i]?.codigo
+                                "value": objectToCheck?.inputsTrimestral[i]?.código
                             },
                             {
                                 "name": "Tipo",
-                                "value": objectToCheck?.inputsSemestral[i]?.tipo
+                                "value": objectToCheck?.inputsTrimestral[i]?.["Tipo (PIN/IR)"]
                             },
                             {
                                 "name": "Responsable del uso",
-                                "value": objectToCheck?.inputsSemestral[i]?.responsable
+                                "value": objectToCheck?.inputsTrimestral[i]?.responsabledeluso
                             },
                             {
                                 "name": "Área",
-                                "value": objectToCheck?.inputsSemestral[i]?.area
+                                "value": objectToCheck?.inputsTrimestral[i]?.área
                             },
                             {
                                 "name": "Punto 0",
-                                "value": objectToCheck?.inputsSemestral[i]?.punto0
+                                "value": objectToCheck?.inputsTrimestral[i]?.punto0
                             },
                             {
                                 "name": "Desvío",
-                                "value": objectToCheck?.inputsSemestral[i]?.desvio0
+                                "value": objectToCheck?.inputsTrimestral[i]?.desvío0
                             },
                             {
                                 "name": "Punto 100",
-                                "value": objectToCheck?.inputsSemestral[i]?.punto100
+                                "value": objectToCheck?.inputsTrimestral[i]?.punto100
                             },
                             {
                                 "name": "Desvío",
-                                "value": objectToCheck?.inputsSemestral[i]?.desvio100
+                                "value": objectToCheck?.inputsTrimestral[i]?.desvío100
                             },
                             {
                                 "name": "Acciones de correción",
-                                "value": objectToCheck?.inputsSemestral[i]?.acciones
+                                "value": objectToCheck?.inputsTrimestral[i]?.["Acciones de corrección"]
                             },
                         ]
                     })
                 }
 
-                for (let i = 0; i < objectToCheck?.inputsTrimestral?.length; i++) {
+                for (let i = 0; i < objectToCheck?.inputsSemestral?.length; i++) {
                     reglonesCopy[3].push({
                         values: [
                             {
                                 "name": "Código",
-                                "value": objectToCheck?.inputsTrimestral[i]?.codigo
+                                "value": objectToCheck?.inputsSemestral[i]?.código
                             },
                             {
                                 "name": "Área",
-                                "value": objectToCheck?.inputsTrimestral[i]?.area
+                                "value": objectToCheck?.inputsSemestral[i]?.área
                             },
                             {
                                 "name": "Temp. termón referencia",
-                                "value": objectToCheck?.inputsTrimestral[i]?.termoReferencia
+                                "value": objectToCheck?.inputsSemestral[i]?.["temp.termómreferencia"]
                             },
                             {
                                 "name": "Temp. termón evaluado",
-                                "value": objectToCheck?.inputsTrimestral[i]?.termoEvaluado
+                                "value": objectToCheck?.inputsSemestral[i]?.["temp.termómevaluado"]
                             },
                             {
                                 "name": "Desvío",
-                                "value": objectToCheck?.inputsTrimestral[i]?.desvio
+                                "value": objectToCheck?.inputsSemestral[i]?.desvío
                             },
                             {
                                 "name": "Acciones de correción",
-                                "value": objectToCheck?.inputsTrimestral[i]?.acciones
+                                "value": objectToCheck?.inputsSemestral[i]?.["Acciones de corrección"]
                             },
                         ]
                     })
                 }
                 console.log('salida de inputs')
-                setInputsValues(inputsValuesCopy)
                 setReglones(reglonesCopy)
+                setInputsValues(inputsValuesCopy)
             }
             else if (cardToCheck.title === "Entrega de Bidones de Aceite Usado") {
                 if (objectToCheck) {
@@ -874,14 +884,14 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
             for (let i = 0; i < reglones[2].length; i++) {
                 inputsFinalReglones.push({
-                    "codigo": reglones[2][i]?.values[0]?.value,
-                    "tipo": reglones[2][i]?.values[1]?.value,
-                    "responsableUso": reglones[2][i]?.values[2]?.value,
-                    "area": reglones[2][i]?.values[3]?.value,
-                    "pesoMasa": reglones[2][i]?.values[4]?.value,
-                    "pesoReal": reglones[2][i]?.values[5]?.value,
-                    "desvio": reglones[2][i]?.values[6]?.value,
-                    "accionesCorrecion": reglones[2][i]?.values[7]?.value,
+                    "código": reglones[2][i]?.values[0]?.value,
+                    "Tipo (BP/BR)": reglones[2][i]?.values[1]?.value,
+                    "responsabledeluso": reglones[2][i]?.values[2]?.value,
+                    "área": reglones[2][i]?.values[3]?.value,
+                    "pesomasaref/ptobalanza": reglones[2][i]?.values[4]?.value,
+                    "pesoreal": reglones[2][i]?.values[5]?.value,
+                    "desvío": reglones[2][i]?.values[6]?.value,
+                    "Acciones de corrección": reglones[2][i]?.values[7]?.value,
                 })
 
                 objetoFinal = {
@@ -898,26 +908,26 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
             for (let i = 0; i < reglones[2].length; i++) {
                 inputsSemestralFinal.push({
-                    "codigo": reglones[2][i]?.values[0]?.value,
-                    "tipo": reglones[2][i]?.values[1]?.value,
-                    "responsable": reglones[2][i]?.values[2]?.value,
-                    "area": reglones[2][i]?.values[3]?.value,
+                    "código": reglones[2][i]?.values[0]?.value,
+                    "Tipo (PIN/IR)": reglones[2][i]?.values[1]?.value,
+                    "responsabledeluso": reglones[2][i]?.values[2]?.value,
+                    "área": reglones[2][i]?.values[3]?.value,
                     "punto0": reglones[2][i]?.values[4]?.value,
-                    "desvio0": reglones[2][i]?.values[5]?.value,
+                    "desvío0": reglones[2][i]?.values[5]?.value,
                     "punto100": reglones[2][i]?.values[6]?.value,
-                    "desvio100": reglones[2][i]?.values[7]?.value,
+                    "desvío100": reglones[2][i]?.values[7]?.value,
                     "acciones": reglones[2][i]?.values[8]?.value,
                 })
             }
 
             for (let i = 0; i < reglones[3].length; i++) {
                 inputsTrimestralFinal.push({
-                    "codigo": reglones[3][i]?.values[0]?.value,
-                    "area": reglones[3][i]?.values[1]?.value,
-                    "termoReferencia": reglones[3][i]?.values[2]?.value,
-                    "termoEvaluado": reglones[3][i]?.values[3]?.value,
-                    "desvio": reglones[3][i]?.values[4]?.value,
-                    "acciones": reglones[3][i]?.values[5]?.value,
+                    "código": reglones[3][i]?.values[0]?.value,
+                    "área": reglones[3][i]?.values[1]?.value,
+                    "temp.termómreferencia": reglones[3][i]?.values[2]?.value,
+                    "temp.termómevaluado": reglones[3][i]?.values[3]?.value,
+                    "desvío": reglones[3][i]?.values[4]?.value,
+                    "Acciones de corrección": reglones[3][i]?.values[5]?.value,
                 })
             }
 
