@@ -4,12 +4,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import { AntDesign } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
+import { API_URL } from '../functions/globalFunctions'
 
 export default function FormType3({ setViewInfo, navigation, setNotif }) {
 
     const [globalInputs, setGlobalInputs] = useState([]); // este es el array que tendra todos los inputs que se creen en el formulario
     const [inputsValues, setInputsValues] = useState([])
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
+    const [usuarios, setUsuarios] = useState([]); // este es el array que tendra todos los usuarios que se creen en el formulario
+    const [puesto, setPuesto] = useState(''); // aca se guarda el texto que se ingresa en el input de puesto
 
     const [observacionesInput, setObservacionesInput] = useState(''); // aca se guarda el texto que se ingresa en el input de observaciones
 
@@ -116,11 +119,28 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
             else if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Año")) {
                 array[i] = { name: cardToCheck.inputs[i].name, value: new Date().getFullYear() }
             }
-            else if (cardToCheck.inputs[i].tipo === "select") {
+            else if (cardToCheck.inputs[i].tipo === "select" || cardToCheck.inputs[i].tipo === "empleadosList") {
                 array[i] = { name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] }
             }
         }
         setInputsValues(array)
+
+        // hago un fetch a API_URL + '/api/rol1-2-3/' + businessName
+        fetch(API_URL + '/api/rol1-2-3/' + businessName)
+            .then(response => response.json())
+            .then(data => {
+                let array = []
+                for (let i = 0; i < data.length; i++) {
+                    array.push({
+                        name: data[i]?.fullName,
+                        puesto: data[i]?.puesto,
+                    })    
+                }
+                setUsuarios(array)                
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }, [])
 
     function updateData(index) {
@@ -448,6 +468,14 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                         </View>
                     )
                 }
+                else if (input.tipo === "puesto") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name + ": " + puesto}</Text>
+      
+                        </View>
+                    )
+                }
                 else if (input.tipo === "checkBox") {
                     return (
                         <View key={index} style={{ marginVertical: 40 }}>
@@ -533,6 +561,43 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                                 {input.options.map((option, index) => {
                                     return (
                                         <Picker.Item key={index} label={option.toLowerCase()} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "empleadosList") {
+                    return (
+                        <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <TouchableOpacity onPress={() => {
+                                console.log('valor: ', inputsValues)
+                            }}>
+                                <Text>Prueba</Text>
+                            </TouchableOpacity>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value}
+                                style={styles.userInput}
+                                editable={input.disabled ? false : true}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    // let array = [...inputsValues];
+                                    // creo una copia profunda
+                                    let array = JSON.parse(JSON.stringify(inputsValues));
+                                    if (itemValue.length && array[index]) {
+                                        // array[index].value = itemValue;
+                                        array[index] = { name: input.name, value: itemValue };
+                                        setPuesto(usuarios[itemIndex]?.puesto)
+                                        setInputsValues(array);
+                                    } else if (array[index]) {
+                                        array[index] = { name: input.name, value: '' };
+                                        setInputsValues(array);
+                                    }
+                                }}
+                            >
+                                {usuarios.map((user, index2) => {
+                                    return (
+                                        <Picker.Item key={index2} label={user?.name} value={user?.name} />
                                     )
                                 })}
                             </Picker>

@@ -560,7 +560,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                 if (cardToCheck.exception2) {
                     let inputFinal = [];
                     for (let i = 0; i < copiaInputsValue[0].value.length; i++) {
-                        inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productoDecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
+                        inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productodecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
                     }
                     objeto.inputs = inputFinal
                 } else {

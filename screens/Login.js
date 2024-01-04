@@ -232,7 +232,6 @@ export default function Login({ navigation }) {
                                                             return item.fechaInicio
                                                         } else {
                                                             // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023
-                                                            console.log('proxFecha: ', proxFecha.fecha)
                                                             return proxFecha?.fecha
                                                         }
                                                     }

@@ -363,9 +363,9 @@ export const formulariosData = [
             { name: "Mes", tipo: "picker", options: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"], subManejador: true },
             // hago otro picker pero con los años de 2023 a 2040 en array
             { name: "Año", tipo: "picker", options: ["2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035", "2036", "2037", "2038", "2039", "2040"], manejador: true },
-            { name: "Empleado", tipo: "select", options: ['Andres', 'Eric', 'Fernando', 'Daniela', 'Ivonne'] },
+            { name: "Empleado", tipo: "empleadosList", options: [] },
             { name: "Sector", tipo: "text" },
-            { name: "Puesto", disabled: true, tipo: "select", options: [' '] },
+            { name: "Puesto", tipo: "puesto" },
             {
                 name: "chequeo de uso E.P.P", tipo: "checkBox", options: [
                     "Ropa de trabajo",
@@ -484,7 +484,7 @@ export const formulariosData = [
                         { name: "Turno", tipo: "select", options: ['Turno Mañana', 'Turno Tarde', 'Turno Noche'] },
                         { name: "Producto decomisado", tipo: "text" },
                         { name: "Cantidad", tipo: "text" },
-                        { name: "Causa", tipo: "select", options: ['Recall', 'Desvíos de proceso', 'Fuera fecha de vida util', 'Fuera de aptitud', 'Otras Causas'] }
+                        { name: "Causa", tipo: "select", options: ['Recall', 'Desvíos de Proceso', 'Fuera fecha de vida útil', 'Fuera de aptitud', 'Otras causas'] }
                     ]
             },
         ]

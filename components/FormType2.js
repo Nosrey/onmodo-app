@@ -132,7 +132,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                             },
                             {
                                 "name": "Producto decomisado",
-                                "value": objectToCheck.inputs[i].productoDecomisado
+                                "value": objectToCheck.inputs[i].productodecomisado
                             },
                             {
                                 "name": "Cantidad",
@@ -741,11 +741,24 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
             let inputFinal = [];
 
             for (let i = 0; i < reglones[0].length; i++) {
+                let fechaTemp = new Date(reglones[0][i]?.values[0]?.value);
+                if (fechaTemp.toString() !== "Invalid Date") {
+                    let year = fechaTemp.getFullYear();
+                    let month = fechaTemp.getMonth() + 1;
+                    let date = fechaTemp.getDate();
+                    // Agregar un cero al principio si el mes o el día son menores que 10
+                    month = month < 10 ? '0' + month : month;
+                    date = date < 10 ? '0' + date : date;
+                    fechaTemp = year + "-" + month + "-" + date;
+                } else {
+                    fechaTemp = "";
+                }
+
                 inputFinal.push({
                     "id": i,
-                    "fecha": reglones[0][i]?.values[0]?.value,
+                    "fecha": fechaTemp,
                     "turno": reglones[0][i]?.values[1]?.value,
-                    "productoDecomisado": reglones[0][i]?.values[2]?.value,
+                    "productodecomisado": reglones[0][i]?.values[2]?.value,
                     "cantidad": reglones[0][i]?.values[3]?.value,
                     "causa": reglones[0][i]?.values[4]?.value,
                 })
@@ -1215,7 +1228,28 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 if (cardToCheck.exception2) {
                     let inputFinal = [];
                     for (let i = 0; i < copiaInputsValue[0].value.length; i++) {
-                        inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productoDecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
+
+                        let fechaTemp = new Date(copiaInputsValue[0].value[i][0]?.value);
+                        if (fechaTemp.toString() !== "Invalid Date") {
+                            let year = fechaTemp.getFullYear();
+                            let month = fechaTemp.getMonth() + 1;
+                            let date = fechaTemp.getDate();
+                            // Agregar un cero al principio si el mes o el día son menores que 10
+                            month = month < 10 ? '0' + month : month;
+                            date = date < 10 ? '0' + date : date;
+                            fechaTemp = year + "-" + month + "-" + date;
+                        } else {
+                            fechaTemp = "";
+                        }
+
+                        inputFinal.push({
+                            id: i,
+                            fecha: fechaTemp,
+                            turno: copiaInputsValue[0].value[i][1].value,
+                            productodecomisado: copiaInputsValue[0].value[i][2].value,
+                            cantidad: copiaInputsValue[0].value[i][3].value,
+                            causa: copiaInputsValue[0].value[i][4].value
+                        })
                     }
                     objeto.inputs = inputFinal
                 } else {

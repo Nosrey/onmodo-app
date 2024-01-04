@@ -244,11 +244,7 @@ export default function FormulariosCargados({ navigation }) {
                                 entries: item?.entries
                             }
                         });
-
-                        console.log('itemToFormDetails: ', {
-                                ...formCoincidence,
-                                entries: item?.entries
-                            })
+                      
                         navigation.navigate('FormDetails');
                     },
                     entries: item.entries,

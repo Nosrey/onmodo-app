@@ -45,7 +45,7 @@ export default function FormView({ navigation }) {
                 let item
                 if (formulario.exception2) {
                     item = objectToCheck.inputs
-                    // item es igual  {"cantidad": "1", "causa": "Otras Causas", "fecha": "2023-10-30T18:28:31.479Z", "id": 0, "productoDecomisado": "1", "turno": "Turno Noche"}
+                    // item es igual  {"cantidad": "1", "causa": "Otras Causas", "fecha": "2023-10-30T18:28:31.479Z", "id": 0, "productodecomisado": "1", "turno": "Turno Noche"}
 
                     let itemTemp = []
                     for (let j = 0; j < item?.length; j++) {
@@ -53,7 +53,7 @@ export default function FormView({ navigation }) {
                             values: [
                                 { name: "fecha", value: item[j].fecha },
                                 { name: "turno", value: item[j].turno },
-                                { name: "productoDecomisado", value: item[j].productoDecomisado },
+                                { name: "productodecomisado", value: item[j].productodecomisado },
                                 { name: "cantidad", value: item[j].cantidad },
                                 { name: "causa", value: item[j].causa }
                             ]
@@ -74,7 +74,7 @@ export default function FormView({ navigation }) {
 
         // array:  [[{"values":[{"name":"Fecha","value":"2023-10-30T14:33:42.495Z"},{"name":"Vegetal a desinfectar","value":"1"},{"name":"Lavado","value":"No"},{"name":"Concentración","value":"No"},{"name":"Minutos","value":"2"},{"name":"Enjuague","value":"No"},{"name":"Acciones de correción","value":"3"},{"name":"Responsable","value":"4"}]}]]
 
-        // array:  [[{"values":[{"name":"cantidad","value":"1"},{"name":"causa","value":"Otras Causas"},{"name":"fecha","value":"2023-10-30T18:28:31.479Z"},{"name":"id","value":0},{"name":"productoDecomisado","value":"1"},{"name":"turno","value":"Turno Noche"}]}]]
+        // array:  [[{"values":[{"name":"cantidad","value":"1"},{"name":"causa","value":"Otras Causas"},{"name":"fecha","value":"2023-10-30T18:28:31.479Z"},{"name":"id","value":0},{"name":"productodecomisado","value":"1"},{"name":"turno","value":"Turno Noche"}]}]]
 
     }, [])
 

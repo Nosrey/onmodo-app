@@ -32,7 +32,6 @@ export default function FormCreate({ navigation }) {
     const [reglones, setReglones] = useState([]); 
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
-    console.log('cardToCheck', cardToCheck)
     const rol = useSelector((state) => state.rol);
     const editMode = useSelector((state) => state.editMode);
 
