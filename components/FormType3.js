@@ -9,7 +9,31 @@ import { API_URL } from '../functions/globalFunctions'
 export default function FormType3({ setViewInfo, navigation, setNotif }) {
 
     const [globalInputs, setGlobalInputs] = useState([]); // este es el array que tendra todos los inputs que se creen en el formulario
-    const [inputsValues, setInputsValues] = useState([])
+
+    const id = useSelector((state) => state.id);
+    const businessName = useSelector((state) => state.business);
+    const rol = useSelector((state) => state.rol);
+    const nombre = useSelector((state) => state.fullName);
+    const cardToCheck = useSelector((state) => state.cardToCheck);
+
+    // Inicializar inputsValues antes de renderizar el componente
+    let initialInputsValues = []
+    if (cardToCheck.title === 'Chequeo de uso de EPP') {
+        initialInputsValues = cardToCheck.inputs.map(input => {
+            if (input.tipo === "picker" && input.name === "Mes") {
+                return { name: input.name, value: new Date().toLocaleString('es-ES', { month: 'long' }).toLowerCase() };
+            } else if (input.tipo === "picker" && input.name === "Año") {
+                return { name: input.name, value: new Date().getFullYear() };
+            } else if (input.tipo === "select" || input.tipo === "empleadosList") {
+                return { name: input.name, value: input.options[0] };
+            } else {
+                return { name: input.name, value: '' };
+            }
+        }
+        );
+    }
+    console.log('initialInputsValues: ', initialInputsValues)
+    const [inputsValues, setInputsValues] = useState(initialInputsValues); // aca se guarda el texto que se ingresa en los inputs
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
     const [usuarios, setUsuarios] = useState([]); // este es el array que tendra todos los usuarios que se creen en el formulario
     const [puesto, setPuesto] = useState(''); // aca se guarda el texto que se ingresa en el input de puesto
@@ -35,12 +59,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
     const height10 = height * 0.1
     const height15 = height * 0.15
     const height20 = height * 0.2
-
-    const cardToCheck = useSelector((state) => state.cardToCheck);
-    const id = useSelector((state) => state.id);
-    const businessName = useSelector((state) => state.business);
-    const rol = useSelector((state) => state.rol);
-    const nombre = useSelector((state) => state.fullName);
 
     function handleInputChange(value, index, day, name) {
         let array = [...inputsValues];
@@ -117,6 +135,7 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 array[i] = { name: cardToCheck.inputs[i].name, value: new Date().toLocaleString('es-ES', { month: 'long' }).toLowerCase() }
             }
             else if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Año")) {
+                console.log('creando year¿', new Date().getFullYear())
                 array[i] = { name: cardToCheck.inputs[i].name, value: new Date().getFullYear() }
             }
             else if (cardToCheck.inputs[i].tipo === "select" || cardToCheck.inputs[i].tipo === "empleadosList") {
@@ -332,6 +351,8 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                                 }
                             }
                             if (entrar2) arrayOptions.push({ name: cardToCheck.inputs[indexCheckBox].options[k], array: arrayDays })
+                            else arrayOptions.push({name: cardToCheck.inputs[indexCheckBox].options[k], array: Array.from({ length: 31 }, (_, i) => false)})
+                          
                         }
                         if (entrar) mesesFinal.push({ name: (j).toString(), array: arrayOptions })
                     }
@@ -369,19 +390,18 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                     let array = []
                     for (let i = 0; i < cardToCheck.inputs.length; i++) {
                         if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Mes")) {
-                            array[i] = { value: new Date().toLocaleString('default', { month: 'long' }) }
+                            array[i] = { name: cardToCheck.inputs[i].name, value: new Date().toLocaleString('es-ES', { month: 'long' }).toLowerCase() }
                         }
                         else if ((cardToCheck.inputs[i].tipo === "picker") && (cardToCheck.inputs[i].name === "Año")) {
-                            array[i] = { value: new Date().getFullYear() }
+                            array[i] = { name: cardToCheck.inputs[i].name, value: new Date().getFullYear() }
                         }
-                        else if (cardToCheck.inputs[i].tipo === "select") {
+                        else if (cardToCheck.inputs[i].tipo === "select" || cardToCheck.inputs[i].tipo === "empleadosList") {
                             array[i] = { name: cardToCheck.inputs[i].name, value: cardToCheck.inputs[i].options[0] }
                         }
                     }
-
                     setInputsValues(array)
                     // voy a la pagina anterior
-                    navigation.goBack();
+                    // navigation.goBack();
 
                     setSaving(false);
 
@@ -410,6 +430,11 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                     }}>VER MÁS</Text>
                 </View>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+                console.log('valor de año: ', inputsValues)
+            }}>
+               <Text>Prueba</Text>
+            </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "picker") {
@@ -417,7 +442,8 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                         <View key={index}>
                             <Text style={styles.normalText}>{input.name}</Text>
                             <Picker
-                                selectedValue={inputsValues[index]?.value}
+                            // en string inputsValues[index]?.value
+                                selectedValue={inputsValues[index]?.value.toString()}
                                 onValueChange={(itemValue) => {
                                     let array = [...inputsValues];
                                     array[index] = { value: itemValue };
@@ -425,7 +451,9 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                                 }}
                                 style={styles.userInput}>
                                 {input.options.map((option) => (
-                                    <Picker.Item key={option} label={option} value={option.toLowerCase()} />
+                                    <Picker.Item key={option} label={option} value={
+                                        (typeof option === "string" ? option.toLowerCase() : option)
+                                    } />
                                 ))}
                             </Picker>
                         </View>

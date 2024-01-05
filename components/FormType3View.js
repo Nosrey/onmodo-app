@@ -4,12 +4,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import { AntDesign } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
+import { API_URL } from '../functions/globalFunctions'
 
 export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
     const [globalInputs, setGlobalInputs] = useState([]); // este es el array que tendra todos los inputs que se creen en el formulario
     const [inputsValues, setInputsValues] = useState([])
     const [saving, setSaving] = useState(false); // si saving es true, se muestra un mensaje de guardando... y se deshabilita el boton de guardar
+    const [puesto, setPuesto] = useState(''); // aca se guarda el texto que se ingresa en el input de puesto
+    const [usuarios, setUsuarios] = useState([]); // este es el array que tendra todos los usuarios que se creen en el formulario
 
     const [observacionesInput, setObservacionesInput] = useState(''); // aca se guarda el texto que se ingresa en el input de observaciones
 
@@ -146,7 +149,19 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             array[4] = { value: objectToCheck?.puesto }
             array[6] = { value: objectToCheck?.observaciones }
 
-            let indexMes = meses.findIndex((element) => element === objectToCheck.mes?.toLowerCase())
+            let itemMes = meses.findIndex((element) => element === objectToCheck.mes?.toLowerCase())
+            let añoObject = objectToCheck.inputs.find((element) => element.name === objectToCheck.año.toString())
+            let indexMes = añoObject?.meses.findIndex((element) => element.name === itemMes.toString())
+
+            if (indexMes === -1) {
+                // El mes no existe en el objeto, por lo que debes manejar este caso aquí.
+                // Por ejemplo, puedes establecer indexMes en 0, o puedes saltarte el resto del código en este bloque.
+                indexMes = 0;
+            }
+
+            console.log('objectToCheck.año - 2023: ', objectToCheck.año - 2023)
+            console.log('indexMes: ', indexMes)
+
             array[5] = { value: [] }
             array[5].value[objectToCheck.año - 2023] = []
             array[5].value[objectToCheck.año - 2023][indexMes] = []
@@ -160,10 +175,8 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             array[5].value[objectToCheck.año - 2023][indexMes][7] = []
             array[5].value[objectToCheck.año - 2023][indexMes][8] = []
             
-            console.log('entrando a array de checkbox')
-            
-            let arrayDeCheckBox = objectToCheck?.inputs?.[0]?.meses?.[0]?.array ? [...objectToCheck.inputs[0].meses[0].array] : [];
-            console.log('fase 1')
+            let arrayDeCheckBox = objectToCheck?.inputs?.[objectToCheck.año - 2023]?.meses?.[indexMes]?.array ? [...objectToCheck.inputs[objectToCheck.año - 2023].meses[indexMes].array] : [];
+    
             let count = 0
             while (arrayDeCheckBox.length < 9) {
                 if (arrayDeCheckBox[count]?.name === "Ropa de trabajo") count++
@@ -222,31 +235,42 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                     continue
                 }
             }
-            console.log('fase 2')
-            console.log(' arrayDeCheckBox', arrayDeCheckBox)
+            console.log('arrayDeCheckBox: ', arrayDeCheckBox)
             // un for 31 veces
             for (let h = 0; h < arrayDeCheckBox.length; h++) {
-                console.log('h', h)
                 for (let i = 0; i < 31; i++) {
                     let boolean = false                    
                     if (arrayDeCheckBox[h] && arrayDeCheckBox[h].array[i] == true) boolean = true
                     if (array[5] && array[5].value && array[5].value[objectToCheck.año - 2023] && array[5].value[objectToCheck.año - 2023][indexMes] && array[5].value[objectToCheck.año - 2023][indexMes][h]) {
                         array[5].value[objectToCheck.año - 2023][indexMes][h][i] = boolean;
                     } else {
-                        // Código a ejecutar cuando array[5], value, array[5].value[objectToCheck.año - 2023], array[5].value[objectToCheck.año - 2023][indexMes] o array[5].value[objectToCheck.año - 2023][indexMes][h] son undefined
-                        console.log('salto la excepcion')
+                        // Código a ejecutar cuando array[5], value, array[5].value[objectToCheck.año - 2023], array[5].value[objectToCheck.año - 2023][indexMes] o array[5].value[objectToCheck.año - 2023][indexMes][h] son undefined                        
                     }
                 }
             }
 
-
-
-            
-
             setInputsValues(array)
-            console.log('objectToCheck: ', JSON.stringify(objectToCheck))
-            console.log('array', array)
+            // console.log('objectToCheck: ', JSON.stringify(objectToCheck))
+            // console.log('array', array)
         }
+
+          // hago un fetch a API_URL + '/api/rol1-2-3/' + businessName
+          fetch(API_URL + '/api/rol1-2-3/' + businessName)
+          .then(response => response.json())
+          .then(data => {
+              let array = []
+              for (let i = 0; i < data.length; i++) {
+                  array.push({
+                      name: data[i]?.fullName,
+                      puesto: data[i]?.puesto,
+                  })    
+              }
+              setUsuarios(array)      
+              array.find((element) => element.name === objectToCheck?.empleado) ? setPuesto(array.find((element) => element.name === objectToCheck?.empleado).puesto) : setPuesto('')
+          })
+          .catch((error) => {
+              console.error('Error:', error);
+          });
     }, [])
 
 
@@ -540,6 +564,16 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                     }}>VER MÁS</Text>
                 </View>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+                console.log('inputsValues: ', inputsValues)
+            }}>
+
+                <Text style={{
+                        // fuente color azul rgb(25, 118, 210) pero en hex
+                        color: '#1976D2',
+                    }}>PRUEBA</Text>
+         
+            </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "picker") {
@@ -547,12 +581,13 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                         <View key={index}>
                             <Text style={styles.normalText}>{input.name}</Text>
                             <Picker
-                                selectedValue={inputsValues[index]?.value}
+                                enabled={false}
+                                selectedValue={inputsValues[index]?.value.toString().toLowerCase()}
                                 editable={false}
                                 onValueChange={(itemValue) => {
                                     let array = [...inputsValues];
                                     array[index] = { value: itemValue };
-                                    // setInputsValues(array);
+                                    setInputsValues(array);
                                 }}
                                 style={styles.userInput}>
                                 {input.options.map((option) => (
@@ -578,6 +613,45 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                                 }}
                                 value={inputsValues[index]?.value}
                             />
+                        </View>
+                    )
+                }
+                else if (input.tipo === "puesto") {
+                    return (
+                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name + ": " + puesto}</Text>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "empleadosList") {
+                    return (
+                        <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>            
+                            <Picker
+                                selectedValue={inputsValues[index]?.value}
+                                style={styles.userInput}
+                                enabled={editMode ? true : false}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    // let array = [...inputsValues];
+                                    // creo una copia profunda
+                                    let array = JSON.parse(JSON.stringify(inputsValues));
+                                    if (itemValue.length && array[index]) {
+                                        // array[index].value = itemValue;
+                                        array[index] = { name: input.name, value: itemValue };
+                                        setPuesto(usuarios[itemIndex]?.puesto)
+                                        setInputsValues(array);
+                                    } else if (array[index]) {
+                                        array[index] = { name: input.name, value: '' };
+                                        setInputsValues(array);
+                                    }
+                                }}
+                            >
+                                {usuarios.map((user, index2) => {
+                                    return (
+                                        <Picker.Item key={index2} label={user?.name} value={user?.name} />
+                                    )
+                                })}
+                            </Picker>
                         </View>
                     )
                 }
@@ -656,6 +730,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                                                     }]}>
                                                         <Checkbox
                                                             style={{}}
+                                                            enabled={editMode ? true : false}
                                                             color={(editMode ? handleCheckColor(day, index, index2) : 'gray')}
                                                             value={handleCheckValue(day, index, index2)}
                                                             onValueChange={(value) => (editMode ? handleCheckChange(value, day, index, index2) : null)}
@@ -677,7 +752,8 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                             <Picker
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
-                                editable={(editMode && !input.disabled ? true : false)}
+                                enabled={false}
+                                
                                 onValueChange={(itemValue, itemIndex) => {
                                     if (editMode && !input.disabled) {
                                         let array = [...inputsValues];

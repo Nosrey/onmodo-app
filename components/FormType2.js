@@ -1370,6 +1370,16 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     }}>VER MÁS</Text>
                 </View>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+                console.log('reglones: ', JSON.stringify(reglones))
+            }}>
+
+                <Text style={{
+                    // fuente color azul rgb(25, 118, 210) pero en hex
+                    color: '#1976D2',
+                }}>PRUEBA</Text>
+
+            </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "date") {
