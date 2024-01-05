@@ -393,7 +393,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     console.log('entre a bidones')
                     let array = objectToCheck.inputs.map((input, index) => ({
                         values: [
-                            { name: "Fecha", value: input.fecha },
+                            { name: "Fecha", value: new Date(input.fecha) },
                             { name: "Cantidad de litros entregados", value: input.cantidaddelitrosentregados },
                             { name: "Responsable de entrega", value: input.responsabledeentrega },
                             { name: "Responsable de retiro", value: input.responsablederetiro },
@@ -1150,14 +1150,12 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     "asistentes": [],
                     "observaciones": inputsValues[21]?.value,
                     "instructor": inputsValues[22]?.value,
-                }
-                // "firma": inputsValues[23]?.value,
+                    "firma": inputsValues[23]?.value,
+                }           
 
-                if (inputsValues[23]?.value?.uri) {
-                    inputsFinal = {
-                        ...inputsFinal,
-                        firma: inputsValues[23]?.value
-                    }
+                // reviso si en .firma hay algo (y algo en .firma.uri) y si no es asi substraigno esa propiedad
+                if (!inputsFinal.firma || !inputsFinal.firma.uri) {
+                    delete inputsFinal.firma
                 }
 
                 console.log('inputsValues: ', JSON.stringify(inputsValues))

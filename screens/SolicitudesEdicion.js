@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getTitle } from '../functions/globalFunctions';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
-import FiltradorPorEstado from '../components/FiltradorPorEstado';
+import FiltradorPorEstado from '../components/FiltradorPorEstadoSolicitudesEdicion';
 // importo los iconos de MaterialCommunityIcons
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 // importo icons de eye
@@ -21,6 +21,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
 import { API_URL } from '../functions/globalFunctions'
+// importo loading.png
+import loading from '../assets/loading.png';
 
 export default SolicitudesEdicion = ({ navigation }) => {
     // traigo business de redux
@@ -38,6 +40,7 @@ export default SolicitudesEdicion = ({ navigation }) => {
     const [indexSelected, setIndexSelected] = useState(0);
     const [paginaActual, setPaginaActual] = useState(1);
     const [paginaTotal, setPaginaTotal] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
     
     const elementsPerPage = 8
 
@@ -156,6 +159,7 @@ export default SolicitudesEdicion = ({ navigation }) => {
                 // en base a que cada pagina tiene elementsPerPage elementos, calculo la cantidad de paginas que tendre en arrayFinal y la asigno a paginaTotal
                 setPaginaTotal(Math.ceil(arrayFinal.length / elementsPerPage));
                 setLegajos(arrayFinal);
+                setIsLoading(false)
             })
             .catch((error) => console.error(error));
     }, []);
@@ -261,7 +265,15 @@ export default SolicitudesEdicion = ({ navigation }) => {
             <View>
                 <Header cajaText={cajaText} unElemento={true} />
                 {/* <Buscador inputValue={inputValue} handleInputChange={handleInputChange} /> */}
-                <FiltradorPorEstado states={legajosFound} setStates={setLegajosFound} statesOriginal={legajos} />
+                <FiltradorPorEstado states={legajosFound} setStates={setLegajosFound} statesOriginal={legajos} params={
+                    {
+                        paginaActual: paginaActual,
+                        setPaginaActual: setPaginaActual,
+                        paginaTotal: paginaTotal,
+                        setPaginaTotal: setPaginaTotal,
+                        elementsPerPage: elementsPerPage,
+                    }
+                } />
             </View>
 
             <View style={{ display: 'flex', flexDirection: 'row', alignContent: 'center', justifyContent: 'space-between', marginTop: 15 }}>
@@ -270,6 +282,8 @@ export default SolicitudesEdicion = ({ navigation }) => {
                 <Text style={{ textAlign: 'left', fontSize: 12, width: "25%", fontFamily: "GothamRoundedMedium", color: "#636363" }}>Estado</Text>
                 <Text style={{ textAlign: 'left', fontSize: 12, width: "25%", fontFamily: "GothamRoundedMedium", color: "#636363" }}></Text>
             </View>
+
+            <Image source={loading} style={{ width: 150, height: 150, marginTop: 50, alignSelf: 'center', display: (isLoading ? 'flex' : 'none') }} />
 
             <FlatList
                 // hago que en data solo se muestre de 10 en elementsPerPage en base a la pagina actual

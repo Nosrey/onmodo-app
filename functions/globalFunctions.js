@@ -539,7 +539,7 @@ export const formulariosData = [
                     { name: "Cantidad Comprada", tipo: "textTop", cabecera: "Cantidad (Kg-Un)" }, { name: "Cantidad Recibida", tipo: "textFooter" },
                     { name: "T° de Carga", tipo: "textTop", cabecera: "Temperatura Alimento (ºC)" }, { name: "T° de Recepcion", tipo: "textFooter" },
                     { name: "T° de Carga", tipo: "textTop", cabecera: "Temperatura Caja Camión (ºC)" }, { name: "T° de Recepcion", tipo: "textFooter" },
-                    { name: "Dentro de vida útil", tipo: "textTop", cabecera: "Rotulación" }, { name: "Nro. lote", tipo: "textMiddle" }, { name: "Fecha vto.", tipo: "textFooter" },
+                    { name: "Dentro de vida útil", tipo: "textTop", cabecera: "Rotulación" }, { name: "Nro. lote", tipo: "textMiddle" }, { name: "Fecha vto.", tipo: "dateFooter" },
                     { name: "Recibido", tipo: "textTop", cabecera: "Acciones de corrección tomadas" }, { name: "Motivo del rechazo", tipo: "textFooter" },
                 ]
             }
@@ -1205,8 +1205,8 @@ export const registroCapacitacion = async (values, setSaving, rol, id, businessN
             fileName = values['firma'].name; // Asume que el nombre del archivo es 'firma.jpeg'
         }
 
-        let fileResponse = await fetch(fileUri);
-        let fileBlob = await fileResponse.blob();
+        // let fileResponse = await fetch(fileUri);
+        // let fileBlob = await fileResponse.blob();
 
         for (const key in values) {
             if (key === 'firma' && values.firma) {
@@ -1488,18 +1488,39 @@ export const entregabidones = async (values, id) => {
     for (let i = 0; i < values.length; i++) {
         let objetoIndividual = {}
         for (let j = 0; j < values[i].length; j++) {
-            if (values[i][j].values[0].name === "Fecha") objetoIndividual = { ...objetoIndividual, fecha: values[i][j].values[0].value }
+            if (values[i][j].values[0].name === "Fecha") {
+                // tengo la fecha en formato "2024-01-05T05:17:06.658Z" y la convierto a "2024-01-05"
+                // verifico primero si no esta vacio
+                if (values[i][j].values[0].value !== "" && values[i][j].values[0].value !== undefined) {
+                    // creo una fecha con el valor
+                    let fechaTemp = new Date(values[i][j].values[0].value)
+                    // obtengo el dia
+                    let dia = fechaTemp.getDate()
+                    // obtengo el mes
+                    let mes = fechaTemp.getMonth() + 1
+                    // obtengo el año
+                    let año = fechaTemp.getFullYear()
+                    // creo un string con el formato que quiero
+                    // reviso si los valores son menores a 10 para agregarle un 0
+                    let diaString = dia < 10 ? '0' + dia : dia
+                    let mesString = mes < 10 ? '0' + mes : mes
+                    let fechaString = año + '-' + mesString + '-' + diaString
+                    objetoIndividual = { ...objetoIndividual, fecha: fechaString }
+                } else {
+                    objetoIndividual = { ...objetoIndividual, fecha: '' }
+                }
+            }
             if (values[i][j].values[1].name === "Cantidad de litros entregados") objetoIndividual = { ...objetoIndividual, cantidaddelitrosentregados: values[i][j].values[1].value }
             if (values[i][j].values[2].name === "Responsable de entrega") objetoIndividual = { ...objetoIndividual, responsabledeentrega: values[i][j].values[2].value }
             if (values[i][j].values[3].name === "Responsable de retiro") objetoIndividual = { ...objetoIndividual, responsablederetiro: values[i][j].values[3].value }
-            if (values[i][j].values[4].name === "foto de transporte" || values[i][j].values[4].name === "Selecciona una foto de transporte") {     
+            if (values[i][j].values[4].name === "foto de transporte" || values[i][j].values[4].name === "Selecciona una foto de transporte") {
                 // si es un objeto con typeof
                 if (typeof (values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value) === 'object') {
-                    arrayTransporte.push('obj')                    
+                    arrayTransporte.push('obj')
                 } else if (typeof (values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value) === 'string') {
-                    arrayTransporte.push((values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value))                    
+                    arrayTransporte.push((values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value))
                 } else {
-                    arrayTransporte.push(null)                
+                    arrayTransporte.push(null)
                 }
                 objetoIndividual = {
                     ...objetoIndividual, transporte: (values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value)
@@ -1518,10 +1539,11 @@ export const entregabidones = async (values, id) => {
                     ...objetoIndividual, disposiciónfinal: (values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value)
                 }
             }
+            objetoFinal.push(objetoIndividual)
+            objetoIndividual = {}
+            console.log('objetoFinal post proceso: ', JSON.stringify(objetoFinal))
         }
-        objetoFinal.push(objetoIndividual)
 
-        console.log('objetoFinal post proceso: ', JSON.stringify(objetoFinal))
  
         const propiedades = ['transporte', 'disposiciónfinal'];
 

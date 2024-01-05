@@ -279,7 +279,7 @@ export default function FormulariosCargados({ navigation }) {
             }>
                 <View style={styles.containerBox}>
                     {/* si cardFound.length es 0, muestro un mensaje de que no hay resultados */}
-                    {cardsFound.length == 0 ? <Text style={[styles.title, styles.notFoundMsg]}>No hay resultados</Text>
+                    {(inputValue.length ? cardsFiltered.length == 0 : cardsFound.length == 0) ? <Text style={[styles.title, styles.notFoundMsg]}>No hay resultados</Text>
                         : (
                             (inputValue.length ? cardsFiltered : cardsFound).map((boton, i) => {
                                 if (boton.entries?.length) {

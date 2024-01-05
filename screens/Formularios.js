@@ -7,7 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
-import Filtrador from '../components/Filtrador';
+import Filtrador from '../components/FiltradorFormularios';
 // importo getTitle de globalFunctions
 import { getTitle } from '../functions/globalFunctions';
 import ButtonBar from '../components/ButtonBar';

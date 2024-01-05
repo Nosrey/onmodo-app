@@ -1,5 +1,5 @@
 // creo un componente para que se muestre un popup donde confirmare una accion con dos botones de si o no
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,18 +13,26 @@ import dotOrange from '../assets/dotOrange.png'
 import dotRed from '../assets/dotRed.png'
 import * as ImagePicker from 'expo-image-picker';
 
+
 export default function CrearServicio({ navigation, params }) {
-    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked } = params
+    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked, dot, setDot } = params
     const [row, setRow] = useState([])
+    const scrollRef = useRef(null);
     const [inputsValueRow, setInputsValueRow] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
-    const [dot, setDot] = useState([])
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
 
     // un useEffect que se ejecute una sola vez y establezca row
     useEffect(() => {
-        setRow(cardToCheck.inputs[index].options)    
+        setRow(cardToCheck.inputs[index].options)
+        // scrolleo al inicio del formulario
     }, [])
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ x: 0, y: 0, animated: true })
+        }
+    }, [visible])
 
     useEffect(() => {
         if (row.length > 0) {
@@ -33,8 +41,8 @@ export default function CrearServicio({ navigation, params }) {
                 for (let i = 0; i < row.length; i++) {
                     if (row[i].tipo === "select") array.push({ name: row[i].name, value: row[i].options[0] })
                     else array.push({ name: row[i].name, value: '' })
-            }
-            setInputsValueRow(array);
+                }
+                setInputsValueRow(array);
             }
             else if (editionMode) {
                 if (index === indexPicked) {
@@ -56,7 +64,7 @@ export default function CrearServicio({ navigation, params }) {
                     setInputsValueRow(array)
                 }
             }
-            
+
         }
     }, [row, visible, reglones, editionMode])
 
@@ -239,7 +247,7 @@ export default function CrearServicio({ navigation, params }) {
     const pickImage = async (index) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // Solo imágenes
-            allowsEditing: true,            
+            allowsEditing: true,
             quality: 1,
             // tamaño cuadrado
             aspect: [1, 1],
@@ -248,7 +256,7 @@ export default function CrearServicio({ navigation, params }) {
         if (!result.canceled) {
             console.log('result: ', result.assets[0])
             let copiaInputsValueRow = [...inputsValueRow];
-            copiaInputsValueRow[index] = {...copiaInputsValueRow[index], value: result.assets[0].uri, objeto: result.assets[0] };
+            copiaInputsValueRow[index] = { ...copiaInputsValueRow[index], value: result.assets[0].uri, objeto: result.assets[0] };
             setInputsValueRow(copiaInputsValueRow);
         }
     }
@@ -282,7 +290,7 @@ export default function CrearServicio({ navigation, params }) {
                     }} />
                 </TouchableOpacity>
             </View>
-            <ScrollView style={{ paddingHorizontal: 10 }}>
+            <ScrollView ref={scrollRef} style={{ paddingHorizontal: 10 }}>
                 {/* mapeo el array de row y si es tipo text o tipo date creare un componente diferente */}
                 {row?.map((input, index) => {
                     if (input.tipo === "date") {
@@ -417,9 +425,9 @@ export default function CrearServicio({ navigation, params }) {
                         return (
                             <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{"Selecciona una " + row[index].name}</Text>
-                                <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                     <Text>{inputsValueRow[index]?.value}</Text>
-        
+
                                     <Image source={{ uri: (inputsValueRow[index]?.value.length ? inputsValueRow[index]?.value : null) }} style={{ width: 200, height: 200, marginVertical: 10, marginBottom: 20, display: (inputsValueRow[index]?.value ? 'flex' : 'none') }} />
                                     <TouchableOpacity onPress={() => pickImage(index)} style={[buttonFooterStyle, { width: "40%" }]}>
                                         <Text style={[styles.buttonText]}>{(inputsValueRow[index]?.value ? "Cambiar Imagen" : "Cargar Imagen")}</Text>

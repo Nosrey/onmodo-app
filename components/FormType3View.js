@@ -135,7 +135,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
                 setInputsValues(array)
             }
-        } 
+        }
         else if (cardToCheck.title === "Chequeo de uso de EPP" && inputsValues.length === 0) {
             let array = []
 
@@ -174,9 +174,9 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             array[5].value[objectToCheck.año - 2023][indexMes][6] = []
             array[5].value[objectToCheck.año - 2023][indexMes][7] = []
             array[5].value[objectToCheck.año - 2023][indexMes][8] = []
-            
+
             let arrayDeCheckBox = objectToCheck?.inputs?.[objectToCheck.año - 2023]?.meses?.[indexMes]?.array ? [...objectToCheck.inputs[objectToCheck.año - 2023].meses[indexMes].array] : [];
-    
+
             let count = 0
             while (arrayDeCheckBox.length < 9) {
                 if (arrayDeCheckBox[count]?.name === "Ropa de trabajo") count++
@@ -239,7 +239,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             // un for 31 veces
             for (let h = 0; h < arrayDeCheckBox.length; h++) {
                 for (let i = 0; i < 31; i++) {
-                    let boolean = false                    
+                    let boolean = false
                     if (arrayDeCheckBox[h] && arrayDeCheckBox[h].array[i] == true) boolean = true
                     if (array[5] && array[5].value && array[5].value[objectToCheck.año - 2023] && array[5].value[objectToCheck.año - 2023][indexMes] && array[5].value[objectToCheck.año - 2023][indexMes][h]) {
                         array[5].value[objectToCheck.año - 2023][indexMes][h][i] = boolean;
@@ -254,23 +254,23 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             // console.log('array', array)
         }
 
-          // hago un fetch a API_URL + '/api/rol1-2-3/' + businessName
-          fetch(API_URL + '/api/rol1-2-3/' + businessName)
-          .then(response => response.json())
-          .then(data => {
-              let array = []
-              for (let i = 0; i < data.length; i++) {
-                  array.push({
-                      name: data[i]?.fullName,
-                      puesto: data[i]?.puesto,
-                  })    
-              }
-              setUsuarios(array)      
-              array.find((element) => element.name === objectToCheck?.empleado) ? setPuesto(array.find((element) => element.name === objectToCheck?.empleado).puesto) : setPuesto('')
-          })
-          .catch((error) => {
-              console.error('Error:', error);
-          });
+        // hago un fetch a API_URL + '/api/rol1-2-3/' + businessName
+        fetch(API_URL + '/api/rol1-2-3/' + businessName)
+            .then(response => response.json())
+            .then(data => {
+                let array = []
+                for (let i = 0; i < data.length; i++) {
+                    array.push({
+                        name: data[i]?.fullName,
+                        puesto: data[i]?.puesto,
+                    })
+                }
+                setUsuarios(array)
+                array.find((element) => element.name === objectToCheck?.empleado) ? setPuesto(array.find((element) => element.name === objectToCheck?.empleado).puesto) : setPuesto('')
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }, [])
 
 
@@ -569,10 +569,10 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             }}>
 
                 <Text style={{
-                        // fuente color azul rgb(25, 118, 210) pero en hex
-                        color: '#1976D2',
-                    }}>PRUEBA</Text>
-         
+                    // fuente color azul rgb(25, 118, 210) pero en hex
+                    color: '#1976D2',
+                }}>PRUEBA</Text>
+
             </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {
@@ -626,7 +626,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                 else if (input.tipo === "empleadosList") {
                     return (
                         <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>            
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 selectedValue={inputsValues[index]?.value}
                                 style={styles.userInput}
@@ -753,7 +753,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
                                 enabled={false}
-                                
+
                                 onValueChange={(itemValue, itemIndex) => {
                                     if (editMode && !input.disabled) {
                                         let array = [...inputsValues];
@@ -777,6 +777,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                         <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                enabled={false}
                                 selectedValue={inputsValues[index]?.value?.toLowerCase()}
                                 style={styles.userInput}
                                 editable={true}
@@ -803,7 +804,7 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
 
             {/* para guardar los datos */}
             <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 20, display: (editMode ? 'flex' : 'none') }} />
-            <TouchableOpacity style={[styles.buttonForm, {display: (editMode ? 'flex' : 'none')}]} onPress={(() => handleSaveButton())}>
+            <TouchableOpacity style={[styles.buttonForm, { display: (editMode ? 'flex' : 'none') }]} onPress={(() => handleSaveButton())}>
                 <Text style={styles.buttonFormText}>
                     Actualizar
                 </Text>

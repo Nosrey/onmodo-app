@@ -1,5 +1,5 @@
 // creo un componente para que se muestre un popup donde confirmare una accion con dos botones de si o no
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,10 +13,11 @@ import dotOrange from '../assets/dotOrange.png'
 import dotRed from '../assets/dotRed.png'
 
 export default function CrearServicio({ navigation, params }) {
-    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked } = params
+    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked, dot, setDot } = params
     const [row, setRow] = useState([])
+    const scrollRef = useRef(null);
     const [inputsValueRow, setInputsValueRow] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
-    const [dot, setDot] = useState([])
+    
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
 
@@ -24,6 +25,12 @@ export default function CrearServicio({ navigation, params }) {
     useEffect(() => {
         setRow(cardToCheck.inputs[index].options)
     }, [])
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ x: 0, y: 0, animated: true })
+        }
+    }, [visible])
 
     useEffect(() => {
         if (row.length > 0) {
@@ -264,7 +271,7 @@ export default function CrearServicio({ navigation, params }) {
                     }} />
                 </TouchableOpacity>
             </View>
-            <ScrollView style={{ paddingHorizontal: 10 }}>
+            <ScrollView ref={scrollRef} style={{ paddingHorizontal: 10 }}>
                 {/* mapeo el array de row y si es tipo text o tipo date creare un componente diferente */}
                 {row?.map((input, index) => {
                     if (input.tipo === "date") {
@@ -352,6 +359,7 @@ export default function CrearServicio({ navigation, params }) {
 
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                                 <Picker
+                                    enabled={false}
                                     editable={false}
                                     selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                     style={styles.userInput}
@@ -383,6 +391,7 @@ export default function CrearServicio({ navigation, params }) {
 
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                                 <Picker
+                                    enabled={false}
                                     editable={false}
                                     selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                     style={styles.userInput}
@@ -556,6 +565,7 @@ export default function CrearServicio({ navigation, params }) {
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                enabled={false}
                                 editable={false}
                                 selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                 style={styles.userInput}
@@ -575,6 +585,7 @@ export default function CrearServicio({ navigation, params }) {
                             <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                                 <Picker
+                                    enabled={false}
                                     editable={false}
                                     selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                     style={styles.userInput}

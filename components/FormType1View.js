@@ -155,6 +155,7 @@ export default function FormType1View({ navigation, setNotif }) {
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                enabled={false}
                                 editable={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}

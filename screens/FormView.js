@@ -31,6 +31,7 @@ export default function FormView({ navigation }) {
     const [inputsValuesFormType2, setInputsValuesFormType2] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
 
     const [reglones, setReglones] = useState([]); 
+    const [dot, setDot] = useState([])
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const objectToCheck = useSelector((state) => state.objectToCheck);
@@ -148,9 +149,17 @@ export default function FormView({ navigation }) {
             <ConfirmScreen navigation={navigation} params={paramsDelete}/>
 
             <BlackWindow visible={viewInfo} setVisible={setViewInfo} />
-            <InfoScreen navigation={navigation} params={paramsInfo} msg/>        
+            <InfoScreen navigation={navigation} params={paramsInfo} msg />
 
             <BlackWindow visible={viewCortinaNegra} setVisible={() => {
+                setDot([])
+                let visibleCopia = [...visibleForm];
+                // visibleCopia[index] = false;
+                visibleCopia.map((item, index) => {
+                    visibleCopia[index] = false;
+                })
+                setVisibleForm(visibleCopia);
+                setViewCortinaNegra(false)
                 setEditionMode(false)
             }} />
 
@@ -171,6 +180,8 @@ export default function FormView({ navigation }) {
                             editionMode: editionMode,
                             setEditionMode: setEditionMode,
                             reglonPicked: reglonPicked,
+                            dot: dot,
+                            setDot: setDot,
                         }} />
                     )
                 }
@@ -189,6 +200,9 @@ export default function FormView({ navigation }) {
                     <Text style={{
                         fontSize: 18,
                         fontFamily: "GothamRoundedBold",
+                        width: "70%",
+                        // que el texto salte de linea si es muy largo
+                        flexWrap: 'wrap',
                     }}>{cardToCheck.title}</Text>
                     <Feather name={editMode ? "edit-3" : "eye"} size={25} style={{
                         paddingRight: 20,                        

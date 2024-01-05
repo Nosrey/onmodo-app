@@ -30,6 +30,7 @@ export default function FormCreate({ navigation }) {
     const [inputsValuesFormType2, setInputsValuesFormType2] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
 
     const [reglones, setReglones] = useState([]); 
+    const [dot, setDot] = useState([])
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const rol = useSelector((state) => state.rol);
@@ -104,7 +105,15 @@ export default function FormCreate({ navigation }) {
             <InfoScreen navigation={navigation} params={paramsInfo} msg/>        
 
             <BlackWindow visible={viewCortinaNegra} setVisible={() => {
-                setEditionMode(false)
+                  setDot([])
+                  let visibleCopia = [...visibleForm];
+                  // visibleCopia[index] = false;
+                  visibleCopia.map((item, index) => {
+                      visibleCopia[index] = false;
+                  })
+                  setVisibleForm(visibleCopia);
+                  setViewCortinaNegra(false)
+                  setEditionMode(false)
             }} />
 
             
@@ -123,6 +132,8 @@ export default function FormCreate({ navigation }) {
                             editionMode: editionMode,
                             setEditionMode: setEditionMode,
                             reglonPicked: reglonPicked,
+                            dot: dot,
+                            setDot: setDot,
                         }} />
                     )
                 }
@@ -140,6 +151,9 @@ export default function FormCreate({ navigation }) {
                     <Text style={{
                         fontSize: 18,
                         fontFamily: "GothamRoundedBold",
+                        width: "70%",
+                        // que el texto salte de linea si es muy largo
+                        flexWrap: 'wrap',
                     }}>{cardToCheck.title}</Text>
                     <Feather name="edit-3" size={25} style={{
                         paddingRight: 20,

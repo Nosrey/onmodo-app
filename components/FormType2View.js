@@ -369,6 +369,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         { name: "foto de disposición final", value: objectToCheck.certificadoDisposicion[index] },
                     ]
                 }));
+               
                 // hago que esto se aplique 0.1s despues
                 setTimeout(() => {
                     setReglones([array]);
@@ -407,7 +408,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
             // recorro checkboxes de parsedObject y si el check es true entonces le asigno el valor "Si" y si es false le asigno "No"
             for (let i = 0; i < parsedObject.checkboxes.length; i++) {
-                if (parsedObject.checkboxes[i].check === true) {
+                if (parsedObject.checkboxes[i]?.check === true) {
                     parsedObject.checkboxes[i].check = "Si"
                 } else {
                     parsedObject.checkboxes[i].check = "No"
@@ -416,7 +417,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
             // ahora con materialEntregado y materialExpuesto hago lo mismo
             for (let i = 0; i < parsedObject.materialEntregado.length; i++) {
-                if (parsedObject.materialEntregado[i].check === true) {
+                if (parsedObject.materialEntregado[i]?.check === true) {
                     parsedObject.materialEntregado[i].check = "Si"
                 } else {
                     parsedObject.materialEntregado[i].check = "No"
@@ -424,7 +425,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             }
 
             for (let i = 0; i < parsedObject.materialExpuesto.length; i++) {
-                if (parsedObject.materialExpuesto[i].check === true) {
+                if (parsedObject.materialExpuesto[i]?.check === true) {
                     parsedObject.materialExpuesto[i].check = "Si"
                 } else {
                     parsedObject.materialExpuesto[i].check = "No"
@@ -438,23 +439,23 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                     { "name": "Fecha", "value": data.fecha },
                     { "name": "Hora", "value": data.tiempoDuracion },
                     { "name": "Tipo de capacitación (Selecciona la opción que corresponda)", "value": "" },
-                    { "name": "Inducción", "value": data.checkboxes[0].check },
-                    { "name": "Campaña", "value": data.checkboxes[1].check },
-                    { "name": "Entrenamiento Puesto de trabajo", "value": data.checkboxes[2].check },
-                    { "name": "Capacitaciones gubernamentales", "value": data.checkboxes[3].check },
-                    { "name": "Capacitación sobre Normas o Certificaciones", "value": data.checkboxes[4].check },
-                    { "name": "Cierre Auditoría", "value": data.checkboxes[5].check },
+                    { "name": "Inducción", "value": data.checkboxes[0]?.check },
+                    { "name": "Campaña", "value": data.checkboxes[1]?.check },
+                    { "name": "Entrenamiento Puesto de trabajo", "value": data.checkboxes[2]?.check },
+                    { "name": "Capacitaciones gubernamentales", "value": data.checkboxes[3]?.check },
+                    { "name": "Capacitación sobre Normas o Certificaciones", "value": data.checkboxes[4]?.check },
+                    { "name": "Cierre Auditoría", "value": data.checkboxes[5]?.check },
                     { "name": "Temas dados", "value": data.temas },
                     { "name": "Material didáctico Entregado", "value": "" },
-                    { "name": "Manual /instructivo", "value": data.materialEntregado[0].check },
-                    { "name": "Folleto", "value": data.materialEntregado[1].check },
-                    { "name": "Procedimiento", "value": data.materialEntregado[2].check },
-                    { "name": "Otros", "value": data.materialEntregado[3].check, value2: data.materialEntregado[3].desc },
+                    { "name": "Manual /instructivo", "value": data.materialEntregado[0]?.check },
+                    { "name": "Folleto", "value": data.materialEntregado[1]?.check },
+                    { "name": "Procedimiento", "value": data.materialEntregado[2]?.check },
+                    { "name": "Otros", "value": data.materialEntregado[3]?.check, value2: data.materialEntregado[3]?.desc },
                     { "name": "Material didáctico Expuesto", "value": "" },
-                    { "name": "Video", "value": data.materialExpuesto[0].check },
-                    { "name": "Filminas", "value": data.materialExpuesto[1].check },
-                    { "name": "Disertación", "value": data.materialExpuesto[2].check },
-                    { "name": "Otros", "value": data.materialExpuesto[3].check, value2: data.materialExpuesto[3].desc },
+                    { "name": "Video", "value": data.materialExpuesto[0]?.check },
+                    { "name": "Filminas", "value": data.materialExpuesto[1]?.check },
+                    { "name": "Disertación", "value": data.materialExpuesto[2]?.check },
+                    { "name": "Otros", "value": data.materialExpuesto[3]?.check, value2: data.materialExpuesto[3]?.desc },
                     { "name": "ASISTENTES", "value": "" },
                     { "name": "Observaciones", "value": data.observaciones },
                     { "name": "Instructor", "value": data.instructor },
@@ -787,7 +788,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         <View key={index} style={{ marginTop: 5, marginBottom: 20, alignItems: 'center' }} >
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 10 }}>{input.name}</Text>
                             <Image
-                                source={{ uri: inputsValues[index]?.value }}
+                                source={inputsValues[index]?.value ? { uri: inputsValues[index]?.value } : null}
                                 style={
                                     {
                                         width: 200,
@@ -808,6 +809,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                enabled={false}
                                 editable={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
@@ -833,6 +835,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 editable={false}
+                                enabled={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
                                 onValueChange={(itemValue, itemIndex) => {

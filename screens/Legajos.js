@@ -22,6 +22,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { PUESTOS_N1, PUESTOS_N2, API_URL } from '../functions/globalFunctions';
 import Notification from '../components/Notification';
 import { FontAwesome5 } from '@expo/vector-icons';
+import loading from '../assets/loading.png';
 
 export default function Legajos({ navigation }) {
     // traigo el dispatch
@@ -36,6 +37,7 @@ export default function Legajos({ navigation }) {
     const [update, setUpdate] = useState(false);
     const [viewDeleteLegajo, setViewDeleteLegajo] = useState(false);
     const [legajoSelected, setLegajoSelected] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
 
     const [paginaActual, setPaginaActual] = useState(1);
     const [paginaTotal, setPaginaTotal] = useState(1);
@@ -44,7 +46,8 @@ export default function Legajos({ navigation }) {
 
     useEffect(() => {
         // hago un fetch a la url API_URL + rol + :business
-        fetch(API_URL + '/api' + (rol === 2 ? '/rol1' : rol === 3 ? '/rol1-2' : '/rol1-2-3') + `/${business}`, {
+        // fetch(API_URL + '/api' + (rol === 2 ? '/rol1' : rol === 3 ? '/rol1-2' : '/rol1-2-3') + `/${business}`, {
+        fetch(API_URL + '/api' + '/rol1-2-3' + `/${business}`, {
             // tipo get
             method: 'GET',
         })
@@ -75,6 +78,7 @@ export default function Legajos({ navigation }) {
             .then(() => {
                 // seteo el update en false
                 setUpdate(false);
+                setIsLoading(false)
             })
             .catch((error) => {
                 setUpdate(false);
@@ -132,24 +136,24 @@ export default function Legajos({ navigation }) {
     }
 
     function handleViewForms(item) {
-        let formulariosLegajos = { entries: [], title: "Formularios cargados de Legajo"};
+        let formulariosLegajos = { entries: [], title: "Formularios cargados de Legajo" };
         // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
         for (const [key, value] of Object.entries(item)) {
             if (Array.isArray(value) && key !== 'recordatorio') {
-          
+
                 let arrayEdited = value.map((item) => {
-                    return ({...item, tituloForm: key})
+                    return ({ ...item, tituloForm: key })
                 })
 
                 formulariosLegajos.entries = [...formulariosLegajos.entries, ...arrayEdited]
             }
         }
-        
+
         // console.log('formulariosLegajos', formulariosLegajos);
 
         dispatch({ type: 'counter/setFormulariosLegajo', payload: formulariosLegajos });
 
-        navigation.navigate('FormDetailsLegajos');        
+        navigation.navigate('FormDetailsLegajos');
     }
 
     function handleViewLegajo(item) {
@@ -229,8 +233,16 @@ export default function Legajos({ navigation }) {
                 <Header cajaText={cajaTextoHeader} />
             </View>
 
-            <View style={{ marginVertical: 5 }}>                
-                <FiltradorLegajos states={legajosListaOriginal} setStates={setLegajosLista} />
+            <View style={{ marginVertical: 5 }}>
+                <FiltradorLegajos states={legajosListaOriginal} setStates={setLegajosLista} params={
+                    {
+                        paginaActual: paginaActual,
+                        setPaginaActual: setPaginaActual,
+                        paginaTotal: paginaTotal,
+                        setPaginaTotal: setPaginaTotal,
+                        elementsPerPage: elementsPerPage,
+                    }
+                } />
             </View>
 
             <View style={{ display: 'flex', flexDirection: 'row', alignContent: 'center', justifyContent: 'space-between', marginTop: 15 }}>
@@ -240,6 +252,8 @@ export default function Legajos({ navigation }) {
                 <Text style={{ textAlign: 'left', color: "#636363", fontSize: 12, width: "25%", fontFamily: "GothamRoundedBold" }}></Text>
             </View>
             <View style={{ borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginTop: 10 }} />
+
+            <Image source={loading} style={{ width: 150, height: 150, marginTop: 50, alignSelf: 'center', display: (isLoading ? 'flex' : 'none') }} />
 
             <FlatList
                 data={legajosLista.slice((paginaActual - 1) * elementsPerPage, paginaActual * elementsPerPage)}
