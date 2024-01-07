@@ -34,23 +34,6 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             let card = formulariosData.find((card) => card.title === "Verificación de Termómetros")
             console.log('objectToCheck: ', JSON.stringify(objectToCheck))
 
-            // Establecer inputsValues
-
-
-            // Establecer reglones
-            // let reglones2 = [null, null];
-            // reglones2.push(objectToCheck.inputsSemestral.map(input => ({
-            //     values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
-            // })));
-            // reglones2.push(objectToCheck.inputsTrimestral.map(input => ({
-            //     values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
-            // })));
-            // console.log('reglones2: ', JSON.stringify(reglones2))
-            // // aplico el setReglones(reglones2); medio segundo despues
-            // setTimeout(() => {
-            //     setReglones(reglones2);
-            // }, 0.1);
-
             let reglonesCopy = [null, null, [], []]
 
             console.log('entrada hacia los reglones')
@@ -153,7 +136,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             setInputsValues(inputsValues);
 
             if (objectToCheck.inputs?.length > 0) {
-                let reglones = [null, null];
+                let reglones = [null];
                 reglones.push(objectToCheck.inputs.map(input => ({
                     values: [
                         { name: "Código", value: input.código },

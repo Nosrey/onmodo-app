@@ -109,6 +109,8 @@ export default FormDetails = ({ navigation }) => {
                         }
                     });
                     setEntriesFound(entriesFoundTemp);
+                } else {
+                    console.log('algo salio mal')
                 }
             })
             .catch((error) => {

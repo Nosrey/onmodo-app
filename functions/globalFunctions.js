@@ -263,7 +263,7 @@ export const formulariosData = [
                     { name: "Fecha", tipo: "date" },
                     { name: "Punto de toma de agua evaluado", tipo: "text" },
                     { name: "Punto de Corte", tipo: "select", options: ['Menor 0,2 (Valor ppm)', '0,2 - 0,5 (Valor ppm)', '0,5 - 0,8 (Valor ppm)', 'Mayor a 0,8 (Valor ppm)'] },
-                    { name: "Acciones de correción", tipo: "select", options: ["Dar aviso escrito al cliente.", "Lavado y desinfección de reservorios de agua."] },
+                    { name: "Acciones de correción", tipo: "select", options: ["Dar aviso escrito al cliente.", "Lavado y desinfección de reservorios de agua.", "Sin Acción Correctiva"] },
                 ]
             }
         ]
@@ -281,7 +281,7 @@ export const formulariosData = [
             { text: "menor a 10ºC.", tipo: "text" },
             { text: "Temperaturas de freezer:", tipo: "text" },
             { text: "Menor a -18ºC.", tipo: "text" },
-            { text: "Contratos certificados con IRAM BPM:", tipo: "text" },
+            // { text: "Contratos certificados con IRAM BPM:", tipo: "text" },
             { text: "Temperatura de equipos de frío refrigerados menor a 4ºC.", tipo: "text" },
             { text: "Según los turnos de producciónse debe controlar la temperatura de cámaras y heladeras, distando entre un control y el otro entre 8 y 10 horas(mínimo 2 veces).", tipo: "text" },
             { text: "Un alimento correspondiente a cada cámara, seleccionado al azar, debe ser registrado. Alimentos críticos: postres, productos cocidos, vegetales desinfectados.", tipo: "text" },
@@ -289,11 +289,12 @@ export const formulariosData = [
             { text: "Acciones de corrección", tipo: "title" },
             { text: "Equipos refrigerados:", tipo: "text" },
 
-            { text: "1. Sila T° de los equipos supera el límite, controlar la temperatura de alimentos en distintas zonas del equipo. Re chequear la temperatura de los alimentos habiendo mantenido cerrada la puerta de cámara.", tipo: "text" },
+            { text: "1. Si la T° de los equipos supera el límite, controlar la temperatura de alimentos en distintas zonas del equipo. Re chequear la temperatura de los alimentos habiendo mantenido cerrada la puerta de cámara.", tipo: "text" },
             { text: "2. Luego de la hora, si los alimentos se encuentran dentro del límite, ninguna otra acción es requerida, si la lectura del termómetro del equipo es correcta", tipo: "text" },
             { text: "3. Luego de la hora, si los alimentos se encuentran a más del límite, chequear alimentos en distintas zonas del equipo:", tipo: "text" },
-            { text: "        ° Si la temperatura de los alimentos supera los 7°Cen cámara o los 10°C en heladera de tránsito (IRAMBPM mayor a 4ºC): trasladarlos a otro equipo.", tipo: "text" },
-            { text: "        ° Si la temperatura de los alimentos supera los 13°C (IRAM BPM mayor a 7ºC): deben ser DESECHADOS.", tipo: "text" },
+            // { text: "        ° Si la temperatura de los alimentos supera los 7°Cen cámara o los 10°C en heladera de tránsito (IRAMBPM mayor a 4ºC): trasladarlos a otro equipo.", tipo: "text" },
+
+            // { text: "        ° Si la temperatura de los alimentos supera los 13°C (IRAM BPM mayor a 7ºC): deben ser DESECHADOS.", tipo: "text" },
             { text: "Equipos congelados:", tipo: "text" },
             { text: "1. Si el freezer se encuentra con temperaturas superiores a -12°C, chequear la dureza al tacto y signos de descongelamiento.", tipo: "text" },
             { text: "2. Si hay signos de descongelamiento, los alimentos deben descongelarse en cámara y ser tratados como producto fresco, con una vida útil de 24 hs. una vez descongelado. Deben rotularse: -fecha de inicio del descongelamiento y hora –fecha final de descongelamiento y hora.", tipo: "text" },
@@ -312,7 +313,9 @@ export const formulariosData = [
                     { name: "Temperatura Equipo", tipo: "text" },
                     { name: "Alimento", tipo: "text" },
                     { name: "Temperatura Alimento", tipo: "text" },
-                    { name: "Acción de correción", tipo: "text" },
+                    // select con Sin Acción Correctiva
+                    // { name: "Acción de correción", tipo: "text" },
+                    { name: "Acción de correción", tipo: "select", options: ["Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" },
                 ]
             },
@@ -412,7 +415,8 @@ export const formulariosData = [
                     { name: "Hora", tipo: "timeHeader", titulo: "PROCESO DE ARMADO/FRACCIONAMIENTO", cabecera: "INICIO" }, { name: "Temp. Interna", tipo: "textFooter" },
                     { name: "Hora", tipo: "timeTop", cabecera: "FINAL" }, { name: "Temp. Interna", tipo: "textFooter" },
 
-                    { name: "Acciones Correcion", tipo: "text" },
+                    // { name: "Acciones Correcion", tipo: "text" },
+                    { name: "Acciones correción", tipo: "select", options: ["Sin acción correctiva"] },
                 ]
             }
         ],
@@ -628,7 +632,8 @@ export const formulariosData = [
                     { name: "Temp.", cabecera: "Inicio", titulo: "Mantenimiento en caliente", tipo: "textHeader" },
                     { name: "Temp.", tipo: "textTop", cabecera: "1 hs." },
                     { name: "Temp.", tipo: "textTop", cabecera: "2 hs." },
-                    { name: "Acciones de corrección", tipo: "text" },
+                    // { name: "Acciones de corrección", tipo: "text" },
+                    { name: "Acciones de corrección", tipo: "select", options: ["Sin acción correctiva"] },
 
                 ]
             }
@@ -760,7 +765,8 @@ export const formulariosData = [
                     { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 2" }, { name: "Temp", tipo: "textFooter" },
                     { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 3" }, { name: "Temp", tipo: "textFooter" },
                     { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Final" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Acciones de correción", tipo: "text" },
+                    // { name: "Acciones de correción", tipo: "text" },
+                    { name: "Acciones de correción", tipo: "select", options: ["Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" },
                 ]
             },
@@ -825,7 +831,7 @@ export const formulariosData = [
                     // * Desechar porque la temperatura está por encima de 15°C.
                     // * Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C.
                     // * Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C.
-                    { name: "Acciones correctivas", tipo: "selectShow", options: ["Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.", "Desechar porque la temperatura está por debajo de 55 °C", "Desechar porque la temperatura está por encima de 15°C", "Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C", "Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C"] },
+                    { name: "Acciones correctivas", tipo: "selectShow", options: ["Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.", "Desechar porque la temperatura está por debajo de 55 °C", "Desechar porque la temperatura está por encima de 15°C", "Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C", "Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C", "Sin Acción Correctiva"] },
                 ]
             },
         ]
@@ -866,7 +872,8 @@ export const formulariosData = [
                     { name: "Minutos", tipo: "textFooterCabecera", cabecera: "Tiempo inmersión" },
                     { name: "Enjuague", tipo: "selectTop", cabecera: "ENJUAGUE FINAL", options: ["Si", "No"] },
                     // tipo text acciones de correcion
-                    { name: "Acciones de correción", tipo: "text" },
+                    // { name: "Acciones de correción", tipo: "text" },
+                    { name: "Acciones de correción", tipo: "select", options: ["Sin acción correctiva"] },
                     // responsable
                     { name: "Responsable", tipo: "text" },
                 ]
@@ -891,7 +898,7 @@ export const formulariosData = [
             { text: "SERVICIO LÍNEA FRIA", tipo: "title" },
             { text: "Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºCpor un máximo de 2 horas.", tipo: "text" },
             { text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text" },
-            { text: "Contratos certificados con IRAM BPM: mantener a menos de 4ºC.", tipo: "text" },
+            // { text: "Contratos certificados con IRAM BPM: mantener a menos de 4ºC.", tipo: "text" },
         ],
         inputs: [
             { name: "Fecha", tipo: "date" },
@@ -902,7 +909,8 @@ export const formulariosData = [
                     { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio", titulo: "Mantenimiento" }, { name: "Temp", tipo: "textFooter" },
                     { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 1" }, { name: "Temp", tipo: "textFooter" },
                     { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 2" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Acciones correctivas", tipo: "text" },
+                    // { name: "Acciones correctivas", tipo: "text" },
+                    { name: "Acciones correctivas", tipo: "select", options: ["Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" }
                 ]
             },
@@ -1085,13 +1093,15 @@ export const formulariosData = [
             // fecha
             { name: "Fecha", tipo: "date" },
             // un select que diga Instrumento con opciones Báscula/Balanza
-            { name: "Instrumento", tipo: "select", options: ["Báscula", "Balanza"] },
+            // { name: "Instrumento", tipo: "select", options: ["Báscula", "Balanza"] },
             {
                 name: "Identificación Balanza", tipo: "row", options: [
                     // un text que diga Punto 0°C
                     { name: "Código", tipo: "textTop", cabecera: "Identificación Termómetro" },
                     // un select de opciones PIN o IR
-                    { name: "Tipo", tipo: "selectTop", options: ["BP", "BR"] },
+                    // { name: "Instrumento", tipo: "selectTop", options: ["BP", "BR"] },
+                    // "Balanza de producción" "Balanza de recepción" "Báscula"
+                    { name: "Instrumento", tipo: "selectTop", options: ["Balanza de producción", "Balanza de recepción", "Báscula"] },
                     // text responsable del uso
                     { name: "Responsable del uso", tipo: "textFooter" },
                     // Área
@@ -1102,7 +1112,8 @@ export const formulariosData = [
                     // Desvío
                     { name: "Desvío", tipo: "text" },
                     // { name: "Acciones de correción", tipo: "text" },un select con una unica opcion de "Enviar a calibrar"
-                    { name: "Acciones de correción", tipo: "select", options: ["Enviar a calibrar"] },
+                    // { name: "Acciones de correción", tipo: "select", options: ["Enviar a calibrar"] },
+                    { name: "Acciones de correción", tipo: "select", options: ["Enviar a calibrar", "Sin acción correctiva"] },
                 ]
             },
         ]
@@ -1165,7 +1176,8 @@ export const formulariosData = [
                     { name: "Desvío", tipo: "text" },
                     // { name: "Acciones de correción", tipo: "text" },
                     // debe ser un select con las opciones Calibrar , Reemplazar
-                    { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar"] },
+                    // { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar"] },
+                    { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar", "Sin acción correctiva"] },
                 ]
             },
             // otro row con titulo TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER
@@ -1181,7 +1193,8 @@ export const formulariosData = [
                     { name: "Temp. termón evaluado", tipo: "text" },
                     // Desvío
                     { name: "Desvío", tipo: "text" },
-                    { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar"] },
+                    // { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar"] },
+                    { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar", "Sin acción correctiva"] },
                 ]
             }
 
@@ -1299,7 +1312,7 @@ export const verificacionBalanzas = (values) => {
                 let temp = {};
                 inputGroup.forEach((input) => {
                     if (input.name === "Código") temp.código = input.value;
-                    else if (input.name === "Tipo") temp["Tipo (BP/BR)"] = input.value === "" ? "BP" : input.value;
+                    else if (input.name === "Instrumento") temp["Tipo (BP/BR)"] = input.value === "" ? "Balanza de producción" : input.value;
                     else if (input.name === "Responsable del uso") temp["responsabledeluso"] = input.value;
                     else if (input.name === "Área") temp.área = input.value;
                     else if (input.name === "Peso Masa ref/Pto balanza") temp["pesomasaref/ptobalanza"] = input.value;

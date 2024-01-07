@@ -252,10 +252,10 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
                 inputsValuesCopy[2] = { name: "Código", value: '' }
 
-                reglonesCopy = [null, null, []]
+                reglonesCopy = [null, []]
 
                 for (let i = 0; i < objectToCheck.inputs.length; i++) {
-                    reglonesCopy[2].push({
+                    reglonesCopy[1].push({
                         values: [
                             {
                                 "name": "Código",
