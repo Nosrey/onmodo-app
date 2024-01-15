@@ -200,7 +200,7 @@ export default function FormulariosCargados({ navigation }) {
     };
 
 
-    const handleInputChange = (value) => {
+    const handleInputChange = (value, array = []) => {
         // guardo el valor del input en el estado inputValue
         setInputValue(value);
         let inputLocal = value;
@@ -208,7 +208,8 @@ export default function FormulariosCargados({ navigation }) {
         inputLocal = inputLocal.toLowerCase();
         inputLocal = inputLocal.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         // creo un array donde guardaré los buttons que coincidan con el valor del input al filtrar
-        setCardsFiltered(cardsFound.filter((item) => {
+        if (array.length == 0) array = cardsFound
+        setCardsFiltered(array.filter((item) => {
             let itemTitle = item.title.toLowerCase();
             itemTitle = itemTitle.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
             if (itemTitle.includes(inputLocal)) return item
@@ -263,6 +264,7 @@ export default function FormulariosCargados({ navigation }) {
         cards = [...cards];
         setCopiaCardsInicial(cards)
         setCardsFound(cards)
+        handleInputChange(inputValue, cards)
     }, [formularios]);
 
     return (

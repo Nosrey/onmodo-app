@@ -22,13 +22,18 @@ export default function Login({ navigation }) {
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false
     // const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña2eKgjc19
     // const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
+    const [legajoInput, setLegajoInput] = useState('333'); // 3986722 -- Estado para guardar el valor del input de legajo
     const [passwordInput, setPasswordInput] = useState('123'); // Estado para guardar el valor del input de contraseña
-    const [legajoInput, setLegajoInput] = useState('22222'); // 3986722 -- Estado para guardar el valor del input de legajo
     const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
+
+    // hago un dispatch a setLogo y lo vacio ''
+    useEffect(() => {
+        dispatch({ type: 'counter/setLogo', payload: '' });
+    }, []);
 
     useEffect(() => {
         async function prepare() {
@@ -133,7 +138,7 @@ export default function Login({ navigation }) {
                                     dispatch({ type: 'counter/setProvincia', payload: json2.response[0].provincia });
                                     dispatch({ type: 'counter/setLocalidad', payload: json2.response[0].localidad });
                                     dispatch({ type: 'counter/setContratoComedor', payload: json2.response[0].contratoComedor });
-                                    dispatch({ type: 'counter/setBusiness', payload: json2.response[0].business });
+                                    dispatch({ type: 'counter/setBusiness', payload: json2.response[0].business });                                    
 
                                     // hago un fetch GET a la url de la api + /api/recordatorio/${business}
                                     let url = API_URL + '/api/recordatorio/' + json2.response[0].business;
@@ -177,8 +182,7 @@ export default function Login({ navigation }) {
                                                 };
 
                                                 const evaluarFechaYFrecuencia = (fechaString, frecuencia) => {
-                                                    const fechaActual = new Date();
-                                                    console.log('fechaString: ', fechaString)
+                                                    const fechaActual = new Date();               
                                                     const fechaLimite = parseFecha(fechaString);
 
                                                     // Comprueba si la fecha ya pasó
@@ -189,17 +193,12 @@ export default function Login({ navigation }) {
                                                         return 'invalido';
                                                     }
 
-                                                    console.log('fechaLimite entrada: ', fechaLimite)
+                                            
                                                     // Comprueba si la fecha está próxima según la frecuencia
                                                     const umbralDias = FrecuenciaToDias[frecuencia];
                                                     // creo una nueva fecha en let fechaUmbral que es igual a fechaLimite menos los dias de umbralDias
                                                     let fechaUmbral = new Date(fechaLimite);
-                                                    fechaUmbral.setDate(fechaUmbral.getDate() - umbralDias);
-
-                                                    console.log('fechaActual: ', fechaActual)
-                                                    console.log('fechaUmbral salida: ', fechaUmbral)
-
-                                                    console.log('comparativa: ', fechaActual < fechaLimite)
+                                                    fechaUmbral.setDate(fechaUmbral.getDate() - umbralDias);                     
 
                                                     if (fechaActual > fechaLimite) {
                                                         return 'invalido';
@@ -332,6 +331,22 @@ export default function Login({ navigation }) {
                                     // hago un dispatch que setee formularios con el valor de formularios
                                     dispatch({ type: 'counter/setFormularios', payload: formularios });
                                     // elimino el stack de navegacion
+                                    url = API_URL + "/api/newbusiness/" +  json2.response[0].business;
+                                    fetch(url)
+                                        .then((response) => response.json())
+                                        // setLogo(state, action) {
+                                        //     state.logo = action.payload;
+                                        //   },
+                                        .then((json) => {
+                                            if (json.success == true) {
+                                                dispatch({ type: 'counter/setLogo', payload: json.response.logo });
+                                            }
+                                        })
+                                        .catch((error) => {
+                                            console.error('error en newBusiness: ', error)
+                                        })
+
+
                                     setNotif({ view: true, message: '¡Actualizado correctamente!', color: 'verde' });
                                     navigation.reset({
                                         index: 0,

@@ -240,17 +240,13 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 let fechaTemp = new Date(objectToCheck?.fecha)
                 // checo si el resultado es una fecha
                 if (fechaTemp.toString() !== "Invalid Date") {
-                    console.log('fecha es valida -----------------')
-                    console.log('fechaTemp: ', fechaTemp)
                 } else {
                     fechaTemp = 'Sin fecha'
-                    console.log('fecha es Invalida -----------------')
-                    console.log('fechaTemp: ', fechaTemp)
                 }
                 inputsValuesCopy[0] = { name: "Fecha", value: fechaTemp }
-                inputsValuesCopy[1] = { name: "Instrumento", value: objectToCheck?.balanza }
+                // inputsValuesCopy[1] = { name: "Instrumento", value: objectToCheck?.balanza }
 
-                inputsValuesCopy[2] = { name: "Código", value: '' }
+                // inputsValuesCopy[2] = { name: "Código", value: '' }
 
                 reglonesCopy = [null, []]
 
@@ -894,23 +890,24 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
         } else if (cardToCheck.title === 'Verificación Balanzas') {
             let inputsFinalReglones = []
+            console.log('inputsValues: ', JSON.stringify(inputsValues))
+            console.log('reglones: ', JSON.stringify(reglones))
 
-            for (let i = 0; i < reglones[2].length; i++) {
+            for (let i = 0; i < reglones[1].length; i++) {
                 inputsFinalReglones.push({
-                    "código": reglones[2][i]?.values[0]?.value,
-                    "Tipo (BP/BR)": reglones[2][i]?.values[1]?.value,
-                    "responsabledeluso": reglones[2][i]?.values[2]?.value,
-                    "área": reglones[2][i]?.values[3]?.value,
-                    "pesomasaref/ptobalanza": reglones[2][i]?.values[4]?.value,
-                    "pesoreal": reglones[2][i]?.values[5]?.value,
-                    "desvío": reglones[2][i]?.values[6]?.value,
-                    "Acciones de corrección": reglones[2][i]?.values[7]?.value,
+                    "código": reglones[1][i]?.values[0]?.value,
+                    "Tipo (BP/BR)": reglones[1][i]?.values[1]?.value,
+                    "responsabledeluso": reglones[1][i]?.values[2]?.value,
+                    "área": reglones[1][i]?.values[3]?.value,
+                    "pesomasaref/ptobalanza": reglones[1][i]?.values[4]?.value,
+                    "pesoreal": reglones[1][i]?.values[5]?.value,
+                    "desvío": reglones[1][i]?.values[6]?.value,
+                    "Acciones de corrección": reglones[1][i]?.values[7]?.value,
                 })
 
                 objetoFinal = {
                     ...objectToCheck,
-                    fecha: inputsValues[0]?.value,
-                    balanza: inputsValues[1]?.value,
+                    fecha: inputsValues[0]?.value,                    
                     inputs: inputsFinalReglones,
                     editEnabled: false
                 }
@@ -1367,16 +1364,6 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         color: '#1976D2',
                     }}>VER MÁS</Text>
                 </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-                console.log('reglones: ', JSON.stringify(reglones))
-            }}>
-
-                <Text style={{
-                    // fuente color azul rgb(25, 118, 210) pero en hex
-                    color: '#1976D2',
-                }}>PRUEBA</Text>
-
             </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {

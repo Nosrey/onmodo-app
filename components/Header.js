@@ -2,15 +2,19 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useFonts } from 'expo-font';
 import logo from '../assets/on-modo-grande.png';
+// traigo useSelector y luego traigo logo
+import { useSelector } from 'react-redux';
 
 export default function Header({ cajaText, unElemento }) {
+    // traigo el logo del redux
+    const logoImported = useSelector((state) => state.logo);
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
     return (
         <View>
-            <Image source={logo} style={styles.logoHeader} />
+            <Image source={logoImported ? { uri: logoImported } : logo} style={styles.logoHeader} />
             {/* si unElemento esta en flase ejecuto el map */}
             {unElemento ?
                 (

@@ -328,6 +328,12 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                 objetoFinal.inputs = arrayFinal
                 let indexObservaciones = cardToCheck.inputs.findIndex((element) => element.name === "Observaciones")
                 objetoFinal.observaciones = inputsValues[indexObservaciones]?.value
+                // objetoFinal = {...objetoFinal,
+                //     mes: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Mes")]?.value,
+                //     año: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Año")]?.value,
+                // }
+                // pusheo en objetoFinal.inputs un objeto con la propiedad mes y año
+                objetoFinal.inputs.push({ Mes: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Mes")]?.value, Año: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Año")]?.value })
             } else {                
                 // SOLO FUNCIONA SI HAY UN SOLO CHECKBOX
 
@@ -429,11 +435,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                         color: '#1976D2',
                     }}>VER MÁS</Text>
                 </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-                console.log('valor de año: ', inputsValues)
-            }}>
-               <Text>Prueba</Text>
             </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {
@@ -599,11 +600,6 @@ export default function FormType3({ setViewInfo, navigation, setNotif }) {
                     return (
                         <View key={index} style={[{ marginTop: 5, marginBottom: 20 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
-                            <TouchableOpacity onPress={() => {
-                                console.log('valor: ', inputsValues)
-                            }}>
-                                <Text>Prueba</Text>
-                            </TouchableOpacity>
                             <Picker
                                 selectedValue={inputsValues[index]?.value}
                                 style={styles.userInput}

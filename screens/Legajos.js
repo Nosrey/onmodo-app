@@ -46,8 +46,8 @@ export default function Legajos({ navigation }) {
 
     useEffect(() => {
         // hago un fetch a la url API_URL + rol + :business
-        // fetch(API_URL + '/api' + (rol === 2 ? '/rol1' : rol === 3 ? '/rol1-2' : '/rol1-2-3') + `/${business}`, {
-        fetch(API_URL + '/api' + '/rol1-2-3' + `/${business}`, {
+        fetch(API_URL + '/api' + (rol === 2 ? '/rol1' : rol === 3 ? '/rol1-2' : '/rol1-2-3') + `/${business}`, {
+        // fetch(API_URL + '/api' + '/rol1-2-3' + `/${business}`, {
             // tipo get
             method: 'GET',
         })

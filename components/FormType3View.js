@@ -107,34 +107,33 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
             let arrayMeses = []
             let meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
             let opciones = ["Uso", "Filtracion", "Limpieza superficial", "Cambio de Aceite", "Limpieza profunda"]
-            for (let i = 0; i < objectToCheck.inputs.length; i++) {
-                // establezco inputsValue con los valores de objectToCheck
-                array[0] = { name: "Mes", value: meses[Number(objectToCheck.inputs[0]?.meses[0].name)] }
-                array[1] = { name: "Año", value: objectToCheck.inputs[0]?.name }
+            array[0] = { name: "Mes", value: objectToCheck.inputs[objectToCheck.inputs.length - 1]?.["Mes"] };
+            array[1] = { name: "Año", value: objectToCheck.inputs[objectToCheck.inputs.length - 1]?.["Año"] };
+            // ubico el index del objeto que tiene el año
+            let indexAnio = objectToCheck.inputs.findIndex((element) => element.name === array[1].value.toString())
+            console.log('indexAnio: ', indexAnio)
+            
+            for (let j = 0; j < objectToCheck.inputs[indexAnio]?.meses?.length; j++) {
+                arrayMeses[Number(objectToCheck.inputs[indexAnio]?.meses[j]?.name)] = []
+                let opcionesArrayTemp = []
 
-                for (let j = 0; j < objectToCheck.inputs[i]?.meses.length; j++) {
-                    arrayMeses[Number(objectToCheck.inputs[i]?.meses[j].name)] = []
-                    let opcionesArrayTemp = []
-                    for (let k = 0; k < opciones.length; k++) {
-                        // arrayMeses[Number(objectToCheck.inputs[i]?.meses[j].name)].push(objectToCheck.inputs[i]?.meses[j]?.array[k]?.array)
-
-
-                        if (opciones.includes(objectToCheck.inputs[i]?.meses[j]?.array[k]?.name)) {
-                            let index = opciones.findIndex((element) => element === objectToCheck.inputs[i]?.meses[j]?.array[k]?.name)
-                            opcionesArrayTemp[index] = (objectToCheck.inputs[i]?.meses[j]?.array[k]?.array)
-                        }
-                        arrayMeses[Number(objectToCheck.inputs[i]?.meses[j].name)] = opcionesArrayTemp
-
+                for (let k = 0; k < objectToCheck.inputs[indexAnio]?.meses[j]?.array.length; k++) { // Cambio aquí
+                    if (opciones.includes(objectToCheck.inputs[indexAnio]?.meses[j]?.array[k]?.name)) {
+                        let index = opciones.findIndex((element) => element === objectToCheck.inputs[indexAnio]?.meses[j]?.array[k]?.name)
+                        opcionesArrayTemp[index] = (objectToCheck.inputs[indexAnio]?.meses[j]?.array[k]?.array)
                     }
                 }
+                arrayMeses[Number(objectToCheck.inputs[indexAnio]?.meses[j]?.name)] = opcionesArrayTemp
 
-                arrayAnios[Number(objectToCheck.inputs[i]?.name) - 2023] = arrayMeses
-
-                array[2] = { name: "Control del aceite en freidora", value: arrayAnios }
-                array[3] = { name: "Observaciones", value: objectToCheck.observaciones }
-
-                setInputsValues(array)
             }
+
+            arrayAnios[Number(objectToCheck.inputs[indexAnio]?.name) - 2023] = arrayMeses
+
+            array[2] = { name: "Control del aceite en freidora", value: arrayAnios }
+            array[3] = { name: "Observaciones", value: objectToCheck.observaciones }
+
+            setInputsValues(array)
+
         }
         else if (cardToCheck.title === "Chequeo de uso de EPP" && inputsValues.length === 0) {
             let array = []
@@ -459,6 +458,12 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                 objetoFinal.inputs = arrayFinal
                 let indexObservaciones = cardToCheck.inputs.findIndex((element) => element.name === "Observaciones")
                 objetoFinal.observaciones = inputsValues[indexObservaciones]?.value
+                // objetoFinal = {...objetoFinal,
+                //     mes: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Mes")]?.value,
+                //     año: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Año")]?.value,
+                // }
+                // pusheo en objetoFinal.inputs un objeto con la propiedad mes y año
+                objetoFinal.inputs.push({ Mes: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Mes")]?.value, Año: inputsValues[cardToCheck.inputs.findIndex((element) => element.name === "Año")]?.value })
             } else {
                 // SOLO FUNCIONA SI HAY UN SOLO CHECKBOX
 
@@ -563,16 +568,6 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                         color: '#1976D2',
                     }}>VER MÁS</Text>
                 </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-                console.log('inputsValues: ', inputsValues)
-            }}>
-
-                <Text style={{
-                    // fuente color azul rgb(25, 118, 210) pero en hex
-                    color: '#1976D2',
-                }}>PRUEBA</Text>
-
             </TouchableOpacity>
 
             {cardToCheck.inputs?.map((input, index) => {

@@ -10,6 +10,7 @@ import Profile from './screens/Profile';
 import ProfileLegajos from './screens/ProfileLegajos';
 import FormulariosCargados from './screens/FormulariosCargados';
 import Formularios from './screens/Formularios';
+import Estadisticas from './screens/Estadisticas';
 import FormDetails from './screens/FormDetails';
 import FormDetailsLegajos from './screens/FormDetailsLegajos';
 import FormCreate from './screens/FormCreate';
@@ -56,6 +57,7 @@ const initialState = {
   listaRecordatorios: [],
   legajoProfile: {},
   formulariosLegajo: [],
+  logo: '',
 }
 
 const counterSlice = createSlice({
@@ -74,6 +76,9 @@ const counterSlice = createSlice({
     },
     setFormulariosLegajo(state, action) {
       state.formulariosLegajo = action.payload;
+    },
+    setLogo(state, action) {
+      state.logo = action.payload;
     },
     setObjectToCheck(state, action) {
       state.objectToCheck = action.payload;
@@ -161,6 +166,11 @@ export default function App() {
             name="Login"
             component={Login}
             options={{ title: 'Login' }}
+          />
+          <Stack.Screen
+            name="Estadisticas"
+            component={Estadisticas}
+            options={{ title: 'Estadisticas' }}
           />
           <Stack.Screen
             name="Inicio"

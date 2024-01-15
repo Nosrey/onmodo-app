@@ -12,7 +12,6 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
     const cardToCheck = useSelector((state) => state.cardToCheck);
 
     const fechaATexto = (fecha) => {
-        console.log('fecha NUEVA: ', fecha)
         fecha = new Date(fecha)
         fecha = fecha.toISOString()
 
@@ -28,7 +27,6 @@ export default function DatePicker({ inputReceived, index, setInputsGlobal, inpu
         if (event.type === 'set') {
             const currentDate = selectedDate || inputsValues[index]?.value;
             setShow(false)
-            console.log('currentDDate: ', currentDate)
             setInputsGlobal(index, new Date(currentDate))
         } else {
             setShow(false)
