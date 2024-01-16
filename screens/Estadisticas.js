@@ -24,6 +24,99 @@ import {
 } from "react-native-chart-kit";
 
 export default function Estadisticas({ navigation }) {
+    // traigo businessName de redux
+    const business = useSelector(state => state.business);
+
+    const [totalUsuarios, setTotalUsuarios] = useState(0);
+    // const [usuariosPorRol, setUsuariosPorRol] = useState([0, 0, 0]);
+    const [usuariosPorRol, setUsuariosPorRol] = useState([{
+        name: "- Nivel 1",
+        population: 0,
+        color: "#20c997",
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+    },
+    {
+        name: "- Nivel 2",
+        population: 0,
+        color: "#0da1f0",
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+    },
+    {
+        name: "- Nivel 3",
+        population: 0,
+        color: "#6f42c1",
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+    },
+    {
+        name: "- Nivel 4",
+        population: 0,
+        color: "#ffc107",
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+    }
+]);
+
+    useEffect(() => {
+        // fetch a http://192.168.1.107:8080/api/statsusers/test but instead of this IP you need to put your IP from API_URL
+        fetch(API_URL + '/api/statsusers/' + business)
+            .then((response) => response.json())
+            .then((json) => {
+                setTotalUsuarios(json.response.totalUsers);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        
+        fetch(API_URL + '/api/rol1-2-3/' + business)
+            .then((response) => response.json())
+            .then((json) => {
+            let totalRol1 = 0;
+            let totalRol2 = 0;
+            let totalRol3 = 0;
+            let totalRol4 = 0;
+                // recorro el array que es json
+                for (let i = 0; i < json.length; i++) {
+                    if (json[i].rol === 1) {
+                        totalRol1 = totalRol1 + 1;
+                    } else if (json[i].rol === 2) {
+                        totalRol2 = totalRol2 + 1;
+                    }
+                    else if (json[i].rol === 3) {
+                        totalRol3 = totalRol3 + 1;
+                    } else {
+                        totalRol4 = totalRol4 + 1;
+                    }
+                }
+                let usuariosPorRolCopy = JSON.parse(JSON.stringify(usuariosPorRol));
+                setUsuariosPorRol(
+                   [ 
+                    {
+                        ...usuariosPorRolCopy[0],
+                        population: totalRol1
+                    },
+                    {
+                        ...usuariosPorRolCopy[1],
+                        population: totalRol2
+                    },
+                    {
+                        ...usuariosPorRolCopy[2],
+                        population: totalRol3
+                    },
+                    {
+                        ...usuariosPorRolCopy[3],
+                        population: totalRol4
+                    },
+                ]
+                )
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
+
     const screenWidth = Dimensions.get("window").width;
     let cajaTextoHeader = [
         { title: "| Estadísticas", style: "title" },
@@ -90,7 +183,9 @@ export default function Estadisticas({ navigation }) {
             <View>
                 <Header cajaText={cajaTextoHeader} />
             </View>
-
+            {/* <TouchableOpacity onPress={() => console.log('usuariosPorRol', usuariosPorRol)}>
+                <Text>usuariosPorRol</Text>
+            </TouchableOpacity> */}
             <ScrollView>
                 <View style={[styles.titleForm, {
                     // que sea en horizontal
@@ -109,12 +204,12 @@ export default function Estadisticas({ navigation }) {
                 <View style={styles.reglon}>
                     <View style={[styles.bloqueData]}>
                         <Text style={{fontFamily: "GothamRoundedMedium"}}>Cantidad Total</Text>
-                        <Text style={{fontFamily: "GothamRoundedMedium"}}>11</Text>
+                        <Text style={{fontFamily: "GothamRoundedMedium"}}>{totalUsuarios}</Text>
                     </View>
                     <View style={{padding: 10, width: screenWidth * 0.7}}>
                         <Text style={{fontFamily: "GothamRoundedMedium"}}>Distribución por niveles</Text>
                         <PieChart
-                            data={data}
+                            data={usuariosPorRol}
                             width={screenWidth * 0.6}
                             height={220}
                             chartConfig={chartConfig}
