@@ -33,35 +33,27 @@ function getTitle(title) {
         return 'Control de Vidrios';
     } else if (title === 'controlequipofrio') {
         return 'Control de Equipos de Frío';
-    }
-    else if (title === 'carga') {
-        return 'Planilla de Carga / Recepción de Materias Primas'
-    }
-    else if (title === 'chequeoepp') {
-        return 'Chequeo de uso de EPP'
-    }
-    else if (title === 'controlproceso') {
-        return 'Control de Procesos'
-    }
-    else if (title === 'descongelamiento') {
-        return 'Planilla de Descongelamiento'
-    }
-    else if (title === 'distribucion') {
-        return 'Distribución / Expedición'
-    }
-    else if (title === 'planillaarmado') {
-        return 'Planilla de Armado y Fraccionamiento'
-    }
-    else if (title === 'despachoproduccion') {
-        return 'Despacho a Producción'
-    }
-    else if (title === 'sanitizacion') {
-        return 'Planilla de Sanitización'
-    }
-    else if (title === 'recepcion') {
-        return 'Planilla de Recepción'
-    }
-    else {
+    } else if (title === 'carga') {
+        return 'Planilla de Carga / Recepción de Materias Primas';
+    } else if (title === 'chequeoepp') {
+        return 'Chequeo de uso de EPP';
+    } else if (title === 'controlproceso') {
+        return 'Control de Procesos';
+    } else if (title === 'descongelamiento') {
+        return 'Planilla de Descongelamiento';
+    } else if (title === 'distribucion') {
+        return 'Distribución / Expedición';
+    } else if (title === 'planillaarmado') {
+        return 'Planilla de Armado y Fraccionamiento';
+    } else if (title === 'despachoproduccion') {
+        return 'Despacho a Producción';
+    } else if (title === 'sanitizacion') {
+        return 'Planilla de Sanitización';
+    } else if (title === 'recepcion') {
+        return 'Planilla de Recepción';
+    } else if (title === 'entregaropa') {
+        return 'Entrega de ropa de trabajo y EPP';
+    } else {
         return title;
     }
 }

@@ -10,7 +10,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
-import { API_URL } from '../functions/globalFunctions';
+import { API_URL, getTitle } from '../functions/globalFunctions';
 // traigo FontAwesome
 import { FontAwesome } from '@expo/vector-icons';
 // importo lo necesario para react native chart kit
@@ -57,7 +57,12 @@ export default function Estadisticas({ navigation }) {
         legendFontColor: "#7F7F7F",
         legendFontSize: 15
     }
-]);
+    ]);
+    const [distribucionGeo, setDistribucionGeo] = useState([]);
+    const [filtroDistribucionGeo, setFiltroDistribucionGeo] = useState('Cantidad de Personas');
+
+    const [totalFormularios, setTotalFormularios] = useState(0);
+    const [top3Formularios, setTop3Formularios] = useState([]);
 
     useEffect(() => {
         // fetch a http://192.168.1.107:8080/api/statsusers/test but instead of this IP you need to put your IP from API_URL
@@ -65,18 +70,21 @@ export default function Estadisticas({ navigation }) {
             .then((response) => response.json())
             .then((json) => {
                 setTotalUsuarios(json.response.totalUsers);
+                setDistribucionGeo(json.response.provinciaCounts);
+                setTotalFormularios(json.response.totalFormularios);
+                setTop3Formularios(json.response.top3Forms);
             })
             .catch((error) => {
                 console.error(error);
             });
-        
+
         fetch(API_URL + '/api/rol1-2-3/' + business)
             .then((response) => response.json())
             .then((json) => {
-            let totalRol1 = 0;
-            let totalRol2 = 0;
-            let totalRol3 = 0;
-            let totalRol4 = 0;
+                let totalRol1 = 0;
+                let totalRol2 = 0;
+                let totalRol3 = 0;
+                let totalRol4 = 0;
                 // recorro el array que es json
                 for (let i = 0; i < json.length; i++) {
                     if (json[i].rol === 1) {
@@ -92,24 +100,24 @@ export default function Estadisticas({ navigation }) {
                 }
                 let usuariosPorRolCopy = JSON.parse(JSON.stringify(usuariosPorRol));
                 setUsuariosPorRol(
-                   [ 
-                    {
-                        ...usuariosPorRolCopy[0],
-                        population: totalRol1
-                    },
-                    {
-                        ...usuariosPorRolCopy[1],
-                        population: totalRol2
-                    },
-                    {
-                        ...usuariosPorRolCopy[2],
-                        population: totalRol3
-                    },
-                    {
-                        ...usuariosPorRolCopy[3],
-                        population: totalRol4
-                    },
-                ]
+                    [
+                        {
+                            ...usuariosPorRolCopy[0],
+                            population: totalRol1
+                        },
+                        {
+                            ...usuariosPorRolCopy[1],
+                            population: totalRol2
+                        },
+                        {
+                            ...usuariosPorRolCopy[2],
+                            population: totalRol3
+                        },
+                        {
+                            ...usuariosPorRolCopy[3],
+                            population: totalRol4
+                        },
+                    ]
                 )
             })
             .catch((error) => {
@@ -203,11 +211,11 @@ export default function Estadisticas({ navigation }) {
                 </View>
                 <View style={styles.reglon}>
                     <View style={[styles.bloqueData]}>
-                        <Text style={{fontFamily: "GothamRoundedMedium"}}>Cantidad Total</Text>
-                        <Text style={{fontFamily: "GothamRoundedMedium"}}>{totalUsuarios}</Text>
+                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Total</Text>
+                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>{totalUsuarios}</Text>
                     </View>
-                    <View style={{padding: 10, width: screenWidth * 0.7}}>
-                        <Text style={{fontFamily: "GothamRoundedMedium"}}>Distribución por niveles</Text>
+                    <View style={{ padding: 10, width: screenWidth * 0.7 }}>
+                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
                         <PieChart
                             data={usuariosPorRol}
                             width={screenWidth * 0.6}
@@ -237,10 +245,11 @@ export default function Estadisticas({ navigation }) {
                         flexWrap: 'wrap',
                     }}>Distribución geográfica</Text>
                 </View>
-                <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10 }}> 
+                <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10 }}>
                     <Picker
-                        selectedValue={'Cantidad de Personas'}
-                        style={{fontFamily: "GothamRoundedMedium"}}
+                        selectedValue={filtroDistribucionGeo}
+                        onValueChange={(itemValue, itemIndex) => setFiltroDistribucionGeo(itemValue)}
+                        style={{ fontFamily: "GothamRoundedMedium" }}
                     >
                         <Picker.Item label="Cantidad de Personas" value="Cantidad de Personas" />
                         <Picker.Item label="Cantidad de Formularios" value="Cantidad de Formularios" />
@@ -252,26 +261,19 @@ export default function Estadisticas({ navigation }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                 }}>
-                    {[
-                        { id: '1', lugar: 'Córdoba', datos: [{ valor: 2, label: 'Personas' }, { valor: 4, label: 'Formularios' }] },
-                        { id: '2', lugar: 'Jujuy', datos: [{ valor: 20, label: 'Personas' }, { valor: 54, label: 'Formularios' }] },
-                        { id: '3', lugar: 'Neuquén', datos: [{ valor: 21, label: 'Personas' }, { valor: 842, label: 'Formularios' }] },
-                        { id: '4', lugar: 'Catamarca', datos: [{ valor: 12, label: 'Personas' }, { valor: 488, label: 'Formularios' }] },
-                        { id: '5', lugar: 'CABA', datos: [{ valor: 52, label: 'Personas' }, { valor: 47, label: 'Formularios' }] },
-                        { id: '6', lugar: 'Pampa', datos: [{ valor: 201, label: 'Personas' }, { valor: 44, label: 'Formularios' }] },
-                        { id: '7', lugar: 'La Pampa', datos: [{ valor: 211, label: 'Personas' }, { valor: 24, label: 'Formularios' }] },
-                        { id: '8', lugar: 'San Juan', datos: [{ valor: 27, label: 'Personas' }, { valor: 49, label: 'Formularios' }] }
-                    ].map(item => (
-                        <View style={[styles.bloqueData, { width: screenWidth * 0.2 }]} key={item.id}>
-                            <Text style={{fontFamily: "GothamRoundedMedium", fontSize: 12}}>{item?.lugar}</Text>
+                    {distribucionGeo
+                    .sort((a, b) => (filtroDistribucionGeo === 'Cantidad de Personas' ? b.usersCount - a.usersCount : b.formulariosCount - a.formulariosCount))
+                    ?.map((item, index) => (
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.3 }]} key={index}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12 }}>{item?.provincia}</Text>
                             <View style={{ flexDirection: 'column' }}>
                                 <View style={{
                                     flexDirection: 'row',
-                                    justifyContent: 'space-between',
+                                    justifyContent: 'space-between',   
                                 }}>
                                     <Text style={{
                                         fontFamily: "GothamRoundedBold",
-                                    }}>{item?.datos[0]?.valor}</Text>
+                                    }}>{(filtroDistribucionGeo === 'Cantidad de Personas' ? item?.usersCount : item?.formulariosCount)}</Text>
                                 </View>
                             </View>
                         </View>
@@ -294,22 +296,22 @@ export default function Estadisticas({ navigation }) {
                 </View>
                 <View style={styles.reglon}>
                     <View style={[styles.bloqueData]}>
-                        <Text style={{fontFamily: "GothamRoundedMedium"}}>Cantidad Total</Text>
-                        <Text style={{fontFamily: "GothamRoundedMedium"}}>121</Text>
+                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Total</Text>
+                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>{totalFormularios}</Text>
                     </View>
-                    <View style={{ padding: 10, width: screenWidth * 0.6, flexDirection: 'column',fontFamily: "GothamRoundedMedium" }}>
+                    <View style={{ padding: 10, width: screenWidth * 0.6, flexDirection: 'column', fontFamily: "GothamRoundedMedium" }}>
                         <View style={{ flexDirection: 'row', width: "100%" }}>
-                            <Text style={[styles.redondo, {fontFamily: "GothamRoundedMedium"}]}>1</Text>
-                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontSize: 16, flexWrap: 'wrap', fontFamily: "GothamRoundedMedium"}}>Entrega de ropa de trabajo y EPP</Text>
+                            <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>1</Text>
+                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontSize: 16, flexWrap: 'wrap', fontFamily: "GothamRoundedMedium" }}>{getTitle(top3Formularios[0])}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', width: "100%" }}>
-                            <Text style={[styles.redondo, {fontFamily: "GothamRoundedMedium"}]}>2</Text>
-                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap'}}>Registro de Capacitación</Text>
+                            <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>2</Text>
+                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap' }}>{getTitle(top3Formularios[1])}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', width: "100%" }}>
-                            <Text style={[styles.redondo, {fontFamily: "GothamRoundedMedium"}]}>3</Text>
-                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap'}}>Entrega de bidones de aceite usado</Text>
-                        </View>           
+                            <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>3</Text>
+                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap' }}>{getTitle(top3Formularios[2])}</Text>
+                        </View>
                     </View>
 
                 </View>
@@ -360,8 +362,8 @@ export default function Estadisticas({ navigation }) {
                             <Picker.Item label="Control de Comensales con dietas especiales" value="Control de Comensales con dietas especiales" />
                             <Picker.Item label="Flash Reporte de Incidentes" value="Flash Reporte de Incidentes" />
                             <Picker.Item label="Informe interno de Accidente" value="Informe interno de Accidente" />
-                            <Picker.Item label="Registro de Simulacro" value="Registro de Simulacro" />                            
-                          
+                            <Picker.Item label="Registro de Simulacro" value="Registro de Simulacro" />
+
                         </Picker>
                     </View>
                 </View>
@@ -384,7 +386,7 @@ export default function Estadisticas({ navigation }) {
                             <Picker.Item label="Septiembre" value="Septiembre" />
                             <Picker.Item label="Octubre" value="Octubre" />
                             <Picker.Item label="Noviembre" value="Noviembre" />
-                            <Picker.Item label="Diciembre" value="Diciembre" />                                              
+                            <Picker.Item label="Diciembre" value="Diciembre" />
                         </Picker>
                     </View>
                 </View>
@@ -401,11 +403,11 @@ export default function Estadisticas({ navigation }) {
                     </View>
                 </View>
 
-                <View style={[styles.bloqueData, {padding: 20, alignSelf: 'center', marginTop: 20}]}>
-                        <Text style={{fontFamily: "GothamRoundedMedium", fontSize: 24}}>Cantidad Total</Text>
-                        <Text style={{fontFamily: "GothamRoundedMedium", fontSize: 24}}>308</Text>
-                    </View>
-               
+                <View style={[styles.bloqueData, { padding: 20, alignSelf: 'center', marginTop: 20 }]}>
+                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 24 }}>Cantidad Total</Text>
+                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 24 }}>308</Text>
+                </View>
+
 
                 <View style={[styles.titleForm, {
                     // que sea en horizontal
@@ -422,7 +424,7 @@ export default function Estadisticas({ navigation }) {
                     }}>Solicitudes de Edición</Text>
                 </View>
 
-                <View style={{flexDirection: 'column'}}>
+                <View style={{ flexDirection: 'column' }}>
 
                     <View style={{ padding: 10, width: screenWidth * 0.7 }}>
                         <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
@@ -440,15 +442,15 @@ export default function Estadisticas({ navigation }) {
                     </View>
 
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', }}>
-                        <View style={[styles.bloqueData, {width: screenWidth * 0.4}]}>
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.4 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Total</Text>
                             <Text style={{ fontFamily: "GothamRoundedMedium" }}>118</Text>
-                        </View>         
-                        <View style={[styles.bloqueData, {width: screenWidth * 0.4}]}>
+                        </View>
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.4 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Aprobados</Text>
                             <Text style={{ fontFamily: "GothamRoundedMedium" }}>72</Text>
-                        </View>         
-                        <View style={[styles.bloqueData, {width: screenWidth * 0.4}]}>
+                        </View>
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.4 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Editados</Text>
                             <Text style={{ fontFamily: "GothamRoundedMedium" }}>15</Text>
                         </View>
@@ -473,7 +475,7 @@ const styles = StyleSheet.create({
     },
     reglon: {
         flexDirection: 'row',
-    },  
+    },
     bloqueData: {
         borderWidth: 1,
         borderColor: '##363534',
