@@ -58,7 +58,73 @@ function getTitle(title) {
     }
 }
 
-export { getTitle };
+// creo una funcion igual a getTitle pero que me devuelva el titulo original si entrego el titulo traducido
+function returnTitle(title) {
+    // elimino los acentos
+    title = title.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (title === 'Control Alergenos') {
+        return 'controlalergenos';
+    } else if (title === 'Entrega de Bidones de Aceite Usado') {
+        return 'entregabidones';
+    } else if (title === 'Flash Incidente') {
+        return 'flashincidente';
+    } else if (title === 'Informe Accidente') {
+        return 'informeintaccidente';
+    } else if (title === 'Registro de Capacitación') {
+        return 'registrocapacitacion';
+    } else if (title === 'Planilla de Decomiso de Materias Primas') {
+        return 'registrodecomiso';
+    } else if (title === 'Registro Simulacro') {
+        return 'registrosimulacro';
+    } else if (title === 'Rechazo /  Devolución de Materias Primas') {
+        return 'reporterechazo';
+    } else if (title === 'Verificación Balanzas') {
+        return 'verificacionbalanza';
+    } else if (title === 'Verificación de Termómetros') {
+        return 'verificaciontermometros';
+    } else if (title === 'Uso y Cambio de Aceite en Freidora') {
+        return 'usocambioaceite';
+    } else if (title === 'Servicios en línea') {
+        return 'servicioenlinea';
+    } else if (title === 'Recuperación de Productos') {
+        return 'recuperacionproducto';
+    } else if (title === 'Control de Cloro Activo Residual') {
+        return 'controlcloro';
+    } else if (title === 'Control de Vidrios') {
+        return 'controlvidrio';
+    } else if (title === 'Control de Equipos de Frío') {
+        return 'controlequipofrio';
+    } else if (title === 'Planilla de Carga / Recepcion de Materias Primas') {
+        return 'carga';
+    } else if (title === 'Chequeo de uso de EPP') {
+        return 'chequeoepp';
+    } else if (title === 'Control de Procesos') {
+        return 'controlproceso';
+    } else if (title === 'Planilla de Descongelamiento') {
+        return 'descongelamiento';
+    } else if (title === 'Distribución / Expedición') {
+        return 'distribucion';
+    } else if (title === 'Planilla de Armado y Fraccionamiento') {
+        return 'planillaarmado';
+    } else if (title === 'Despacho a Producción') {
+        return 'despachoproduccion';
+    } else if (title === 'Planilla de Sanitización') {
+        return 'sanitizacion';
+    } else if (title === 'Planilla de Recepción') {
+        return 'recepcion';
+    } else if (title === 'Entrega de ropa de trabajo y EPP') {
+        return 'entregaropa';
+    }
+    else if (title === 'Control de Equipos de Frio') {
+        return 'controlequipofrio';
+    }
+    else {
+        console.log('no se encontro el titulo: ' + title)
+        return title;
+    }
+}
+
+export { getTitle, returnTitle };
 
 export const PUESTOS_N1 = [
     'Cadete',
@@ -237,7 +303,7 @@ export const PUESTOS_N2 = [
 // en modo online es https://api.onmodoapp.com
 
 // export const API_URL = 'http://192.168.1.107:8080';
-export const API_URL = 'https://api.onmodoapp.com'; 
+export const API_URL = 'https://api.onmodoapp.com';
 
 const URL_API = API_URL
 
@@ -1534,11 +1600,11 @@ export const entregabidones = async (values, id) => {
             if (values[i][j].values[5].name === "foto de disposición final" || values[i][j].values[5].name === "Selecciona una foto de disposición final") {
                 // si es un objeto con typeof
                 if (typeof (values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value) === 'object') {
-                    arrayDisposicion.push('obj')                    
+                    arrayDisposicion.push('obj')
                 } else if (typeof (values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value) === 'string') {
-                    arrayDisposicion.push((values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value))                    
+                    arrayDisposicion.push((values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value))
                 } else {
-                    arrayDisposicion.push(null)                
+                    arrayDisposicion.push(null)
                 }
                 objetoIndividual = {
                     ...objetoIndividual, disposiciónfinal: (values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value)
@@ -1549,7 +1615,7 @@ export const entregabidones = async (values, id) => {
             console.log('objetoFinal post proceso: ', JSON.stringify(objetoFinal))
         }
 
- 
+
         const propiedades = ['transporte', 'disposiciónfinal'];
 
         const arraysBase64 = await Promise.all(
@@ -1584,7 +1650,7 @@ export const entregabidones = async (values, id) => {
         }
 
     }
-    
+
     // console.log('data: ', data)
     return data
 }
