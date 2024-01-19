@@ -33,7 +33,7 @@ export default function Estadisticas({ navigation }) {
     const [usuariosPorRol, setUsuariosPorRol] = useState([{
         name: "- Nivel 1",
         population: 0,
-        color: "#20c997",
+        color: "#54b42c",
         legendFontColor: "#7F7F7F",
         legendFontSize: 15
     },
@@ -81,6 +81,14 @@ export default function Estadisticas({ navigation }) {
         legendFontSize: 15
     },
     ]);
+    const [formulariosTiempoData, setFormulariosTiempoData] = useState({
+        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        datasets: [
+            {
+                data: [0, 0, 0, 7, 0, 0, 12, 0, 0, 0, 8, 0]
+            }
+        ]
+    });
     // formsTotales, formsAprobados, formsEditados
     const [formsTotales, setFormsTotales] = useState(0);
     const [formsAprobados, setFormsAprobados] = useState(0);
@@ -102,6 +110,13 @@ export default function Estadisticas({ navigation }) {
     const [añoMinimo, setAñoMinimo] = useState(2022);
     const [añoMaximo, setAñoMaximo] = useState(new Date().getFullYear());
     const [totalFormulariosFET, setTotalFormulariosFET] = useState(0);
+    const [update, setUpdate] = useState(false);
+    const [finalizado, setFinalizado] = useState(false);
+
+    // const function numeroAMes(numero) {
+    //     switch (numero) {
+    //         case 1:
+    // }
 
     useEffect(() => {
         // fetch a http://192.168.1.107:8080/api/statsusers/test but instead of this IP you need to put your IP from API_URL
@@ -207,7 +222,8 @@ export default function Estadisticas({ navigation }) {
                 setAñoMinimo(añoMinimoTemp);
                 setAñoMaximo(añoMaximoTemp);
                 setAñoFET(añoMaximoTemp.toString());
-                setTotalFormulariosFET(totalFormulariosFETTemp);   
+                setTotalFormulariosFET(totalFormulariosFETTemp);
+                setUpdate(true)            
             })
             .catch((error) => {
                 console.error(error);
@@ -244,7 +260,7 @@ export default function Estadisticas({ navigation }) {
                 setFormsRechazados(formsRechazadosTemp);
                 setFormsEditados(formsEditadosTemp);
                 setFormsTotales(formsTotalesTemp);
-        
+
                 let formulariosEditadosCopy = JSON.parse(JSON.stringify(formulariosEditados));
                 setFormulariosEditados(
                     [
@@ -262,7 +278,7 @@ export default function Estadisticas({ navigation }) {
                         },
                     ]
                 )
-                
+
             })
             .catch((error) => {
                 console.error(error);
@@ -270,52 +286,57 @@ export default function Estadisticas({ navigation }) {
     }, []);
 
     useEffect(() => {
-        let formsPerYearFilteredTemp = JSON.parse(JSON.stringify(formsPerYear));
-        // filtro solo los forms que coincidan con el formulario .formType pero en minuscula usando la funcion returnTitle
-        formsPerYearFilteredTemp = formsPerYearFilteredTemp.filter((item) => {
-            return item?.formType?.toLowerCase().includes(returnTitle(ordenarPorFET).toLowerCase());
-        });
-        // si el mes es todo el año, no hago nada
+        if (update === true) {
+            let formsPerYearFilteredTemp = JSON.parse(JSON.stringify(formsPerYear));
+            // filtro solo los forms que coincidan con el formulario .formType pero en minuscula usando la funcion returnTitle
+            formsPerYearFilteredTemp = formsPerYearFilteredTemp.filter((item) => {
+                if (item?.status !== false) {
+                    return item?.formType?.toLowerCase().includes(returnTitle(ordenarPorFET).toLowerCase());
+                }
+            });
+            // si el mes es todo el año, no hago nada
 
-        console.log('totalFormulariosFETPREMes', formsPerYearFilteredTemp)
-        if (mesFET !== 'Todo el año') {
-            // filtro solo los forms que coincidan con el mes
+            if (mesFET !== 'Todo el año') {
+                // filtro solo los forms que coincidan con el mes
+                formsPerYearFilteredTemp = formsPerYearFilteredTemp.filter((item) => {
+                    return item.formsPerMonth.some((item2) => {
+                        // convierto el mes como Enero en numerico como 1
+                        let mesNumerico = new Date(Date.parse(item2.month + " 1, 2021")).getMonth() + 1;
+                        console.log('mes original: ', item2.month)
+                        console.log('mes de turno', mesNumerico)
+                        return item2.month == mesNumerico;
+                    });
+                });
+            }
+
+
+
+
+            // filtro solo los forms que coincidan con el año
+
+
             formsPerYearFilteredTemp = formsPerYearFilteredTemp.filter((item) => {
                 return item.formsPerMonth.some((item2) => {
-                    // convierto el mes como Enero en numerico como 1
-                    let mesNumerico = new Date(Date.parse(item2.month + " 1, 2021")).getMonth() + 1;
-                    return item2.month == mesNumerico;                    
+                    return item2.year == parseInt(añoFET);
                 });
             });
-        }
-        console.log('totalFormulariosFETPOSTMes', formsPerYearFilteredTemp)
-
-        
-        console.log('totalFormulariosFETPREaño', formsPerYearFilteredTemp)
-        // filtro solo los forms que coincidan con el año
 
 
-        formsPerYearFilteredTemp = formsPerYearFilteredTemp.filter((item) => {
-            return item.formsPerMonth.some((item2) => {
-                console.log('item2.year', item2.year)
-                console.log('añoFET', añoFET)
-                return item2.year == parseInt(añoFET);
-            });
-        });
 
-        console.log('totalFormulariosFETPOSTaño', formsPerYearFilteredTemp)
+            setFormsPerYearFiltered(formsPerYearFilteredTemp);
+            // seteo el total de formularios
+            let totalFormulariosFETTemp = 0;
 
-        setFormsPerYearFiltered(formsPerYearFilteredTemp);
-        // seteo el total de formularios
-        let totalFormulariosFETTemp = 0;
-        console.log('formsPerYearFilteredTemp', formsPerYearFilteredTemp)
-        for (let i = 0; i < formsPerYearFilteredTemp?.length; i++) {
-            for (let j = 0; j < formsPerYearFilteredTemp[i].formsPerMonth?.length; j++) {
-                totalFormulariosFETTemp = totalFormulariosFETTemp + formsPerYearFilteredTemp[i].formsPerMonth[j].count;
+            for (let i = 0; i < formsPerYearFilteredTemp?.length; i++) {
+                for (let j = 0; j < formsPerYearFilteredTemp[i].formsPerMonth?.length; j++) {
+                    totalFormulariosFETTemp = totalFormulariosFETTemp + formsPerYearFilteredTemp[i].formsPerMonth[j].count;
+                }
             }
+            setTotalFormulariosFET(totalFormulariosFETTemp);
+            setUpdate(false)
+            setFinalizado(true)
         }
-        setTotalFormulariosFET(totalFormulariosFETTemp);
-    }, [mesFET, añoFET, ordenarPorFET]);
+    }, [update]);
 
     const screenWidth = Dimensions.get("window").width;
     let cajaTextoHeader = [
@@ -323,43 +344,14 @@ export default function Estadisticas({ navigation }) {
         { title: "Panel de Estadísticas", style: "title" }
     ];
 
-    const data = [
-        {
-            name: "Seoul",
-            population: 21500000,
-            color: "rgba(131, 167, 234, 1)",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 15
-        },
-        {
-            name: "Toronto",
-            population: 2800000,
-            color: "#F00",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 15
-        },
-        {
-            name: "Beijing",
-            population: 527612,
-            color: "red",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 15
-        },
-        {
-            name: "New York",
-            population: 8538000,
-            color: "#ffffff",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 15
-        },
-        {
-            name: "Moscow",
-            population: 11920000,
-            color: "rgb(0, 0, 255)",
-            legendFontColor: "#7F7F7F",
-            legendFontSize: 15
-        }
-    ];
+    const data = {
+        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        datasets: [
+            {
+                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }
+        ]
+    };
 
     const chartConfig = {
         backgroundColor: "#e26a00",
@@ -399,7 +391,7 @@ export default function Estadisticas({ navigation }) {
                     }}>Personal</Text>
                 </View>
                 <View style={styles.reglon}>
-                    <View style={[styles.bloqueData, {width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05}]}>
+                    <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
                         <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
                         <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalUsuarios}</Text>
                     </View>
@@ -434,8 +426,8 @@ export default function Estadisticas({ navigation }) {
                         flexWrap: 'wrap',
                     }}>Distribución geográfica</Text>
                 </View>
-                <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-                    <Text style={{marginRight: 10, fontSize: 20}}>Ordenar por: </Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <Text style={{ marginRight: 10, fontSize: 20 }}>Ordenar por: </Text>
                     <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10 }}>
                         <Picker
                             selectedValue={filtroDistribucionGeo}
@@ -454,22 +446,26 @@ export default function Estadisticas({ navigation }) {
                     justifyContent: 'center',
                 }}>
                     {distribucionGeo
-                    .sort((a, b) => (filtroDistribucionGeo === 'Cantidad de Personas' ? b.usersCount - a.usersCount : b.formulariosCount - a.formulariosCount))
-                    ?.map((item, index) => (
-                        <View style={[styles.bloqueData, { width: screenWidth * 0.3 }]} key={index}>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12 }}>{item?.provincia}</Text>
-                            <View style={{ flexDirection: 'column' }}>
-                                <View style={{
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',   
-                                }}>
-                                    <Text style={{
-                                        fontFamily: "GothamRoundedBold",
-                                    }}>{(filtroDistribucionGeo === 'Cantidad de Personas' ? item?.usersCount : item?.formulariosCount)}</Text>
+                        .sort((a, b) => (filtroDistribucionGeo === 'Cantidad de Personas' ? b.usersCount - a.usersCount : b.formulariosCount - a.formulariosCount))
+                        ?.map((item, index) => (
+                            <View style={[styles.bloqueData, { width: screenWidth * 0.3, flexDirection: 'column', alignItems: 'flex-start' }]} key={index}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, marginBottom: 5 }}>{item?.provincia}</Text>
+                                <View style={{ flexDirection: 'column' }}>
+                                    <View style={{
+                                        flexDirection: 'column',
+                                        justifyContent: 'space-evenly',
+                                        alignItems: 'flex-start'
+                                    }}>
+                                        <Text style={{
+                                            fontFamily: "GothamRoundedBold",
+                                        }}>{item?.usersCount} Personas</Text>
+                                        <Text style={{
+                                            fontFamily: "GothamRoundedBold",
+                                        }}>{item?.formulariosCount} Formularios</Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    ))}
+                        ))}
                 </View>
 
                 <View style={[styles.titleForm, {
@@ -487,10 +483,16 @@ export default function Estadisticas({ navigation }) {
                     }}>Formularios</Text>
                 </View>
                 <View style={styles.reglon}>
-                    <View style={[styles.bloqueData]}>
-                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Total</Text>
-                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>{totalFormularios}</Text>
+                    <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
+                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalFormularios}</Text>
                     </View>
+                    <Text style={{
+                        fontFamily: "GothamRoundedMedium",
+                        fontSize: 16,
+                        marginTop: 5,
+                        marginLeft: 5,
+                    }}>Más utilizados</Text>
                     <View style={{ padding: 10, width: screenWidth * 0.6, flexDirection: 'column', fontFamily: "GothamRoundedMedium" }}>
                         <View style={{ flexDirection: 'row', width: "100%" }}>
                             <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>1</Text>
@@ -523,12 +525,17 @@ export default function Estadisticas({ navigation }) {
                     }}>Uso de Formularios en el tiempo</Text>
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                     <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Ordenar por: </Text>
                     <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
                         <Picker
                             selectedValue={ordenarPorFET}
-                            onValueChange={(itemValue, itemIndex) => setOrdenarPorFET(itemValue)}
+                            editable={finalizado}
+                            enabled={finalizado}
+                            onValueChange={(itemValue, itemIndex) => {
+                                setOrdenarPorFET(itemValue)
+                                setUpdate(true)
+                            }}
                         >
                             <Picker.Item label="Control de Cloro Activo Residual" value="Control de Cloro Activo Residuals" />
                             <Picker.Item label="Control de Equipos de Frio" value="Control de Equipos de Frio" />
@@ -561,12 +568,17 @@ export default function Estadisticas({ navigation }) {
                     </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                     <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Mes: </Text>
                     <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
                         <Picker
                             selectedValue={mesFET}
-                            onValueChange={(itemValue, itemIndex) => setMesFET(itemValue)}
+                            editable={finalizado}
+                            enabled={finalizado}
+                            onValueChange={(itemValue, itemIndex) => {
+                                setMesFET(itemValue)
+                                setUpdate(true)
+                            }}
                         >
                             <Picker.Item label="Todo el año" value="Todo el año" />
                             <Picker.Item label="Enero" value="Enero" />
@@ -585,12 +597,17 @@ export default function Estadisticas({ navigation }) {
                     </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
                     <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Año: </Text>
                     <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
                         <Picker
                             selectedValue={añoFET}
-                            onValueChange={(itemValue, itemIndex) => setAñoFET(itemValue)}
+                            editable={finalizado}
+                            enabled={finalizado}
+                            onValueChange={(itemValue, itemIndex) => {
+                                setAñoFET(itemValue)
+                                setUpdate(true)
+                            }}
                         >
                             {añoMaximo && añoMinimo && [...Array(añoMaximo - añoMinimo + 1)].map((_, i) => (
                                 <Picker.Item key={i} label={(añoMinimo + i).toString()} value={(añoMinimo + i).toString()} />
@@ -599,11 +616,35 @@ export default function Estadisticas({ navigation }) {
                     </View>
                 </View>
 
-                <View style={[styles.bloqueData, { padding: 20, alignSelf: 'center', marginTop: 20 }]}>
-                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 24 }}>Cantidad Total</Text>
-                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 24 }}>{totalFormulariosFET}</Text>
+
+
+                <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05, marginTop: 10 }]}>
+                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
+                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalFormulariosFET}</Text>
                 </View>
 
+                <BarChart
+                    style={{
+                        // agrega estilos para que se vea una grafica gris con fondito blanco de react native chart kit
+                        marginVertical: 8,
+                        borderRadius: 16,
+                        alignSelf: 'center',
+                        // shadow
+                        color: 'black',
+                        shadowColor: "#000",
+                    }}
+                    data={formulariosTiempoData}
+                    width={screenWidth * 0.9}
+                    height={220}
+
+                    chartConfig={{
+                        backgroundGradientFrom: "white",
+                        backgroundGradientTo: "white",
+                        color: (opacity = 1) => `rgba(4, 89, 217, ${opacity})`, // Change the color to #0459d9
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Change the label color to black
+                    }}
+                    verticalLabelRotation={30}
+                />
 
                 <View style={[styles.titleForm, {
                     // que sea en horizontal
@@ -622,6 +663,23 @@ export default function Estadisticas({ navigation }) {
 
                 <View style={{ flexDirection: 'column' }}>
 
+                    <View style={{ flexDirection: 'column', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
+
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsTotales}</Text>
+                        </View>
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Aprobados</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsAprobados}</Text>
+                        </View>
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Editados</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsEditados}</Text>
+                        </View>
+
+                    </View>
+
                     <View style={{ padding: 10, width: screenWidth * 0.7 }}>
                         <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
                         <PieChart
@@ -636,22 +694,6 @@ export default function Estadisticas({ navigation }) {
                             absolute
                         />
                     </View>
-
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', }}>
-                        <View style={[styles.bloqueData, { width: screenWidth * 0.4 }]}>
-                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Total</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>{formsTotales}</Text>
-                        </View>
-                        <View style={[styles.bloqueData, { width: screenWidth * 0.4 }]}>
-                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Aprobados</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>{formsAprobados}</Text>
-                        </View>
-                        <View style={[styles.bloqueData, { width: screenWidth * 0.4 }]}>
-                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>Cantidad Editados</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>{formsEditados}</Text>
-                        </View>
-                    </View>
-
 
                 </View>
 

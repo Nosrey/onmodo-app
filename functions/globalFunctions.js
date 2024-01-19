@@ -66,33 +66,33 @@ function returnTitle(title) {
         return 'controlalergenos';
     } else if (title === 'Entrega de Bidones de Aceite Usado') {
         return 'entregabidones';
-    } else if (title === 'Flash Incidente') {
+    } else if (title === 'Flash Reporte de Incidentes') {
         return 'flashincidente';
-    } else if (title === 'Informe Accidente') {
+    } else if (title === 'Informe interno de Accidente') {
         return 'informeintaccidente';
-    } else if (title === 'Registro de Capacitación') {
+    } else if (title === 'Registro de Capacitacion') {
         return 'registrocapacitacion';
     } else if (title === 'Planilla de Decomiso de Materias Primas') {
         return 'registrodecomiso';
-    } else if (title === 'Registro Simulacro') {
+    } else if (title === 'Registro de Simulacro') {
         return 'registrosimulacro';
-    } else if (title === 'Rechazo /  Devolución de Materias Primas') {
+    } else if (title === 'Rechazo / Devolucion de Materias Primas') {
         return 'reporterechazo';
-    } else if (title === 'Verificación Balanzas') {
+    } else if (title === 'Verificacion Balanzas') {
         return 'verificacionbalanza';
-    } else if (title === 'Verificación de Termómetros') {
+    } else if (title === 'Verificacion Termometros') {
         return 'verificaciontermometros';
     } else if (title === 'Uso y Cambio de Aceite en Freidora') {
         return 'usocambioaceite';
-    } else if (title === 'Servicios en línea') {
+    } else if (title === 'Servicios en linea') {
         return 'servicioenlinea';
-    } else if (title === 'Recuperación de Productos') {
+    } else if (title === 'Recuperacion de Productos') {
         return 'recuperacionproducto';
     } else if (title === 'Control de Cloro Activo Residual') {
         return 'controlcloro';
     } else if (title === 'Control de Vidrios') {
         return 'controlvidrio';
-    } else if (title === 'Control de Equipos de Frío') {
+    } else if (title === 'Control de Equipos de Frio') {
         return 'controlequipofrio';
     } else if (title === 'Planilla de Carga / Recepcion de Materias Primas') {
         return 'carga';
@@ -102,17 +102,19 @@ function returnTitle(title) {
         return 'controlproceso';
     } else if (title === 'Planilla de Descongelamiento') {
         return 'descongelamiento';
-    } else if (title === 'Distribución / Expedición') {
+    } else if (title === 'Distribucion / Expedicion') {
         return 'distribucion';
     } else if (title === 'Planilla de Armado y Fraccionamiento') {
         return 'planillaarmado';
-    } else if (title === 'Despacho a Producción') {
+    } else if (title === 'Despacho a Produccion') {
         return 'despachoproduccion';
-    } else if (title === 'Planilla de Sanitización') {
+    } else if (title === 'Planilla de Sanitizacion') {
         return 'sanitizacion';
-    } else if (title === 'Planilla de Recepción') {
+    } else if (title === 'Control de Comensales con dietas especiales') {
+        return 'dietasespeciales';
+    } else if (title === 'Planilla de Recepcion') {
         return 'recepcion';
-    } else if (title === 'Entrega de ropa de trabajo y EPP') {
+    } else if (title === 'Entrega de Ropa de Trabajo y EPP') {
         return 'entregaropa';
     }
     else if (title === 'Control de Equipos de Frio') {
@@ -455,7 +457,7 @@ export const formulariosData = [
             { text: "TEMPERATURA INTERNA: Menor a 13ºC", tipo: "text" },
             { text: "PROCEDIMIENTO", tipo: "text" },
             { text: "1. Se prepara el primer plato (plato testigo) como muestra de referencia para armar el resto de los platos, teniendo en cuenta gramajes, ingredientes, formas, tamaños, presentación, entre otros.", tipo: "text" },
-            { text: "2. Se registra en esta planillala temperatura inicial del alimento del plato testigo y se deja el termómetro colocado en él durante todo el proceso. El uso de porcionadores es mandatorio para la estandarización del producto final y uso racional de la materia prima.", tipo: "text" },
+            { text: "2. Se registra en esta planilla la temperatura inicial del alimento del plato testigo y se deja el termómetro colocado en él durante todo el proceso. El uso de porcionadores es mandatorio para la estandarización del producto final y uso racional de la materia prima.", tipo: "text" },
             { text: "3. El primer plato permanece a un lado con el termómetro mientras se continúa con la producción de todo el lote, siguiendo el plato testigo.", tipo: "text" },
             { text: "4. Del plato testigo se monitorea su temperatura, estando correcto el procedimiento si el alimento se encuentra a menos de 13ºC en el centro del alimento.", tipo: "text" },
             { text: "5. Finalizado el último plato, se efectúa la lectura del termómetro del plato testigo y se registra en esta planillala temperatura final. El armado de platos no debe superar los 45 minutos de exposición a temperatura ambiente.", tipo: "text" },
@@ -520,7 +522,7 @@ export const formulariosData = [
                     { name: "DNI", tipo: "text" },
                     { name: "Nombre y Apellido", tipo: "text" },
                     { name: "Area/Lugar de trabajo", tipo: "text" },
-                    { name: "Resultado Evaluacion", tipo: "text" },
+                    { name: "Resultado de evaluación", tipo: "text" },
                     { name: "Método de evaluación", tipo: "select", options: ["Oral", "Escrito"] },
                 ]
             },

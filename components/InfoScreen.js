@@ -105,7 +105,7 @@ export default function InfoScreen({ navigation, params }) {
                         return (
                             <Text key={index} style={[styles.message, {
                                 // hago que el texto este justificado
-                                textAlign: 'justify',
+                                textAlign: 'left',
                             }]}>{msg.text}</Text>
                         )
                 })}

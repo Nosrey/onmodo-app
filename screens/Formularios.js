@@ -161,18 +161,20 @@ const styles = StyleSheet.create({
     },
     box: {
         // width: 150,
-        width: "45%",
-        marginHorizontal: "2.5%",
+        width: "48%",
+        marginHorizontal: "1%",
         height: 100,
         borderRadius: 10,
         marginTop: 15,
         backgroundColor: '#E7E7E7',
         justifyContent: 'center',
-        padding: 5,
+        padding: 1.5,
     },
     boxTitle: {
         textAlign: 'center',
         justifyContent: 'center',
+        // hago que el texto no  se  corten las palabras
+        flexWrap: 'wrap',
         fontFamily: "GothamRoundedMedium",
         fontSize: 12,
         paddingHorizontal: 10,
