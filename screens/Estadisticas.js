@@ -82,10 +82,14 @@ export default function Estadisticas({ navigation }) {
     },
     ]);
     const [formulariosTiempoData, setFormulariosTiempoData] = useState({
-        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        labels: ["1", "2", "3", "4", "5", "6", "7", "8"
+        , "9", "10", "11", "12", " "
+    ],
         datasets: [
             {
-                data: [0, 0, 0, 7, 0, 0, 12, 0, 0, 0, 8, 0]
+                data: [0, 0, 0, 7, 0, 0, 12, 0
+                    , 0, 0, 8, 7, 0
+                ]
             }
         ]
     });
@@ -223,7 +227,7 @@ export default function Estadisticas({ navigation }) {
                 setAñoMaximo(añoMaximoTemp);
                 setAñoFET(añoMaximoTemp.toString());
                 setTotalFormulariosFET(totalFormulariosFETTemp);
-                setUpdate(true)            
+                setUpdate(true)
             })
             .catch((error) => {
                 console.error(error);
@@ -340,15 +344,15 @@ export default function Estadisticas({ navigation }) {
 
     const screenWidth = Dimensions.get("window").width;
     let cajaTextoHeader = [
-        { title: "| Estadísticas", style: "title" },
-        { title: "Panel de Estadísticas", style: "title" }
+        { title: "| Panel de Estadísticas", style: "title" },
+        // { title: "Panel de Estadísticas", style: "title" }
     ];
 
     const data = {
-        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre", 'a'],
         datasets: [
             {
-                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             }
         ]
     };
@@ -371,7 +375,9 @@ export default function Estadisticas({ navigation }) {
     }
 
     return (
-        <View style={[styles.container]}>
+        <View style={[styles.container, {
+            width: screenWidth,
+        }]}>
             <View>
                 <Header cajaText={cajaTextoHeader} />
             </View>
@@ -399,7 +405,7 @@ export default function Estadisticas({ navigation }) {
                         <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
                         <PieChart
                             data={usuariosPorRol}
-                            width={screenWidth}
+                            width={screenWidth * 0.9}
                             height={220}
                             chartConfig={chartConfig}
                             accessor={"population"}
@@ -632,19 +638,49 @@ export default function Estadisticas({ navigation }) {
                         // shadow
                         color: 'black',
                         shadowColor: "#000",
+                        backgroundColor: 'red'
                     }}
                     data={formulariosTiempoData}
                     width={screenWidth * 0.9}
-                    height={220}
-
+                    showValuesOnTopOfBars={true}
+                    height={280}
                     chartConfig={{
                         backgroundGradientFrom: "white",
                         backgroundGradientTo: "white",
                         color: (opacity = 1) => `rgba(4, 89, 217, ${opacity})`, // Change the color to #0459d9
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Change the label color to black
                     }}
-                    verticalLabelRotation={30}
+        
                 />
+
+{/* <BarChart
+  data={formulariosTiempoData}
+  width={400}
+  height={220}
+  yAxisLabel="$"
+  chartConfig={chartConfig}
+  verticalLabelRotation={30}
+/> */}
+
+                {/* <ProgressChart
+                    data={formulariosTiempoData}
+                    width={screenWidth * 0.95}
+                    height={280}
+                    strokeWidth={16}
+                    radius={32}
+                    chartConfig={chartConfig}
+                    hideLegend={false}
+                    style={{
+                        // agrega estilos para que se vea una grafica gris con fondito blanco de react native chart kit
+                        marginVertical: 8,
+                        borderRadius: 16,
+                        alignSelf: 'center',
+                        // shadow
+                        color: 'black',
+                        shadowColor: "#000",
+                        backgroundColor: 'red'
+                    }}
+                /> */}
 
                 <View style={[styles.titleForm, {
                     // que sea en horizontal
@@ -684,7 +720,7 @@ export default function Estadisticas({ navigation }) {
                         <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
                         <PieChart
                             data={formulariosEditados}
-                            width={screenWidth}
+                            width={screenWidth * 0.9}
                             height={220}
                             chartConfig={chartConfig}
                             accessor={"population"}
