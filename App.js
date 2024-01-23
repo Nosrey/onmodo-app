@@ -58,6 +58,7 @@ const initialState = {
   legajoProfile: {},
   formulariosLegajo: [],
   logo: '',
+  documento: '',
 }
 
 const counterSlice = createSlice({
@@ -70,6 +71,9 @@ const counterSlice = createSlice({
     },
     setLegajoProfile(state, action) {
       state.legajoProfile = action.payload;
+    },
+    setDocumento(state, action) {
+      state.documento = action.payload;
     },
     setListaRecordatorios(state, action) {
       state.listaRecordatorios = action.payload;

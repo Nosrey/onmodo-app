@@ -20,6 +20,7 @@ export default function Inicio({ navigation }) {
     });
     const logged = useSelector((state) => state.logged);
     const business = useSelector(state => state.business);
+    const document = useSelector(state => state.documento);
     if (logged == false) {
         navigation.replace('Login');
     }
@@ -30,7 +31,6 @@ export default function Inicio({ navigation }) {
 
     // creo un estado para guardar el valor del input
     const [inputValue, setInputValue] = useState('');
-    const [document, setDocument] = useState('');
 
     function activarAlerta(lista) {
         // recorro la lista de recordatorios obtenida y si algun elemento tiene el status "pendiente" retorno true
@@ -61,8 +61,11 @@ export default function Inicio({ navigation }) {
                 onPress: () => {
                     // voy a este link en google drive si hay algo en document, si no no hago nada
                     if (document) {
+                        console.log('abriendo link: ', document)
                         Linking.openURL(document)
                             .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
                     }
                 }
             },
@@ -87,8 +90,11 @@ export default function Inicio({ navigation }) {
                 onPress: () => {
                     // voy a este link en google drive si hay algo en document, si no no hago nada
                     if (document) {
+                        console.log('abriendo link: ', document)
                         Linking.openURL(document)
                             .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
                     }
                 }
             },
@@ -129,8 +135,11 @@ export default function Inicio({ navigation }) {
                 onPress: () => {
                     // voy a este link en google drive si hay algo en document, si no no hago nada
                     if (document) {
+                        console.log('abriendo link: ', document)
                         Linking.openURL(document)
                             .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
                     }
                 }
             },
@@ -184,19 +193,19 @@ export default function Inicio({ navigation }) {
         prepare();
     }, []);
 
-    useEffect(() => {
-        let url = API_URL + "/api/newbusiness/" + business;
-        console.log('url', url)
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (data) {
-                    console.log('data: ', data)
-                    setDocument(data.response.linkDocumentacion);
-                }
-            })
-            .catch(error => console.log(error));
-    }, [])
+    // useEffect(() => {
+    //     let url = API_URL + "/api/newbusiness/" + business;
+    //     console.log('url', url)
+    //     fetch(url)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data) {
+    //                 console.log('data: ', data)
+    //                 setDocument(data.response.linkDocumentacion);
+    //             }
+    //         })
+    //         .catch(error => console.log(error));
+    // }, [])
 
     if (!fontsLoaded) return undefined;
     else SplashScreen.hideAsync();

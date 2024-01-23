@@ -138,7 +138,7 @@ export default function Login({ navigation }) {
                                     dispatch({ type: 'counter/setProvincia', payload: json2.response[0].provincia });
                                     dispatch({ type: 'counter/setLocalidad', payload: json2.response[0].localidad });
                                     dispatch({ type: 'counter/setContratoComedor', payload: json2.response[0].contratoComedor });
-                                    dispatch({ type: 'counter/setBusiness', payload: json2.response[0].business });                                    
+                                    dispatch({ type: 'counter/setBusiness', payload: json2.response[0].business });
 
                                     // hago un fetch GET a la url de la api + /api/recordatorio/${business}
                                     let url = API_URL + '/api/recordatorio/' + json2.response[0].business;
@@ -182,7 +182,7 @@ export default function Login({ navigation }) {
                                                 };
 
                                                 const evaluarFechaYFrecuencia = (fechaString, frecuencia) => {
-                                                    const fechaActual = new Date();               
+                                                    const fechaActual = new Date();
                                                     const fechaLimite = parseFecha(fechaString);
 
                                                     // Comprueba si la fecha ya pasó
@@ -193,12 +193,12 @@ export default function Login({ navigation }) {
                                                         return 'invalido';
                                                     }
 
-                                            
+
                                                     // Comprueba si la fecha está próxima según la frecuencia
                                                     const umbralDias = FrecuenciaToDias[frecuencia];
                                                     // creo una nueva fecha en let fechaUmbral que es igual a fechaLimite menos los dias de umbralDias
                                                     let fechaUmbral = new Date(fechaLimite);
-                                                    fechaUmbral.setDate(fechaUmbral.getDate() - umbralDias);                     
+                                                    fechaUmbral.setDate(fechaUmbral.getDate() - umbralDias);
 
                                                     if (fechaActual > fechaLimite) {
                                                         return 'invalido';
@@ -217,7 +217,7 @@ export default function Login({ navigation }) {
                                                         fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
                                                         return fecha
                                                     } else if (!item.fechas?.length && item.fechaInicio) {
-                                                      
+
                                                         return item.fechaInicio
                                                     } else {
                                                         // obtnego la fecha mas proxima con la propiedad ejecutado en false
@@ -227,7 +227,7 @@ export default function Login({ navigation }) {
                                                             fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
                                                             return fecha
                                                         } else if (!proxFecha && item.fechaInicio) {
-                                                           
+
                                                             return item.fechaInicio
                                                         } else {
                                                             // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023
@@ -319,7 +319,7 @@ export default function Login({ navigation }) {
                                         // si hay un error lo muestro en consola
                                         .catch((error) => {
                                             console.error('error en recordatorios: ', error)
-                                        })                         
+                                        })
                                     // reviso json2.response[0] y a todos los elementos que sean un array los guardo en otro array llamado formularios que sera un let
                                     let formularios = [];
                                     // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
@@ -331,7 +331,7 @@ export default function Login({ navigation }) {
                                     // hago un dispatch que setee formularios con el valor de formularios
                                     dispatch({ type: 'counter/setFormularios', payload: formularios });
                                     // elimino el stack de navegacion
-                                    url = API_URL + "/api/newbusiness/" +  json2.response[0].business;
+                                    url = API_URL + "/api/newbusiness/" + json2.response[0].business;
                                     fetch(url)
                                         .then((response) => response.json())
                                         // setLogo(state, action) {
@@ -340,6 +340,7 @@ export default function Login({ navigation }) {
                                         .then((json) => {
                                             if (json.success == true) {
                                                 dispatch({ type: 'counter/setLogo', payload: json.response.logo });
+                                                dispatch({ type: 'counter/setDocumento', payload: json.response.linkDocumentacion });
                                             }
                                         })
                                         .catch((error) => {

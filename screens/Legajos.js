@@ -61,7 +61,7 @@ export default function Legajos({ navigation }) {
                 });
                 // reviso listaLegajosTemp y si el elemento tiene un legajo de mas de 7 digitos entonces lo convierto en un string que diga "legajo invalido"
                 listaLegajosTemp = listaLegajosTemp.map((item) => {
-                    if (item.legajo > 9999999 || isNaN(item.legajo)) {
+                    if (item.legajo > Number.MAX_SAFE_INTEGER || isNaN(item.legajo)) {
                         item.legajoOriginal = item.legajo;
                         item.legajo = "Legajo invalido";
                     } else {

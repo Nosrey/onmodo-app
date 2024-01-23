@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { useSelector } from 'react-redux';
 // import useFonts
 import { useFonts } from 'expo-font';
 
 const FiltradorLegajos = ({ states, setStates, params }) => {
+    const rol = useSelector(state => state.rol);
     const [selectedOption, setSelectedOption] = useState('most-recent');
     const {paginaActual, paginaTotal, setPaginaTotal, setPaginaActual, elementsPerPage } = params;
     const [fontsLoaded] = useFonts({
@@ -53,9 +55,9 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
                         }}
                         style={styles.userInput}>
 
-                        <Picker.Item style={{fontSize: 12}}  label="Nivel 1" value="Nivel 1" />
-                        <Picker.Item style={{fontSize: 12}} label="Nivel 2" value="Nivel 2" />
-                        <Picker.Item style={{fontSize: 12}} label="Nivel 3" value="Nivel 3" />
+                        <Picker.Item style={{fontSize: 12}} label="Nivel 1" value="Nivel 1" />
+                        {rol > 2 && <Picker.Item style={{fontSize: 12}} label="Nivel 2" value="Nivel 2" />}
+                        {rol > 3 && <Picker.Item style={{fontSize: 12}} label="Nivel 3" value="Nivel 3" />}
                         <Picker.Item style={{fontSize: 12}} label="Alfabetico" value="Alfabetico" />
                     </Picker>
                 </View>

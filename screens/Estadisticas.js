@@ -23,6 +23,7 @@ import {
     StackedBarChart
 } from "react-native-chart-kit";
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import loading from '../assets/loading.png';
 
 export default function Estadisticas({ navigation }) {
     // traigo businessName de redux
@@ -83,13 +84,11 @@ export default function Estadisticas({ navigation }) {
     ]);
     const [formulariosTiempoData, setFormulariosTiempoData] = useState({
         labels: ["1", "2", "3", "4", "5", "6", "7", "8"
-        , "9", "10", "11", "12", " "
-    ],
+            , "9", "10", "11", "12", " "
+        ],
         datasets: [
             {
-                data: [0, 0, 0, 7, 0, 0, 12, 0
-                    , 0, 0, 8, 7, 0
-                ]
+                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             }
         ]
     });
@@ -116,11 +115,38 @@ export default function Estadisticas({ navigation }) {
     const [totalFormulariosFET, setTotalFormulariosFET] = useState(0);
     const [update, setUpdate] = useState(false);
     const [finalizado, setFinalizado] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
-    // const function numeroAMes(numero) {
-    //     switch (numero) {
-    //         case 1:
-    // }
+    function mesANumero(mes) {
+        switch (mes) {
+            case 'Enero':
+                return 1;
+            case 'Febrero':
+                return 2;
+            case 'Marzo':
+                return 3;
+            case 'Abril':
+                return 4;
+            case 'Mayo':
+                return 5;
+            case 'Junio':
+                return 6;
+            case 'Julio':
+                return 7;
+            case 'Agosto':
+                return 8;
+            case 'Septiembre':
+                return 9;
+            case 'Octubre':
+                return 10;
+            case 'Noviembre':
+                return 11;
+            case 'Diciembre':
+                return 12;
+            default:
+                return 0;
+        }
+    }
 
     useEffect(() => {
         // fetch a http://192.168.1.107:8080/api/statsusers/test but instead of this IP you need to put your IP from API_URL
@@ -187,28 +213,6 @@ export default function Estadisticas({ navigation }) {
             .then((json) => {
                 setFormsPerYear(json.formsPerYear);
                 setFormsPerYearFiltered(json.formsPerYear);
-                // reviso el array dentro de json.formsPerYear y busco el año minimo y maximo, esta es la estructura de los objetos dentro del array
-                // {
-                //     "formType": "Carga",
-                //     "formsPerMonth": [
-                //         {
-                //             "month": 12,
-                //             "year": 2023,
-                //             "count": 1
-                //         },
-                //         {
-                //             "month": 1,
-                //             "year": 2024,
-                //             "count": 2
-                //         }
-                //     ],
-                //     "totalFormsPerYear": {
-                //         "yearReference": 2024,
-                //         "count": 3
-                //     },
-                //     "status": true,
-                //     "error": null
-                // },
                 let añoMinimoTemp = 99999999999999
                 let añoMaximoTemp = 0
                 let totalFormulariosFETTemp = 0;
@@ -242,7 +246,6 @@ export default function Estadisticas({ navigation }) {
                 let formsEditadosTemp = 0;
                 let formsRechazadosTemp = 0;
                 let formsPendientesTemp = 0;
-                // json es un objeto que hay que recorrer con for in y cada elemento es un array de objetos, dichos objetos tienen la propiedad .status aveces, de tenerla y ser true, sumo 1 a formsAprobadosTemp, de tenerla y ser false, e independientemente de si es true, false o si no existe esa propiedad sumo 1 a formsTotalesTemp
                 for (const key in json) {
                     for (let i = 0; i < json[key].length; i++) {
                         if (json[key][i].status === 'approved') {
@@ -283,6 +286,8 @@ export default function Estadisticas({ navigation }) {
                     ]
                 )
 
+                setLoaded(true);
+
             })
             .catch((error) => {
                 console.error(error);
@@ -298,37 +303,37 @@ export default function Estadisticas({ navigation }) {
                     return item?.formType?.toLowerCase().includes(returnTitle(ordenarPorFET).toLowerCase());
                 }
             });
-            // si el mes es todo el año, no hago nada
 
             if (mesFET !== 'Todo el año') {
-                // filtro solo los forms que coincidan con el mes
-                formsPerYearFilteredTemp = formsPerYearFilteredTemp.filter((item) => {
-                    return item.formsPerMonth.some((item2) => {
-                        // convierto el mes como Enero en numerico como 1
-                        let mesNumerico = new Date(Date.parse(item2.month + " 1, 2021")).getMonth() + 1;
-                        console.log('mes original: ', item2.month)
-                        console.log('mes de turno', mesNumerico)
-                        return item2.month == mesNumerico;
+                for (let i = 0; i < formsPerYearFilteredTemp?.length; i++) {
+                    formsPerYearFilteredTemp[i].formsPerMonth = formsPerYearFilteredTemp[i].formsPerMonth.filter((item) => {
+                        return item.month === mesANumero(mesFET);
                     });
+                }
+            }
+
+            for (let i = 0; i < formsPerYearFilteredTemp?.length; i++) {
+                formsPerYearFilteredTemp[i].formsPerMonth = formsPerYearFilteredTemp[i].formsPerMonth.filter((item) => {
+                    return item.year === parseInt(añoFET);
                 });
             }
 
-
-
-
-            // filtro solo los forms que coincidan con el año
-
-
-            formsPerYearFilteredTemp = formsPerYearFilteredTemp.filter((item) => {
-                return item.formsPerMonth.some((item2) => {
-                    return item2.year == parseInt(añoFET);
-                });
-            });
-
-
-
+            // seteo formulariosTiempoData sacando el count de cada formsPerMonth y asignandolo en su posicion en base al month-1
+            let formulariosTiempoDataCopy = JSON.parse(JSON.stringify(formulariosTiempoData));
+            formulariosTiempoDataCopy.datasets = [{
+                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            }]
+            for (let i = 0; i < formsPerYearFilteredTemp?.length; i++) {
+                for (let j = 0; j < formsPerYearFilteredTemp[i].formsPerMonth?.length; j++) {
+                    if (formsPerYearFilteredTemp[i]?.formsPerMonth[j]?.count && formsPerYearFilteredTemp[i]?.formsPerMonth[j]?.month) {
+                        console.log('entrando a aplicar datasets')
+                        formulariosTiempoDataCopy.datasets[0].data[formsPerYearFilteredTemp[i]?.formsPerMonth[j]?.month - 1] = formsPerYearFilteredTemp[i]?.formsPerMonth[j]?.count
+                    }
+                }
+            }
+            console.log('formulariosTiempoDataCopy: ', formulariosTiempoDataCopy)
+            setFormulariosTiempoData(formulariosTiempoDataCopy)
             setFormsPerYearFiltered(formsPerYearFilteredTemp);
-            // seteo el total de formularios
             let totalFormulariosFETTemp = 0;
 
             for (let i = 0; i < formsPerYearFilteredTemp?.length; i++) {
@@ -376,364 +381,341 @@ export default function Estadisticas({ navigation }) {
 
     return (
         <View style={[styles.container, {
-            width: screenWidth,
+            width: screenWidth,            
+            justifyContent: (loaded ? 'space-between' : 'flex-start')
         }]}>
             <View>
                 <Header cajaText={cajaTextoHeader} />
             </View>
-            <ScrollView>
-                <View style={[styles.titleForm, {
-                    // que sea en horizontal
-                    flexDirection: 'row',
-                    // que se esten lo mas opuestos uno de otro
-                    justifyContent: 'space-between',
-                }]}>
-                    <Text style={{
-                        fontSize: 18,
-                        fontFamily: "GothamRoundedBold",
-                        width: "70%",
-                        // que el texto salte de linea si es muy largo
-                        flexWrap: 'wrap',
-                    }}>Personal</Text>
-                </View>
-                <View style={styles.reglon}>
-                    <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
-                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
-                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalUsuarios}</Text>
+            <Image source={loading} style={{ width: (screenWidth * 0.5), height: 150, marginTop: (screenWidth * 0.15), alignSelf: 'center', display: (!loaded ? 'flex' : 'none') }} />
+            {loaded &&
+                <ScrollView>
+                    <View style={[styles.titleForm, {
+                        // que sea en horizontal
+                        flexDirection: 'row',
+                        // que se esten lo mas opuestos uno de otro
+                        justifyContent: 'space-between',
+                    }]}>
+                        <Text style={{
+                            fontSize: 18,
+                            fontFamily: "GothamRoundedBold",
+                            width: "70%",
+                            // que el texto salte de linea si es muy largo
+                            flexWrap: 'wrap',
+                        }}>Personal</Text>
                     </View>
-                    <View style={{ padding: 10, width: screenWidth }}>
-                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
-                        <PieChart
-                            data={usuariosPorRol}
-                            width={screenWidth * 0.9}
-                            height={220}
-                            chartConfig={chartConfig}
-                            accessor={"population"}
-                            backgroundColor={"transparent"}
-                            paddingLeft={"15"}
-                            // center={[10, 50]}
-                            absolute
-                        />
-                    </View>
-
-                </View>
-
-                <View style={[styles.titleForm, {
-                    // que sea en horizontal
-                    flexDirection: 'row',
-                    // que se esten lo mas opuestos uno de otro
-                    justifyContent: 'space-between',
-                }]}>
-                    <Text style={{
-                        fontSize: 18,
-                        fontFamily: "GothamRoundedBold",
-                        width: "70%",
-                        // que el texto salte de linea si es muy largo
-                        flexWrap: 'wrap',
-                    }}>Distribución geográfica</Text>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
-                    <Text style={{ marginRight: 10, fontSize: 20 }}>Ordenar por: </Text>
-                    <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10 }}>
-                        <Picker
-                            selectedValue={filtroDistribucionGeo}
-                            onValueChange={(itemValue, itemIndex) => setFiltroDistribucionGeo(itemValue)}
-                            style={{ fontFamily: "GothamRoundedMedium" }}
-                        >
-                            <Picker.Item label="Cantidad de Personas" value="Cantidad de Personas" />
-                            <Picker.Item label="Cantidad de Formularios" value="Cantidad de Formularios" />
-                        </Picker>
-                    </View>
-                </View>
-                <View style={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}>
-                    {distribucionGeo
-                        .sort((a, b) => (filtroDistribucionGeo === 'Cantidad de Personas' ? b.usersCount - a.usersCount : b.formulariosCount - a.formulariosCount))
-                        ?.map((item, index) => (
-                            <View style={[styles.bloqueData, { width: screenWidth * 0.3, flexDirection: 'column', alignItems: 'flex-start' }]} key={index}>
-                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, marginBottom: 5 }}>{item?.provincia}</Text>
-                                <View style={{ flexDirection: 'column' }}>
-                                    <View style={{
-                                        flexDirection: 'column',
-                                        justifyContent: 'space-evenly',
-                                        alignItems: 'flex-start'
-                                    }}>
-                                        <Text style={{
-                                            fontFamily: "GothamRoundedBold",
-                                        }}>{item?.usersCount} Personas</Text>
-                                        <Text style={{
-                                            fontFamily: "GothamRoundedBold",
-                                        }}>{item?.formulariosCount} Formularios</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        ))}
-                </View>
-
-                <View style={[styles.titleForm, {
-                    // que sea en horizontal
-                    flexDirection: 'row',
-                    // que se esten lo mas opuestos uno de otro
-                    justifyContent: 'space-between',
-                }]}>
-                    <Text style={{
-                        fontSize: 18,
-                        fontFamily: "GothamRoundedBold",
-                        width: "70%",
-                        // que el texto salte de linea si es muy largo
-                        flexWrap: 'wrap',
-                    }}>Formularios</Text>
-                </View>
-                <View style={styles.reglon}>
-                    <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
-                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
-                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalFormularios}</Text>
-                    </View>
-                    <Text style={{
-                        fontFamily: "GothamRoundedMedium",
-                        fontSize: 16,
-                        marginTop: 5,
-                        marginLeft: 5,
-                    }}>Más utilizados</Text>
-                    <View style={{ padding: 10, width: screenWidth * 0.6, flexDirection: 'column', fontFamily: "GothamRoundedMedium" }}>
-                        <View style={{ flexDirection: 'row', width: "100%" }}>
-                            <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>1</Text>
-                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontSize: 16, flexWrap: 'wrap', fontFamily: "GothamRoundedMedium" }}>{getTitle(top3Formularios[0])}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', width: "100%" }}>
-                            <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>2</Text>
-                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap' }}>{getTitle(top3Formularios[1])}</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', width: "100%" }}>
-                            <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>3</Text>
-                            <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap' }}>{getTitle(top3Formularios[2])}</Text>
-                        </View>
-                    </View>
-
-                </View>
-
-                <View style={[styles.titleForm, {
-                    // que sea en horizontal
-                    flexDirection: 'row',
-                    // que se esten lo mas opuestos uno de otro
-                    justifyContent: 'space-between',
-                }]}>
-                    <Text style={{
-                        fontSize: 18,
-                        fontFamily: "GothamRoundedBold",
-                        width: "70%",
-                        // que el texto salte de linea si es muy largo
-                        flexWrap: 'wrap',
-                    }}>Uso de Formularios en el tiempo</Text>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                    <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Ordenar por: </Text>
-                    <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
-                        <Picker
-                            selectedValue={ordenarPorFET}
-                            editable={finalizado}
-                            enabled={finalizado}
-                            onValueChange={(itemValue, itemIndex) => {
-                                setOrdenarPorFET(itemValue)
-                                setUpdate(true)
-                            }}
-                        >
-                            <Picker.Item label="Control de Cloro Activo Residual" value="Control de Cloro Activo Residuals" />
-                            <Picker.Item label="Control de Equipos de Frio" value="Control de Equipos de Frio" />
-                            <Picker.Item label="Control de Vidrios" value="Control de Vidrios" />
-                            <Picker.Item label="Chequeo de uso de EPP" value="Chequeo de uso de EPP" />
-                            <Picker.Item label="Planilla de Armado y Fraccionamiento" value="Planilla de Armado y Fraccionamiento" />
-                            <Picker.Item label="Registro de Capacitación" value="Registro de Capacitación" />
-                            <Picker.Item label="Planilla de Decomiso de Materias Primas" value="Planilla de Decomiso de Materias Primas" />
-                            <Picker.Item label="Planilla de Carga / Recepción de Materias Primas" value="Planilla de Carga / Recepción de Materias Primas" />
-                            <Picker.Item label="Control de Procesos" value="Control de Procesos" />
-                            <Picker.Item label="Planilla de Descongelamiento" value="Planilla de Descongelamiento" />
-                            <Picker.Item label="Despacho a Producción" value="Despacho a Producción" />
-                            <Picker.Item label="Distribución / Expedición" value="Distribución / Expedición" />
-                            <Picker.Item label="Planilla de Recepción" value="Planilla de Recepción" />
-                            <Picker.Item label="Planilla de Sanitización" value="Planilla de Sanitización" />
-                            <Picker.Item label="Servicios en línea" value="Servicios en línea" />
-                            <Picker.Item label="Recuperación de Productos" value="Recuperación de Productos" />
-                            <Picker.Item label="Uso y Cambio de Aceite en Freidora" value="Uso y Cambio de Aceite en Freidora" />
-                            <Picker.Item label="Entrega de Bidones de Aceite Usado" value="Entrega de Bidones de Aceite Usado" />
-                            <Picker.Item label="Rechazo / Devolución de Materias Primas" value="Rechazo / Devolución de Materias Primas" />
-                            <Picker.Item label="Verificación Balanzas" value="Verificación Balanzas" />
-                            <Picker.Item label="Verificación Termómetros" value="Verificación Termómetros" />
-                            <Picker.Item label="Entrega de Ropa de Trabajo y EPP" value="Entrega de Ropa de Trabajo y EPP" />
-                            <Picker.Item label="Control de Comensales con dietas especiales" value="Control de Comensales con dietas especiales" />
-                            <Picker.Item label="Flash Reporte de Incidentes" value="Flash Reporte de Incidentes" />
-                            <Picker.Item label="Informe interno de Accidente" value="Informe interno de Accidente" />
-                            <Picker.Item label="Registro de Simulacro" value="Registro de Simulacro" />
-
-                        </Picker>
-                    </View>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                    <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Mes: </Text>
-                    <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
-                        <Picker
-                            selectedValue={mesFET}
-                            editable={finalizado}
-                            enabled={finalizado}
-                            onValueChange={(itemValue, itemIndex) => {
-                                setMesFET(itemValue)
-                                setUpdate(true)
-                            }}
-                        >
-                            <Picker.Item label="Todo el año" value="Todo el año" />
-                            <Picker.Item label="Enero" value="Enero" />
-                            <Picker.Item label="Febrero" value="Febrero" />
-                            <Picker.Item label="Marzo" value="Marzo" />
-                            <Picker.Item label="Abril" value="Abril" />
-                            <Picker.Item label="Mayo" value="Mayo" />
-                            <Picker.Item label="Junio" value="Junio" />
-                            <Picker.Item label="Julio" value="Julio" />
-                            <Picker.Item label="Agosto" value="Agosto" />
-                            <Picker.Item label="Septiembre" value="Septiembre" />
-                            <Picker.Item label="Octubre" value="Octubre" />
-                            <Picker.Item label="Noviembre" value="Noviembre" />
-                            <Picker.Item label="Diciembre" value="Diciembre" />
-                        </Picker>
-                    </View>
-                </View>
-
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                    <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Año: </Text>
-                    <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
-                        <Picker
-                            selectedValue={añoFET}
-                            editable={finalizado}
-                            enabled={finalizado}
-                            onValueChange={(itemValue, itemIndex) => {
-                                setAñoFET(itemValue)
-                                setUpdate(true)
-                            }}
-                        >
-                            {añoMaximo && añoMinimo && [...Array(añoMaximo - añoMinimo + 1)].map((_, i) => (
-                                <Picker.Item key={i} label={(añoMinimo + i).toString()} value={(añoMinimo + i).toString()} />
-                            ))}
-                        </Picker>
-                    </View>
-                </View>
-
-
-
-                <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05, marginTop: 10 }]}>
-                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
-                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalFormulariosFET}</Text>
-                </View>
-
-                <BarChart
-                    style={{
-                        // agrega estilos para que se vea una grafica gris con fondito blanco de react native chart kit
-                        marginVertical: 8,
-                        borderRadius: 16,
-                        alignSelf: 'center',
-                        // shadow
-                        color: 'black',
-                        shadowColor: "#000",
-                        backgroundColor: 'red'
-                    }}
-                    data={formulariosTiempoData}
-                    width={screenWidth * 0.9}
-                    showValuesOnTopOfBars={true}
-                    height={280}
-                    chartConfig={{
-                        backgroundGradientFrom: "white",
-                        backgroundGradientTo: "white",
-                        color: (opacity = 1) => `rgba(4, 89, 217, ${opacity})`, // Change the color to #0459d9
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Change the label color to black
-                    }}
-        
-                />
-
-{/* <BarChart
-  data={formulariosTiempoData}
-  width={400}
-  height={220}
-  yAxisLabel="$"
-  chartConfig={chartConfig}
-  verticalLabelRotation={30}
-/> */}
-
-                {/* <ProgressChart
-                    data={formulariosTiempoData}
-                    width={screenWidth * 0.95}
-                    height={280}
-                    strokeWidth={16}
-                    radius={32}
-                    chartConfig={chartConfig}
-                    hideLegend={false}
-                    style={{
-                        // agrega estilos para que se vea una grafica gris con fondito blanco de react native chart kit
-                        marginVertical: 8,
-                        borderRadius: 16,
-                        alignSelf: 'center',
-                        // shadow
-                        color: 'black',
-                        shadowColor: "#000",
-                        backgroundColor: 'red'
-                    }}
-                /> */}
-
-                <View style={[styles.titleForm, {
-                    // que sea en horizontal
-                    flexDirection: 'row',
-                    // que se esten lo mas opuestos uno de otro
-                    justifyContent: 'space-between',
-                }]}>
-                    <Text style={{
-                        fontSize: 18,
-                        fontFamily: "GothamRoundedBold",
-                        width: "70%",
-                        // que el texto salte de linea si es muy largo
-                        flexWrap: 'wrap',
-                    }}>Solicitudes de Edición</Text>
-                </View>
-
-                <View style={{ flexDirection: 'column' }}>
-
-                    <View style={{ flexDirection: 'column', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
-
+                    <View style={styles.reglon}>
                         <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsTotales}</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalUsuarios}</Text>
                         </View>
-                        <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Aprobados</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsAprobados}</Text>
-                        </View>
-                        <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Editados</Text>
-                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsEditados}</Text>
+                        <View style={{ padding: 10, width: screenWidth }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
+                            <PieChart
+                                data={usuariosPorRol}
+                                width={screenWidth * 0.9}
+                                height={220}
+                                chartConfig={chartConfig}
+                                accessor={"population"}
+                                backgroundColor={"transparent"}
+                                paddingLeft={"15"}
+                                // center={[10, 50]}
+                                absolute
+                            />
                         </View>
 
                     </View>
 
-                    <View style={{ padding: 10, width: screenWidth * 0.7 }}>
-                        <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
-                        <PieChart
-                            data={formulariosEditados}
-                            width={screenWidth * 0.9}
-                            height={220}
-                            chartConfig={chartConfig}
-                            accessor={"population"}
-                            backgroundColor={"transparent"}
-                            paddingLeft={"15"}
-                            // center={[10, 50]}
-                            absolute
-                        />
+                    <View style={[styles.titleForm, {
+                        // que sea en horizontal
+                        flexDirection: 'row',
+                        // que se esten lo mas opuestos uno de otro
+                        justifyContent: 'space-between',
+                    }]}>
+                        <Text style={{
+                            fontSize: 18,
+                            fontFamily: "GothamRoundedBold",
+                            width: "70%",
+                            // que el texto salte de linea si es muy largo
+                            flexWrap: 'wrap',
+                        }}>Distribución geográfica</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        <Text style={{ marginRight: 10, fontSize: 20 }}>Ordenar por: </Text>
+                        <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10 }}>
+                            <Picker
+                                selectedValue={filtroDistribucionGeo}
+                                onValueChange={(itemValue, itemIndex) => setFiltroDistribucionGeo(itemValue)}
+                                style={{ fontFamily: "GothamRoundedMedium" }}
+                            >
+                                <Picker.Item label="Cantidad de Personas" value="Cantidad de Personas" />
+                                <Picker.Item label="Cantidad de Formularios" value="Cantidad de Formularios" />
+                            </Picker>
+                        </View>
+                    </View>
+                    <View style={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        {distribucionGeo
+                            .sort((a, b) => (filtroDistribucionGeo === 'Cantidad de Personas' ? b.usersCount - a.usersCount : b.formulariosCount - a.formulariosCount))
+                            ?.map((item, index) => (
+                                <View style={[styles.bloqueData, { width: screenWidth * 0.4, flexDirection: 'column', alignItems: 'flex-start' }]} key={index}>
+                                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, marginBottom: 5 }}>{item?.provincia}</Text>
+                                    <View style={{ flexDirection: 'column' }}>
+                                        <View style={{
+                                            flexDirection: 'column',
+                                            justifyContent: 'space-evenly',
+                                            alignItems: 'flex-start'
+                                        }}>
+                                            <Text style={{
+                                                fontFamily: "GothamRoundedBold",
+                                            }}>{item?.usersCount} Personas</Text>
+                                            <Text style={{
+                                                fontFamily: "GothamRoundedBold",
+                                            }}>{item?.formulariosCount} Formularios</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            ))}
                     </View>
 
-                </View>
+                    <View style={[styles.titleForm, {
+                        // que sea en horizontal
+                        flexDirection: 'row',
+                        // que se esten lo mas opuestos uno de otro
+                        justifyContent: 'space-between',
+                    }]}>
+                        <Text style={{
+                            fontSize: 18,
+                            fontFamily: "GothamRoundedBold",
+                            width: "70%",
+                            // que el texto salte de linea si es muy largo
+                            flexWrap: 'wrap',
+                        }}>Formularios</Text>
+                    </View>
+                    <View style={styles.reglon}>
+                        <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalFormularios}</Text>
+                        </View>
+                        <Text style={{
+                            fontFamily: "GothamRoundedMedium",
+                            fontSize: 16,
+                            marginTop: 5,
+                            marginLeft: 5,
+                        }}>Más utilizados</Text>
+                        <View style={{ padding: 10, width: screenWidth * 0.6, flexDirection: 'column', fontFamily: "GothamRoundedMedium" }}>
+                            <View style={{ flexDirection: 'row', width: "100%" }}>
+                                <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>1</Text>
+                                <Text style={{ marginLeft: 10, alignSelf: 'center', fontSize: 16, flexWrap: 'wrap', fontFamily: "GothamRoundedMedium" }}>{getTitle(top3Formularios[0])}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', width: "100%" }}>
+                                <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>2</Text>
+                                <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap' }}>{getTitle(top3Formularios[1])}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', width: "100%" }}>
+                                <Text style={[styles.redondo, { fontFamily: "GothamRoundedMedium" }]}>3</Text>
+                                <Text style={{ marginLeft: 10, alignSelf: 'center', fontFamily: "GothamRoundedMedium", fontSize: 16, flexWrap: 'wrap' }}>{getTitle(top3Formularios[2])}</Text>
+                            </View>
+                        </View>
 
-            </ScrollView>
+                    </View>
+
+                    <View style={[styles.titleForm, {
+                        // que sea en horizontal
+                        flexDirection: 'row',
+                        // que se esten lo mas opuestos uno de otro
+                        justifyContent: 'space-between',
+                    }]}>
+                        <Text style={{
+                            fontSize: 18,
+                            fontFamily: "GothamRoundedBold",
+                            width: "70%",
+                            // que el texto salte de linea si es muy largo
+                            flexWrap: 'wrap',
+                        }}>Uso de Formularios en el tiempo</Text>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                        <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Ordenar por: </Text>
+                        <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
+                            <Picker
+                                selectedValue={ordenarPorFET}
+                                editable={finalizado}
+                                enabled={finalizado}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    setOrdenarPorFET(itemValue)
+                                    setUpdate(true)
+                                }}
+                            >
+                                <Picker.Item label="Control de Cloro Activo Residual" value="Control de Cloro Activo Residual" />
+                                <Picker.Item label="Control de Equipos de Frio" value="Control de Equipos de Frio" />
+                                <Picker.Item label="Control de Vidrios" value="Control de Vidrios" />
+                                <Picker.Item label="Chequeo de uso de EPP" value="Chequeo de uso de EPP" />
+                                <Picker.Item label="Planilla de Armado y Fraccionamiento" value="Planilla de Armado y Fraccionamiento" />
+                                <Picker.Item label="Registro de Capacitación" value="Registro de Capacitación" />
+                                <Picker.Item label="Planilla de Decomiso de Materias Primas" value="Planilla de Decomiso de Materias Primas" />
+                                <Picker.Item label="Planilla de Carga / Recepción de Materias Primas" value="Planilla de Carga / Recepción de Materias Primas" />
+                                <Picker.Item label="Control de Procesos" value="Control de Procesos" />
+                                <Picker.Item label="Planilla de Descongelamiento" value="Planilla de Descongelamiento" />
+                                <Picker.Item label="Despacho a Producción" value="Despacho a Producción" />
+                                <Picker.Item label="Distribución / Expedición" value="Distribución / Expedición" />
+                                <Picker.Item label="Planilla de Recepción" value="Planilla de Recepción" />
+                                <Picker.Item label="Planilla de Sanitización" value="Planilla de Sanitización" />
+                                <Picker.Item label="Servicios en línea" value="Servicios en línea" />
+                                <Picker.Item label="Recuperación de Productos" value="Recuperación de Productos" />
+                                <Picker.Item label="Uso y Cambio de Aceite en Freidora" value="Uso y Cambio de Aceite en Freidora" />
+                                <Picker.Item label="Entrega de Bidones de Aceite Usado" value="Entrega de Bidones de Aceite Usado" />
+                                <Picker.Item label="Rechazo / Devolución de Materias Primas" value="Rechazo / Devolución de Materias Primas" />
+                                <Picker.Item label="Verificación Balanzas" value="Verificación Balanzas" />
+                                <Picker.Item label="Verificación Termómetros" value="Verificación Termómetros" />
+                                <Picker.Item label="Entrega de Ropa de Trabajo y EPP" value="Entrega de Ropa de Trabajo y EPP" />
+                                <Picker.Item label="Control de Comensales con dietas especiales" value="Control de Comensales con dietas especiales" />
+                                <Picker.Item label="Flash Reporte de Incidentes" value="Flash Reporte de Incidentes" />
+                                <Picker.Item label="Informe interno de Accidente" value="Informe interno de Accidente" />
+                                <Picker.Item label="Registro de Simulacro" value="Registro de Simulacro" />
+
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                        <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Mes: </Text>
+                        <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
+                            <Picker
+                                selectedValue={mesFET}
+                                editable={finalizado}
+                                enabled={finalizado}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    setMesFET(itemValue)
+                                    setUpdate(true)
+                                }}
+                            >
+                                <Picker.Item label="Todo el año" value="Todo el año" />
+                                <Picker.Item label="Enero" value="Enero" />
+                                <Picker.Item label="Febrero" value="Febrero" />
+                                <Picker.Item label="Marzo" value="Marzo" />
+                                <Picker.Item label="Abril" value="Abril" />
+                                <Picker.Item label="Mayo" value="Mayo" />
+                                <Picker.Item label="Junio" value="Junio" />
+                                <Picker.Item label="Julio" value="Julio" />
+                                <Picker.Item label="Agosto" value="Agosto" />
+                                <Picker.Item label="Septiembre" value="Septiembre" />
+                                <Picker.Item label="Octubre" value="Octubre" />
+                                <Picker.Item label="Noviembre" value="Noviembre" />
+                                <Picker.Item label="Diciembre" value="Diciembre" />
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                        <Text style={{ fontFamily: "GothamRoundedMedium", alignSelf: 'center', marginRight: 10, marginLeft: 10, fontSize: 18 }}>Año: </Text>
+                        <View style={{ width: screenWidth * 0.5, alignSelf: 'flex-end', borderWidth: 1, borderColor: 'black', borderRadius: 10, marginVertical: 10, marginRight: 10 }}>
+                            <Picker
+                                selectedValue={añoFET}
+                                editable={finalizado}
+                                enabled={finalizado}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    setAñoFET(itemValue)
+                                    setUpdate(true)
+                                }}
+                            >
+                                {añoMaximo && añoMinimo && [...Array(añoMaximo - añoMinimo + 1)].map((_, i) => (
+                                    <Picker.Item key={i} label={(añoMinimo + i).toString()} value={(añoMinimo + i).toString()} />
+                                ))}
+                            </Picker>
+                        </View>
+                    </View>
+
+
+
+                    <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05, marginTop: 10 }]}>
+                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
+                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{totalFormulariosFET}</Text>
+                    </View>
+
+                    <BarChart
+                        style={{
+                            // agrega estilos para que se vea una grafica gris con fondito blanco de react native chart kit
+                            marginVertical: 8,
+                            borderRadius: 16,
+                            alignSelf: 'center',
+                            // shadow
+                            color: 'black',
+                            shadowColor: "#000",
+                            backgroundColor: 'red',
+                            display: ((mesFET === 'Todo el año' ? 'flex' : 'none'))
+                        }}
+                        data={formulariosTiempoData}
+                        width={screenWidth * 0.9}
+                        showValuesOnTopOfBars={true}
+                        height={280}
+                        chartConfig={{
+                            backgroundGradientFrom: "white",
+                            backgroundGradientTo: "white",
+                            color: (opacity = 1) => `rgba(4, 89, 217, ${opacity})`, // Change the color to #0459d9
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // Change the label color to black
+                        }}
+
+                    />
+
+                    <View style={[styles.titleForm, {
+                        // que sea en horizontal
+                        flexDirection: 'row',
+                        // que se esten lo mas opuestos uno de otro
+                        justifyContent: 'space-between',
+                    }]}>
+                        <Text style={{
+                            fontSize: 18,
+                            fontFamily: "GothamRoundedBold",
+                            width: "70%",
+                            // que el texto salte de linea si es muy largo
+                            flexWrap: 'wrap',
+                        }}>Solicitudes de Edición</Text>
+                    </View>
+
+                    <View style={{ flexDirection: 'column' }}>
+
+                        <View style={{ flexDirection: 'column', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', alignSelf: 'center' }}>
+
+                            <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Total</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsTotales}</Text>
+                            </View>
+                            <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Aprobados</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsAprobados}</Text>
+                            </View>
+                            <View style={[styles.bloqueData, { width: screenWidth * 0.8, alignSelf: 'center', paddingVertical: screenWidth * 0.05 }]}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 30, textAlign: 'left' }}>Cantidad Editados</Text>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 50 }}>{formsEditados}</Text>
+                            </View>
+
+                        </View>
+
+                        <View style={{ padding: 10, width: screenWidth * 0.7 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium" }}>Distribución por niveles</Text>
+                            <PieChart
+                                data={formulariosEditados}
+                                width={screenWidth * 0.9}
+                                height={220}
+                                chartConfig={chartConfig}
+                                accessor={"population"}
+                                backgroundColor={"transparent"}
+                                paddingLeft={"15"}
+                                // center={[10, 50]}
+                                absolute
+                            />
+                        </View>
+
+                    </View>
+
+                </ScrollView>
+            }
+
         </View>
     );
 }
