@@ -12,6 +12,7 @@ import Formularios from './screens/Formularios';
 import FormDetails from './screens/FormDetails';
 import FormCreate from './screens/FormCreate';
 import FormView from './screens/FormView';
+import Recordatorios from './screens/Recordatorios';
 import Legajos from './screens/Legajos';
 import SolicitudesEdicion from './screens/SolicitudesEdicion';
 import { NavigationContainer } from '@react-navigation/native';
@@ -177,6 +178,11 @@ export default function App() {
             name="Formularios"
             component={Formularios}
             options={{ title: 'Formularios' }}
+          />
+          <Stack.Screen
+            name="Recordatorios"
+            component={Recordatorios}
+            options={{ title: 'Recordatorios' }}
           />
           <Stack.Screen
             name="FormCreate"

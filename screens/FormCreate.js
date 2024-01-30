@@ -13,6 +13,7 @@ import ButtonBar from '../components/ButtonBar';
 import ConfirmScreen from '../components/ConfirmScreen';
 import InfoScreen from '../components/InfoScreen';
 import Notification from '../components/Notification';
+import { Feather } from '@expo/vector-icons';
 
 export default function FormCreate({ navigation }) {
     // traigo del redux el state cardToCheck
@@ -32,6 +33,7 @@ export default function FormCreate({ navigation }) {
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const rol = useSelector((state) => state.rol);
+    const editMode = useSelector((state) => state.editMode);
 
     useEffect(() => {
         navigation?.setOptions({
@@ -105,6 +107,7 @@ export default function FormCreate({ navigation }) {
                 setEditionMode(false)
             }} />
 
+            
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "row") {
                     return (
@@ -127,9 +130,24 @@ export default function FormCreate({ navigation }) {
             }                  
 
             <ScrollView>
-                <Text style={styles.titleForm}>{cardToCheck.title}</Text>
+
+                <View style={[styles.titleForm, {
+                    // que sea en horizontal
+                    flexDirection: 'row',
+                    // que se esten lo mas opuestos uno de otro
+                    justifyContent: 'space-between',
+                }]}>
+                    <Text style={{
+                        fontSize: 18,
+                        fontFamily: "GothamRoundedBold",
+                    }}>{cardToCheck.title}</Text>
+                    <Feather name="edit-3" size={25} style={{
+                        paddingRight: 20,
+                        display: (editMode ? 'flex' : 'none')
+                    }} color="black" onPress={() => { handleEditButton(item?._id) }} />
+                </View>
                 {cardToCheck.formType === 1 ? (
-                    <FormType1 navigation={navigation} setNotif={setNotif}/>
+                    <FormType1 navigation={navigation} setNotif={setNotif} />
                 ) : cardToCheck.formType === 2 ? (
                     <FormType2 setCortina={setViewCortinaNegra} cortina={viewCortinaNegra} indexPicked={indexPicked} setIndexPicked={setIndexPicked} setNotif={setNotif} navigation={navigation} visibleForm={visibleForm} setVisibleForm={setVisibleForm} reglones={reglones} setReglones={setReglones} setViewDelete={setViewDelete} reglonPicked={reglonPicked} setReglonPicked={setReglonPicked} editionMode={editionMode} setEditionMode={setEditionMode}  viewInfo={viewInfo} setViewInfo={setViewInfo} inputsValues={inputsValuesFormType2} setInputsValues={setInputsValuesFormType2}/>
                 ) : null}

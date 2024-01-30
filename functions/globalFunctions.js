@@ -1,3 +1,5 @@
+import * as FileSystem from 'expo-file-system';
+
 function getTitle(title) {
     if (title === 'controlalergenos') {
         return 'Control Alergenos';
@@ -348,7 +350,7 @@ export const formulariosData = [
     },
     {
         title: "Chequeo de uso de EPP",
-        rolNeeded: 1,
+        rolNeeded: 2,
         formType: 3,
         url: API_URL + "/api/chequeoepp",
         verMas: [
@@ -1184,56 +1186,11 @@ export const formulariosData = [
     }
 ]
 
-// export const registroCapacitacion = async (values, setSaving, rol, businessName, nombre) => {
-//     try {
-//         console.log('values: ', JSON.stringify(values))
-//         const formData = new FormData();
-
-//         // Agregar las propiedades de "values" al FormData
-//         for (const key in values) {
-//             if (Array.isArray(values[key])) {
-//                 // Si es un array, como propiedades que son arrays de objetos,
-//                 // puedes serializarlo a JSON y luego agregarlo al FormData
-//                 formData.append(key, values[key]);
-//             }
-//             else if (key === 'firma') {
-//                 // Si es una propiedad de tipo "file", debes manejarla por separado
-//                 // Aquí asumo que "firma" es el nombre de la propiedad de tipo "file"
-//                 formData.append('firma', values[key]); // Puedes ajustar el índice según sea necesario
-//             }
-//             else {
-//                 formData.append(key, values[key]);
-//             }
-//         }
-
-//         // Agregar otras propiedades como businessName, rol, nombre, etc., al FormData
-//         formData.append('businessName', businessName);
-//         formData.append('rol', rol);
-//         formData.append('nombre', nombre);
-
-//         console.log('formData', formData)
-
-//         const response = await fetch(`${API_URL}/api/registrocapacitacion`, {
-//             method: 'POST',
-//             body: formData,
-//         });
-//         const data = await response.json();
-//         await setSaving(false);
-//         console.log('Success interno:', data);
-//         return data;
-
-//     } catch (error) {
-//         console.error('Error', error);
-//         setSaving(false);
-//         throw error;
-//     }
-// };
 
 export const registroCapacitacion = async (values, setSaving, rol, id, businessName, nombre, firma) => {
     try {
         let formData = new FormData();
-        // Agregar las propiedades de "values" al FormData
-        // {"assets": [{"mimeType": "image/jpeg", "name": "IMG-20210328-WA0016.jpg", "size": 84176, "uri": "file:///data/user/0/host.exp.exponent/cache/DocumentPicker/cd7383c1-47a0-4a23-9111-05985ea8912f.jpg"}], "canceled": false}
+
         let fileUri
         let fileType
         let fileName
@@ -1481,49 +1438,122 @@ export const reporterechazo = (values) => {
     return objetoFinal
 }
 
-export const entregabidones = (values) => {
-    // recibo este array de objetos que
-    // 
 
-    // [
-    //     { "values": [{ "name": "Fecha", "value": "2023-11-15T18:28:58.001Z" }, { "name": "Cantidad de litros entregados", "value": "1" }, { "name": "Responsable de entrega", "value": "2" }, { "name": "Responsable de retiro", "value": "3" }, { "name": "Selecciona una foto de transporte", "value": "4" }, { "name": "Selecciona una foto de disposición final", "value": "5" }] },
-    //     { "values": [{ "name": "Fecha", "value": "" }, { "name": "Cantidad de litros entregados", "value": "" }, { "name": "Responsable de entrega", "value": "2" }, { "name": "Responsable de retiro", "value": "2" }, { "name": "Selecciona una foto de transporte", "value": "" }, { "name": "Selecciona una foto de disposición final", "value": "" }] }
-    // ]
+const getBase64 = async (file) => {
+    try {
+        const base64Data = await FileSystem.readAsStringAsync(file, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
+        console.log('returning')
+        return base64Data;
+    } catch (error) {
+        console.log('Error en getBase64: ', error);
+        throw error;
+    }
+};
 
+const obtenerBase64ParaArchivo = async (value, propiedad) => {
+    console.log('entrando a obtenerBase64')
+    console.log('value: ', value)
+    console.log('propiedad: ', propiedad)
 
-    // y por cada objeto de ese array, tengo que crear un objeto con las propiedades que necesito que son asi y mas, dependiendo de la cantidad de objetos que tenga el array
-    // [
-    //     {
-    //         "fecha": "2023-11-15T18:28:58.001Z",
-    //         "cantidaddelitrosentregados": "1",
-    //         "responsabledeentrega": "2",
-    //         "responsablederetiro": "3"
-    //         "transporte": "4",
-    //         "disposiciónfinal": "5"
-    //     },
-    //     {
-    //         fecha: "",
-    //         cantidaddelitrosentregados: "",
-    //         responsabledeentrega: "2",
-    //         responsablederetiro: "2",
-    //         transporte: "",
-    //         disposiciónfinal: ""
-    //     }
-    // ]
+    if (value[propiedad] && typeof value[propiedad] === 'object') {
+        console.log('si')
+        try {
+            return await getBase64(value[propiedad].uri);
+        } catch (error) {
+            console.error('Error al obtener Base64:', error);
+            throw error;
+        }
+    } else {
+        console.log('no para -obtenerBase64: ', value[propiedad])
+        return value[propiedad];
+    }
+};
 
+export const entregabidones = async (values, id) => {
+
+    let data = {}
     let objetoFinal = []
+
+    let arrayTransporte = []
+    let arrayDisposicion = []
+
+    console.log('values DE ENTRADA: ', JSON.stringify(values))
+
     for (let i = 0; i < values.length; i++) {
         let objetoIndividual = {}
-        for (let j = 0; j < values[i].values.length; j++) {
-            if (values[i].values[j].name === "Fecha") objetoIndividual = { ...objetoIndividual, fecha: values[i].values[j].value }
-            else if (values[i].values[j].name === "Cantidad de litros entregados") objetoIndividual = { ...objetoIndividual, cantidaddelitrosentregados: values[i].values[j].value }
-            else if (values[i].values[j].name === "Responsable de entrega") objetoIndividual = { ...objetoIndividual, responsabledeentrega: values[i].values[j].value }
-            else if (values[i].values[j].name === "Responsable de retiro") objetoIndividual = { ...objetoIndividual, responsablederetiro: values[i].values[j].value }
-            else if (values[i].values[j].name === "Selecciona una foto de transporte") objetoIndividual = { ...objetoIndividual, transporte: values[i].values[j].value }
-            else if (values[i].values[j].name === "Selecciona una foto de disposición final") objetoIndividual = { ...objetoIndividual, disposiciónfinal: values[i].values[j].value }
+        for (let j = 0; j < values[i].length; j++) {
+            if (values[i][j].values[0].name === "Fecha") objetoIndividual = { ...objetoIndividual, fecha: values[i][j].values[0].value }
+            if (values[i][j].values[1].name === "Cantidad de litros entregados") objetoIndividual = { ...objetoIndividual, cantidaddelitrosentregados: values[i][j].values[1].value }
+            if (values[i][j].values[2].name === "Responsable de entrega") objetoIndividual = { ...objetoIndividual, responsabledeentrega: values[i][j].values[2].value }
+            if (values[i][j].values[3].name === "Responsable de retiro") objetoIndividual = { ...objetoIndividual, responsablederetiro: values[i][j].values[3].value }
+            if (values[i][j].values[4].name === "foto de transporte" || values[i][j].values[4].name === "Selecciona una foto de transporte") {     
+                // si es un objeto con typeof
+                if (typeof (values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value) === 'object') {
+                    arrayTransporte.push('obj')                    
+                } else if (typeof (values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value) === 'string') {
+                    arrayTransporte.push((values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value))                    
+                } else {
+                    arrayTransporte.push(null)                
+                }
+                objetoIndividual = {
+                    ...objetoIndividual, transporte: (values[i][j].values[4].objeto ? values[i][j].values[4].objeto : values[i][j].values[4].value)
+                }
+            }
+            if (values[i][j].values[5].name === "foto de disposición final" || values[i][j].values[5].name === "Selecciona una foto de disposición final") {
+                // si es un objeto con typeof
+                if (typeof (values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value) === 'object') {
+                    arrayDisposicion.push('obj')                    
+                } else if (typeof (values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value) === 'string') {
+                    arrayDisposicion.push((values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value))                    
+                } else {
+                    arrayDisposicion.push(null)                
+                }
+                objetoIndividual = {
+                    ...objetoIndividual, disposiciónfinal: (values[i][j].values[5].objeto ? values[i][j].values[5].objeto : values[i][j].values[5].value)
+                }
+            }
         }
         objetoFinal.push(objetoIndividual)
-    }
 
-    return Object.values(objetoFinal);
+        console.log('objetoFinal post proceso: ', JSON.stringify(objetoFinal))
+ 
+        const propiedades = ['transporte', 'disposiciónfinal'];
+
+        const arraysBase64 = await Promise.all(
+            propiedades.map((propiedad) =>
+                Promise.all(objetoFinal.map((value) => obtenerBase64ParaArchivo(value, propiedad)))
+            )
+        );
+
+        const [arrayFilesTransporte, arrayFilesDisposicion] = arraysBase64;
+
+        console.log('arrayTransporte: ', arrayTransporte)
+        console.log('arrayDisposicion: ', arrayDisposicion)
+
+        for (let i = 0; i < arrayTransporte.length; i++) {
+            if (arrayTransporte[i] === 'obj') {
+                console.log('subiste una foto en transporte')
+                arrayTransporte[i] = arrayFilesTransporte[i]
+            }
+        }
+
+        for (let i = 0; i < arrayDisposicion.length; i++) {
+            if (arrayDisposicion[i] === 'obj') {
+                console.log('subiste una foto en disposicion')
+                arrayDisposicion[i] = arrayFilesDisposicion[i]
+            }
+        }
+
+        data = {
+            certificadoTransporte: arrayTransporte,
+            certificadoDisposicion: arrayDisposicion,
+            inputs: objetoFinal,
+        }
+
+    }
+    
+    // console.log('data: ', data)
+    return data
 }

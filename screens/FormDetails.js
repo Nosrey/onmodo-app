@@ -133,6 +133,7 @@ export default FormDetails = ({ navigation }) => {
             }
         } else if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora" || cardToCheck.title === "Chequeo de uso de EPP") {
             if (cardToCheck.title === "Uso y Cambio de Aceite en Freidora") {
+                dispatch({ type: 'counter/setEditMode', payload: true });
                 navigation.navigate('FormView');
             }
             else {
