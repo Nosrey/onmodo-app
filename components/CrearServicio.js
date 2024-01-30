@@ -201,35 +201,35 @@ export default function CrearServicio({ navigation, params }) {
             if (!isNaN(valueInNumber)) {
                 switch (indexMuestra) {
                     case 0:
-                        if (valueInNumber < 65) dotTemp = dotGreen
+                        if (valueInNumber >= 65) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)
                         break;
                     case 1:
 
-                        if (valueInNumber < 74) dotTemp = dotGreen
+                        if (valueInNumber >= 74) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)
                         break;
                     case 2:
 
-                        if (valueInNumber < 63) dotTemp = dotGreen
+                        if (valueInNumber >= 63) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)
                         break;
                     case 3:
 
-                        if (valueInNumber < 74) dotTemp = dotGreen
+                        if (valueInNumber >= 74) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)
                         break;
                     case 4:
 
-                        if (valueInNumber < 74) dotTemp = dotGreen
+                        if (valueInNumber >= 74) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)

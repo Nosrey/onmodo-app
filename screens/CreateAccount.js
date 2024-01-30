@@ -150,7 +150,7 @@ export default function CreateAccount({ navigation }) {
             setNotif({ view: true, message: "¡Ups! El email ingresado no es válido", color: "naranja" })
         }
         else {
-            
+
             vaciarInputs();
             createNewUSer({
                 email: profileInputs.email,

@@ -24,15 +24,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
 // importo de reduxjs/toolkit configureStore y createSlice
 import { configureStore, createSlice } from '@reduxjs/toolkit';
-import { setJSExceptionHandler } from 'react-native-exception-handler';
-
-const errorHandler = (error, isFatal) => {
-  // Este es tu manejador de errores personalizado
-  // Puedes hacer lo que quieras con el error, como enviarlo a un servidor de logs
-  console.log(error, isFatal);
-};
-
-setJSExceptionHandler(errorHandler);
 
 const initialState = {
   // creo el estado logged para saber si el usuario esta logueado o no
