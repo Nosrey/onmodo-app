@@ -20,7 +20,7 @@ function getTitle(title) {
     } else if (title === 'verificacionbalanza') {
         return 'Verificación Balanzas';
     } else if (title === 'verificaciontermometros') {
-        return 'Verificación Termómetros';
+        return 'Verificación de Termómetros';
     } else if (title === 'usocambioaceite') {
         return 'Uso y Cambio de Aceite en Freidora';
     } else if (title === 'servicioenlinea') {

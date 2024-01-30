@@ -220,11 +220,9 @@ export default function Recordatorios({ navigation }) {
                     function gestionarFechas(item) {
                         if (!item.fechas?.length && !item.fechaInicio) {
                             let fecha = item.createdAt.split('T')[0].split('-');
-                            fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
-                            console.log('item.createdAt: ', fecha)
+                            fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];                            
                             return fecha
-                        } else if (!item.fechas?.length && item.fechaInicio) {
-                            console.log('item.fechaInicio: ', item.fechaInicio)
+                        } else if (!item.fechas?.length && item.fechaInicio) {                            
                             return item.fechaInicio
                         } else {
                             // obtnego la fecha mas proxima con la propiedad ejecutado en false
@@ -232,14 +230,11 @@ export default function Recordatorios({ navigation }) {
                             if (!proxFecha && !item.fechaInicio) {
                                 let fecha = item.createdAt.split('T')[0].split('-');
                                 fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
-                                console.log('item.createdAt: ', fecha)
                                 return fecha
                             } else if (!proxFecha && item.fechaInicio) {
-                                console.log('item.fechaInicio: ', item.fechaInicio)
                                 return item.fechaInicio
                             } else {
-                                // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023
-                                console.log('proxFecha: ', proxFecha.fecha)
+                                // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023                                
                                 return proxFecha?.fecha
                             }
                         }
@@ -313,7 +308,7 @@ export default function Recordatorios({ navigation }) {
                             frecuencia: item.frecuencia,
                             fechaInicio: item.fechaInicio,
                             fechas: item.fechas,
-                            fechaDeCard: obtenerFecha(item),
+                            fechaDeCard: (proxFecha?.fecha ? proxFecha?.fecha : obtenerFecha(item)),
                             businessName: item?.businessName,
                             idUser: item?.idUser
                         }
@@ -367,8 +362,7 @@ export default function Recordatorios({ navigation }) {
                 setUpdate(false)
             })
             // finalmente cierro el then
-            .finally(() => {
-                console.log('finalizado')
+            .finally(() => {                
                 setBlackScreen(false)
                 setUpdate(false)
             })
@@ -429,13 +423,6 @@ export default function Recordatorios({ navigation }) {
                 }}>
                     <Text style={styles.buttonFormText}>
                         CREAR NUEVO
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.buttonForm, { backgroundColor: "#7BC100", marginVertical: 10 }]} onPress={() => {
-                    console.log('listaTareas: ', listaTareas)
-                }}>
-                    <Text style={styles.buttonFormText}>
-                        Prueba
                     </Text>
                 </TouchableOpacity>
 
@@ -649,37 +636,36 @@ export default function Recordatorios({ navigation }) {
                                         <Picker
                                             selectedValue={item?.statusRecordatorio || ' '}
                                             // si el statuso es diferente a En curso lo desactivo
-                                            enabled={item?.statusRecordatorio === 'En curso' ? true : false}
+                                            enabled={item?.statusRecordatorio !== 'Resuelto' ? true : false}
                                             onValueChange={(itemValue, itemIndex) => {
-                                                console.log('disabled status change')
-                                                // if (itemValue !== 'En curso') {
-                                                //     setBlackScreen(true)
-                                                //     // ubico el elemento en listaRecordatorios que tenga el id de item._id
-                                                //     let index = listaRecordatorios.findIndex((itemLista) => itemLista._id === item._id);
-                                                //     // creo una copia del elemento
-                                                //     let itemCopia = { ...listaRecordatorios[index] };
-                                                //     // cambio el valor del status en el elemento dentro de itemCopia al valor de itemValue
-                                                //     itemCopia.status = itemValue;
-                                                //     // actualizo el elemento en la base de datos usando la url /api/recordatorio/${recordatorioId}                                                
-                                                //     url = API_URL + '/api/recordatorio/' + item._id;
-                                                //     fetch(url, {
-                                                //         method: 'PUT',
-                                                //         headers: {
-                                                //             'Content-Type': 'application/json',
-                                                //         },
-                                                //         body: JSON.stringify(itemCopia),
-                                                //     })
-                                                //         .then((response) => response.json())
-                                                //         .then((json) => {
-                                                //             setUpdate(true);
-                                                //         })
-                                                //         .catch((error) => {
-                                                //             console.error(error);
-                                                //         });
-                                                // } else {
-                                                //     setRecordatorioId(item._id);
-                                                //     setFrecuenciaModal(true);
-                                                // }
+                                                if (itemValue !== 'En curso') {
+                                                    setBlackScreen(true)
+                                                    // ubico el elemento en listaRecordatorios que tenga el id de item._id
+                                                    let index = listaRecordatorios.findIndex((itemLista) => itemLista._id === item._id);
+                                                    // creo una copia del elemento
+                                                    let itemCopia = { ...listaRecordatorios[index] };
+                                                    // cambio el valor del status en el elemento dentro de itemCopia al valor de itemValue
+                                                    itemCopia.status = itemValue;
+                                                    // actualizo el elemento en la base de datos usando la url /api/recordatorio/${recordatorioId}                                                
+                                                    url = API_URL + '/api/recordatorio/' + item._id;
+                                                    fetch(url, {
+                                                        method: 'PUT',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                        },
+                                                        body: JSON.stringify(itemCopia),
+                                                    })
+                                                        .then((response) => response.json())
+                                                        .then((json) => {
+                                                            setUpdate(true);
+                                                        })
+                                                        .catch((error) => {
+                                                            console.error(error);
+                                                        });
+                                                } else {
+                                                    setRecordatorioId(item._id);
+                                                    setFrecuenciaModal(true);
+                                                }
                                             }}
                                         >
                                             <Picker.Item label="Aún no desarrollado" value="Aún no desarrollado" />
