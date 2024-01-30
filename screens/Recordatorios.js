@@ -6,21 +6,36 @@ import Header from '../components/Header';
 import { Picker } from '@react-native-picker/picker';
 import BlackWindow from '../components/BlackWIndow';
 import CrearRecordatorio from '../components/CrearRecordatorio';
+import CambiarFrecuencia from '../components/CambiarFrecuencia';
 // useSelector
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ButtonBar from '../components/ButtonBar';
+import { API_URL } from '../functions/globalFunctions';
 
 export default function Recordatorios({ navigation }) {
-    const rol = useSelector(state => state.rol);
-    const [status, setStatus] = useState('');
-    const [tareas, setTareas] = useState('');
-    const [blackWindow, setBlackWindow] = useState(false);
+    const dispatch = useDispatch();
 
-    const [listaTareas, setListaTareas] = useState([
-        { status: "valido" },
-        { status: "invalido" },
-        { status: "cercano" }
-    ])
+    const rol = useSelector(state => state.rol);
+    const business = useSelector(state => state.business);
+    const [status, setStatus] = useState('Todas');
+    const [tareas, setTareas] = useState('Todas');
+    const [blackWindow, setBlackWindow] = useState(false);
+    const [blackScreen, setBlackScreen] = useState(false);
+    const [frecuenciaModal, setFrecuenciaModal] = useState(false);
+    const [recordatorioId, setRecordatorioId] = useState('');
+
+    const [tarea, setTarea] = useState(' ');
+    const [descripcion, setDescripcion] = useState('');
+    const [link, setLink] = useState('');
+    const [linkTitle, setLinkTitle] = useState('');
+    const [statusRecordatorio, setStatusRecordatorio] = useState(' ');
+    const [frecuencia, setFrecuencia] = useState(' ');
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [update, setUpdate] = useState(false);
+    
+    const [listaTareas, setListaTareas] = useState([])
+    const [listaTareasFiltradas, setListaTareasFiltradas] = useState([])
+    const [listaRecordatorios, setListaRecordatorios] = useState([])
 
     let cajaText = [
         { title: '| Mi cuenta', style: "titleProfile" },
@@ -31,181 +46,597 @@ export default function Recordatorios({ navigation }) {
         setBlackWindow(true);
     }
 
-    const renderItem = ({ item }) => (
-        // un view diferente si rol es 1 y otro si es mayor que 1
-         rol > 1 ?
-            <View style={{
-                padding: 20,
-                backgroundColor: 'rgb(234, 233, 233)',
-                borderTopColor: (item.status === 'valido' ? '#9bc568' : (item.status === 'invalido' ? '#e81212' : '#ffb600')),
-                borderTopWidth: 10,
-                // sombra leve negra a los costados
-                shadowColor: "black",
-                fontFamily: 'GothamRoundedMedium',
-                marginBottom: 30,
-                shadowOffset: {
-                    width: 2,
-                    height: 2,
-                },
-            }}>
-                <View>
+    const handleClose = () => {
+        setTarea(' ');
+        setDescripcion('');
+        setLink('');
+        setLinkTitle('');
+        setStatusRecordatorio(' ');
+        setFrecuencia(' ');
+        setFechaInicio('');
+        setBlackWindow(false)
+    }
 
-                    <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: 0,
-                    }}>
-                        <Text style={styles.letrasRecortadorios}>Bimestral <Text style={{
-                            color: (item.status === 'valido' ? '#9bc568' : (item.status === 'invalido' ? '#e81212' : '#ffb600')),
-                        }}>- 11/29/2023</Text></Text>
-                        <Text style={[styles.letrasRecortadorios, { width: '25%', textAlign: 'center' }]}>Resuelto</Text>
-                    </View>
-                    <View style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 10, width: '25%', alignSelf: 'flex-end', padding: 0 }}>
-                        <Picker
-                            style={[styles.letrasRecortadorios, { fontSize: 14, color: 'black', padding: 0 }]}
-                            selectedValue={'no'}
-                        >
-                            <Picker.Item label="No" value="no" style={{ fontSize: 14, color: 'black' }} />
-                            <Picker.Item label="Si" value="si" style={{ fontSize: 14, color: 'black' }} />
-                        </Picker>
-                    </View>
-                </View>
+    function handleCloseFrecuencia() {
+        setFrecuenciaModal(false)
+        setTarea(' ');
+        setDescripcion('');
+        setLink('');
+        setLinkTitle('');
+        setStatusRecordatorio(' ');
+        setFrecuencia(' ');
+        setFechaInicio('');
+    }
 
-                <Text style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 5, fontSize: 17, fontFamily: 'GothamRoundedMedium' }}>Vencimiento de Limpieza de Cámaras Graseras.</Text>
-                <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16 }}>dsfds</Text>
+    function deleteRecordatorio(idRecordatorio) {
+        setBlackScreen(true)
+        url = API_URL + '/api/recordatorio/' + idRecordatorio;
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                setUpdate(true);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, alignItems: 'center' }}>
-                    <Text style={{ color: 'blue', fontFamily: 'GothamRoundedMedium', fontSize: 16, width: '20%' }}>sdf</Text>
-                    <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16, width: '20%' }}>Eliminar</Text>
-                    <View style={{ width: '50%', borderBottomColor: 'gray', borderBottomWidth: 1, padding: 0, margin: 0 }}>
+    function colorStatus(item) {
+        if (item?.realizado === true || item?.realizado === null)
+            return '#9bc568';
+        else if (item?.realizado === false)
+            switch (item.status) {
+                case 'pendiente':
+                    return '#ffb600';
+                case 'invalido':
+                    return '#e81212';
+                default:
+                    return '#9bc568';
+            }
+    }
 
-                        <Picker
-                            selectedValue={'en-curso'}
-                        >
-                            <Picker.Item label="En curso" value="en-curso" />
-                        </Picker>
-                    </View>
-                </View>
-            </View>
-            :
-            <View style={{
-                padding: 20,
-                backgroundColor: 'rgb(234, 233, 233)',
-                borderTopColor: (item.status === 'valido' ? '#9bc568' : (item.status === 'invalido' ? '#e81212' : '#ffb600')),
-                borderTopWidth: 10,
-                // sombra leve negra a los costados
-                shadowColor: "black",
-                fontFamily: 'GothamRoundedMedium',
-                marginBottom: 30,
-                shadowOffset: {
-                    width: 2,
-                    height: 2,
-                },
-            }}>
-                <View>
+    const FrecuenciaToDias = {
+        Mensual: 7,
+        Bimestral: 7,
+        Trimestral: 30,
+        Semestral: 30,
+        Anual: 60,
+        'Cada 2 años': 60,
+    };
 
-                    <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: 0,
-                    }}>
-                        <Text style={[styles.letrasRecortadorios, {marginBottom: 10}]}>Bimestral <Text style={{
-                            color: (item.status === 'valido' ? '#9bc568' : (item.status === 'invalido' ? '#e81212' : '#ffb600')),
-                        }}>- 11/29/2023</Text></Text>
-                  
-                    </View>
-  
-                </View>
+    const parseFecha = (fechaString) => {
+        const parts = fechaString.split('/');
+        if (parts?.length === 3) {
+            const dia = parseInt(parts[0], 10);
+            const mes = parseInt(parts[1], 10);
+            const año = parseInt(parts[2], 10);
+            if (!isNaN(dia) && !isNaN(mes) && !isNaN(año)) {
+                return new Date(año, mes - 1, dia); // Resta 1 al mes, ya que los meses en JavaScript van de 0 a 11.
+            }
+        }
+        return null;
+    };
 
-                <Text style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 5, fontSize: 17, fontFamily: 'GothamRoundedMedium' }}>Vencimiento de Limpieza de Cámaras Graseras.</Text>
-                <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16, marginTop: 5 }}>dsfds</Text>
+    const evaluarFechaYFrecuencia = (fechaString, frecuencia) => {
+        const fechaActual = new Date();
+        const fechaLimite = parseFecha(fechaString);
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, alignItems: 'center' }}>
-                    <Text style={{ color: 'blue', fontFamily: 'GothamRoundedMedium', fontSize: 16, width: '20%' }}>sdf</Text>
-                    <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16, width: '20%' }}>Eliminar</Text>
-                    <View style={{ width: '50%', borderBottomColor: 'gray', borderBottomWidth: 1, padding: 0, margin: 0 }}>
+        // Comprueba si la fecha ya pasó
+        if (fechaLimite === null) {
+            return 'verde'
+        }
+        else if (fechaActual > fechaLimite) {
+            return 'invalido';
+        }
 
-                        <Picker
-                            selectedValue={'en-curso'}
-                        >
-                            <Picker.Item label="En curso" value="en-curso" />
-                        </Picker>
-                    </View>
-                </View>
-            </View>
-    )
+        // Comprueba si la fecha está próxima según la frecuencia
+        const umbralDias = FrecuenciaToDias[frecuencia];
+        // creo una nueva fecha en let fechaUmbral que es igual a fechaLimite menos los dias de umbralDias
+        let fechaUmbral = new Date(fechaLimite);
+        fechaUmbral.setDate(fechaUmbral.getDate() - umbralDias);
+
+        if (fechaActual > fechaLimite) {
+            return 'invalido';
+        } else if (fechaActual > fechaUmbral && fechaActual < fechaLimite) { 
+            return 'pendiente';
+        } else {
+            return 'verde';
+        }
+
+        return 'verde ';
+    };
+
+    function sacarProxFecha(fechaDefault, fechas) {
+        if (!fechas?.length) {
+
+            if (fechaDefault === undefined) return 'Sin Fecha';
+            // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023
+            let fecha = fechaDefault.split('T')[0].split('-');
+            fecha = fecha[1] + '/' + fecha[2] + '/' + fecha[0];
+            if (fechaDefault === undefined || !fechaDefault) return 'Sin Fecha';
+            else return fecha;
+        } else {
+            // obtnego la fecha mas proxima con la propiedad ejecutado en false
+            let proxFecha = fechas.find((fecha) => fecha.ejecutado === false);
+            if (!proxFecha) {
+                return 'Sin Fecha';
+            } else {
+                // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023
+                return proxFecha?.fecha
+            }
+
+        }
+    }
+
+    function obtenerResuelto() {
+
+    }
+
+
+    useEffect(() => {
+        // hago un fetch GET a la url de la api + /api/recordatorio/${business}
+        let url = API_URL + '/api/recordatorio/' + business;
+        fetch(url)
+            // convierto la respuesta a json
+            .then((response) => response.json())
+            // seteo el estado de listaTareas con la respuesta
+            .then((json) => {
+                setListaRecordatorios(json.recordatorios);
+                let array = []
+                for (let i = 0; i < json.recordatorios?.length; i++) {
+                    let item = json.recordatorios[i];
+                    // dentro de item.fechas es un array, busco el que tenga la fecha mas proxima sin estar en true el valor ejecutado
+
+                    let proxFecha = item?.fechas.find((fecha) => fecha.ejecutado === false);
+                    if (!proxFecha) {
+                        proxFecha = {
+                            fecha: ''
+                        }
+                    }
+
+                    function gestionarFechas(item) {
+                        if (!item.fechas?.length && !item.fechaInicio) {
+                            let fecha = item.createdAt.split('T')[0].split('-');
+                            fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
+                            console.log('item.createdAt: ', fecha)
+                            return fecha
+                        } else if (!item.fechas?.length && item.fechaInicio) {
+                            console.log('item.fechaInicio: ', item.fechaInicio)
+                            return item.fechaInicio
+                        } else {
+                            // obtnego la fecha mas proxima con la propiedad ejecutado en false
+                            let proxFecha = item.fechas.find((fecha) => fecha.ejecutado === false);
+                            if (!proxFecha && !item.fechaInicio) {
+                                let fecha = item.createdAt.split('T')[0].split('-');
+                                fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
+                                console.log('item.createdAt: ', fecha)
+                                return fecha
+                            } else if (!proxFecha && item.fechaInicio) {
+                                console.log('item.fechaInicio: ', item.fechaInicio)
+                                return item.fechaInicio
+                            } else {
+                                // paso la fecha de formato string a formato 2023-11-17T20:36:42.088Z a 11/17/2023
+                                console.log('proxFecha: ', proxFecha.fecha)
+                                return proxFecha?.fecha
+                            }
+                        }
+                    }
+
+                    function gestionarRealizado(item, fecha) {
+                        // reviso si tiene length en fechas
+                        if (!item.fechas?.length) {
+                            return null
+                        } else {
+                            // en base a fecha, ubico dentro de item.fechas el elemento que tenga esa fecha
+                            let index = item.fechas.findIndex((fechaItem) => fechaItem.fecha === fecha);
+                            // si no lo encuentra, retorno null
+                            if (index === -1) {
+                                return null
+                            } else {
+                                // si lo encuentra, retorno el valor de ejecutado
+                                return item.fechas[index].ejecutado
+                            }
+                        }
+                    }
+
+                    let itemFinal = {}
+
+                    if (!item?.fechas?.length || item?.status !== 'En curso') {
+                        itemFinal = {
+                            _id: item._id,
+                            // status: evaluarFechaYFrecuencia(proxFecha?.fecha, item.frecuencia),
+                            status: "verde",
+                            tarea: item.tarea,
+                            descripcion: item.descripcion,
+                            link: item.link,
+                            linkTitle: item.linkTitle,
+                            statusRecordatorio: item.status,
+                            realizado: gestionarRealizado(item, gestionarFechas(item)),
+                            frecuencia: item.frecuencia,
+                            fechaInicio: item.fechaInicio,
+                            fechas: item.fechas,
+                            fechaDeCard: gestionarFechas(item)
+                        }
+                        array.push(itemFinal);
+                    } 
+                    else {
+                        // obtengo el indice del elemento en item.fechas que tenga la fecha mas proxima y que tenga la propiedad ejecutado en false
+                        let index = item.fechas.findIndex((fecha) => fecha.ejecutado === false);
+                        // si no hay ninguno que tenga la propiedad ejecutado en false, obtengo el ultimo elemento del array
+                        if (index === -1) {
+                            index = item?.fechas?.length - 1;
+                        }
+                        // ahora pusheo en array todos los elementos hasta el indice que obtuve
+                        for (let j = 0; j < index + 1; j++) {
+                            let itemFinalInterno = {
+                                _id: item._id,
+                                status: evaluarFechaYFrecuencia(item.fechas[j].fecha, item.frecuencia),
+                                tarea: item.tarea,
+                                descripcion: item.descripcion,
+                                link: item.link,
+                                linkTitle: item.linkTitle,
+                                statusRecordatorio: item.status,
+                                realizado: gestionarRealizado(item, item?.fechas[j]?.fecha),
+                                frecuencia: item.frecuencia,
+                                fechaInicio: item?.fechas[j]?.fecha,
+                                fechas: item.fechas,
+                                fechaDeCard: item?.fechas[j]?.fecha
+                            }
+                            array.push(itemFinalInterno);
+                        }
+                    }
+                }
+                // ordeno el array en base a su fechaDeCard colocando primero los que tengan fecha mas proxima
+
+                array.sort((a, b) => {
+                    const dateA = new Date(a.fechaDeCard.split('/').reverse().join('-'));
+                    const dateB = new Date(b.fechaDeCard.split('/').reverse().join('-'));
+
+                    if (dateA > dateB) {
+                        return 1;
+                    }
+                    if (dateA < dateB) {
+                        return -1;
+                    }
+                    return 0;
+                })
+                setListaTareas(array);                
+                dispatch({ type: 'counter/setListaRecordatorios', payload: array });
+            })
+            // si hay un error lo muestro en consola
+            .catch((error) => {
+                console.error(error)
+                setBlackScreen(false)
+                setUpdate(false)
+            })
+            // finalmente cierro el then
+            .finally(() => {
+                console.log('finalizado')
+                setBlackScreen(false)
+                setUpdate(false)
+            })
+    }, [update])
+
+    useEffect(() => {
+        let listaFiltrada = [...listaTareas];
+        // si Status es distinto de Todas, traigo todos los elementos de listaTareas cuya propiedad statusRecordatorio sea igual a Status
+        if (status !== 'Todas') {
+            listaFiltrada = listaFiltrada.filter((item) => item.statusRecordatorio === status);
+        }
+        // si tareas es distinto de Todas, traigo todos los elementos de listaTareas cuya propiedad tarea sea igual a tareas
+        if (tareas !== 'Todas') {
+            listaFiltrada = listaFiltrada.filter((item) => item.tarea === tareas);
+        }
+        setListaTareasFiltradas(listaFiltrada)
+
+    }, [listaTareas, tareas, status])
 
 
     return (
         <View style={styles.container}>
-            <BlackWindow visible={blackWindow} setVisible={setBlackWindow} />
-            <CrearRecordatorio visible={blackWindow} setVisible={setBlackWindow} />
-            <Header cajaText={cajaText} unElemento={true} />
-            <Text style={styles.titleForm}>Recordatorios</Text>
+            <BlackWindow visible={blackWindow} setVisible={handleClose} />
+            <BlackWindow visible={frecuenciaModal} setVisible={handleCloseFrecuencia} />
+            <BlackWindow visible={blackScreen} setVisible={null} />
 
-            <TouchableOpacity style={[styles.buttonForm, { backgroundColor: "#7BC100", marginVertical: 10 }]} onPress={() => {
-                crearRecordatorio()
-            }}>
-                <Text style={styles.buttonFormText}>
-                    CREAR NUEVO
-                </Text>
-            </TouchableOpacity>
-
-            <Text style={{ fontSize: 20, marginBottom: 15, fontFamily: 'GothamRoundedMedium' }}>Eventos</Text>
-
-            <View style={[styles.inputContainer,
-            { borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginBottom: 20 }]}>
-
-                <Text
-                    style={{ marginVertical: 0 }}
-                >Filtrar por Status</Text>
-                <Picker
-                    style={{ marginVertical: 0 }}
-                    selectedValue={status}
-                    onValueChange={
-                        (itemValue, itemIndex) => setStatus(itemValue)
-                    }
-                >
-                    <Picker.Item label="En curso" value="en-curso" />
-                    <Picker.Item label="Otro" value="otro" />
-                </Picker>
-            </View>
-
-            <View style={[styles.inputContainer,
-            { borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginBottom: 20 }]}>
-
-                <Text
-                    style={{ marginVertical: 0 }}
-                >Filtrar por Tarea</Text>
-                <Picker
-                    style={{ marginVertical: 0 }}
-                    selectedValue={tareas}
-                    onValueChange={
-                        (itemValue, itemIndex) => setTareas(itemValue)
-                    }
-                >
-                    <Picker.Item label="Todas" value="Todas" />
-                    <Picker.Item label="Otro" value="otro" />
-                </Picker>
-            </View>
-
-            <Text style={{
-                fontSize: 25,
-                fontFamily: 'GothamRoundedMedium',
-                textAlign: 'center',
-                color: 'gray',
-                marginVertical: 15,
-                display: (listaTareas.length > 0 ? 'none' : 'flex')
-            }}>No hay eventos</Text>
-
-
-            <FlatList
-                data={listaTareas}
-                renderItem={renderItem}
-                keyExtractor={(item) => item?._id}
+            <CrearRecordatorio visible={blackWindow} setVisible={setBlackWindow}
+                tarea={tarea} setTarea={setTarea}
+                descripcion={descripcion} setDescripcion={setDescripcion}
+                link={link} setLink={setLink}
+                linkTitle={linkTitle} setLinkTitle={setLinkTitle}
+                status={statusRecordatorio} setStatus={setStatusRecordatorio}
+                frecuencia={frecuencia} setFrecuencia={setFrecuencia}
+                fechaInicio={fechaInicio} setFechaInicio={setFechaInicio} 
+                handleClose={handleClose} setUpdate={setUpdate} 
+                setBlackScreen={setBlackScreen}
             />
+
+            <CambiarFrecuencia visible={frecuenciaModal} setVisible={setFrecuenciaModal}
+                tarea={tarea} setTarea={setTarea}
+                descripcion={descripcion} setDescripcion={setDescripcion}
+                link={link} setLink={setLink}
+                linkTitle={linkTitle} setLinkTitle={setLinkTitle}
+                status={statusRecordatorio} setStatus={setStatusRecordatorio}
+                frecuencia={frecuencia} setFrecuencia={setFrecuencia}
+                fechaInicio={fechaInicio} setFechaInicio={setFechaInicio} 
+                handleClose={handleCloseFrecuencia} setUpdate={setUpdate} 
+                setBlackScreen={setBlackScreen}
+                recordatorioId={recordatorioId}
+                listaRecordatorios={listaRecordatorios}
+            />
+            <ScrollView>
+                <Header cajaText={cajaText} unElemento={true} />
+                <Text style={styles.titleForm}>Recordatorios</Text>
+
+                <TouchableOpacity style={[styles.buttonForm, { backgroundColor: "#7BC100", marginVertical: 10 }]} onPress={() => {
+                    crearRecordatorio()
+                }}>
+                    <Text style={styles.buttonFormText}>
+                        CREAR NUEVO
+                    </Text>
+                </TouchableOpacity>
+
+                <Text style={{ fontSize: 20, marginBottom: 15, fontFamily: 'GothamRoundedMedium' }}>Eventos</Text>
+
+                <View style={[styles.inputContainer,
+                { borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginBottom: 20 }]}>
+
+                    <Text
+                        style={{ marginVertical: 0 }}
+                    >Filtrar por Status</Text>
+                    <Picker
+                        style={{ marginVertical: 0 }}
+                        selectedValue={status}
+                        onValueChange={
+                            (itemValue, itemIndex) => setStatus(itemValue)
+                        }
+                    >
+                        <Picker.Item label="Todas" value="Todas" />
+                        <Picker.Item label="Aún no desarrollado" value="Aún no desarrollado" />
+                        <Picker.Item label="En proceso de desarrollo" value="En proceso de desarrollo" />
+                        <Picker.Item label="En curso" value="En curso" />
+                        <Picker.Item label="Desestimado transitoriamente" value="Desestimado transitoriamente" />
+                        <Picker.Item label="Resuelto" value="Resuelto" />
+                       
+                    </Picker>
+                </View>
+
+                <View style={[styles.inputContainer,
+                { borderBottomColor: '#C3C3C3', borderBottomWidth: 1, marginBottom: 20 }]}>
+
+                    <Text
+                        style={{ marginVertical: 0 }}
+                    >Filtrar por Tarea</Text>
+                    <Picker
+                        style={{ marginVertical: 0 }}
+                        selectedValue={tareas}
+                        onValueChange={
+                            (itemValue, itemIndex) => setTareas(itemValue)
+                        }
+                    >
+                        <Picker.Item label="Todas" value="Todas" />
+                        <Picker.Item label="Vencimiento de Limpieza de Tanques." value="Vencimiento de Limpieza de Tanques." />
+                        <Picker.Item label="Vencimiento de Limpieza de Cámaras Graseras." value="Vencimiento de Limpieza de Cámaras Graseras." />
+                        <Picker.Item label="Vencimiento de Libretas Sanitarias." value="Vencimiento de Libretas Sanitarias." />
+                        <Picker.Item label="Vencimiento de Cursos de Manipulador." value="Vencimiento de Cursos de Manipulador." />
+                        <Picker.Item label="Vencimiento de Matriz IPER." value="Vencimiento de Matriz IPER." />
+                        <Picker.Item label="Vencimientos de Análisis de Agua Fisicoquímicos." value="Vencimientos de Análisis de Agua Fisicoquímicos." />
+                        <Picker.Item label="Vencimientos de Análisis de Agua Bacteriológicos." value="Vencimientos de Análisis de Agua Bacteriológicos." />
+                        <Picker.Item label="Vencimiento de Extintores." value="Vencimiento de Extintores." />
+                        <Picker.Item label="Vencimiento de Medición de Puesta a Tierra." value="Vencimiento de Medición de Puesta a Tierra." />
+                        <Picker.Item label="Vencimiento de Evaluaciones Ergonómicos por Puesto." value="Vencimiento de Evaluaciones Ergonómicos por Puesto." />
+                        <Picker.Item label="Vencimiento de Medición de Ruido." value="Vencimiento de Medición de Ruido." />
+                        <Picker.Item label="Vencimiento de Medición de Carga Térmica." value="Vencimiento de Medición de Carga Térmica." />
+                        <Picker.Item label="Vencimiento de Medición de Iluminación." value="Vencimiento de Medición de Iluminación." />
+                        <Picker.Item label="Vencimiento de Estudio de Carga de Fuego." value="Vencimiento de Estudio de Carga de Fuego." />
+                        <Picker.Item label="Vencimiento de Fumigación." value="Vencimiento de Fumigación." />                        
+                    </Picker>
+                </View>
+
+                <Text style={{
+                    fontSize: 25,
+                    fontFamily: 'GothamRoundedMedium',
+                    textAlign: 'center',
+                    color: 'gray',
+                    marginVertical: 15,
+                    display: (listaTareasFiltradas?.length > 0 ? 'none' : 'flex')
+                }}>No hay eventos</Text>
+
+                {listaTareasFiltradas.map((item, index) => {
+                    return (
+                        rol > 1 ?
+                            <View key={index} style={{
+                                padding: 20,
+                                backgroundColor: 'rgb(234, 233, 233)',
+                                borderTopColor: colorStatus(item),
+                                borderTopWidth: 10,
+                                // sombra leve negra a los costados
+                                shadowColor: "black",
+                                fontFamily: 'GothamRoundedMedium',
+                                marginBottom: 30,
+                                shadowOffset: {
+                                    width: 2,
+                                    height: 2,
+                                },
+                            }}>
+                                <View>
+
+                                    <View style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        marginBottom: 0,
+                                    }}>
+                                        <Text style={styles.letrasRecortadorios}>{item?.frecuencia} <Text style={{
+                                            color: colorStatus(item),
+                                        }}>- {item?.fechaDeCard}</Text></Text>
+                                              <Text style={[styles.letrasRecortadorios, {
+                                            width: '25%', textAlign: 'center', display: (item?.statusRecordatorio === 'En curso' ? 'flex' : 'none')
+                                        }]}>Resuelto</Text>
+                                    </View>
+                                    <View style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 5, width: '25%', alignSelf: 'flex-end', padding: 0, display: (item?.statusRecordatorio === 'En curso' ? 'flex' : 'none') }}>
+                                        <Picker
+                                            style={[styles.letrasRecortadorios, { fontSize: 14, color: 'black', padding: 0 }]}
+                                            selectedValue={(item?.realizado === false ? 'no' : (item?.realizado === true ? 'si' : 'no')) || 'no'}
+                                            onValueChange={(itemValue, itemIndex) => {
+                                                setBlackScreen(true)
+                                                // ubico el elemento en listaRecordatorios que tenga el id de item._id
+                                                let index = listaRecordatorios.findIndex((itemLista) => itemLista._id === item._id);
+                                                // creo una copia profunda del elemento
+                                                let itemCopia = JSON.parse(JSON.stringify(listaRecordatorios[index]));
+                                            
+                                                let indexTareas = listaTareas.findIndex((itemLista) => itemLista._id === item._id);
+                                                
+                                                // cambio el valor de ejecutado en el elemento dentro de itemCopia.fechas cuya fecha coincida con item.fechaDeCard al valor de itemValue
+                                                let indexFecha = itemCopia.fechas.findIndex((fecha) => fecha.fecha === item?.fechaDeCard);
+
+                                                // recorro el array de itemCopia.fechas y en let arrayFinal guardo una copia de este donde el valor ejecutado de el item con indexFecha sea igual al valor de itemValue y todos los demas valores ADELANTE de indexFecha sean false
+                                                let arrayFinal = [];
+                                                for (let i = 0; i < itemCopia.fechas.length; i++) {
+                                                    if (i < indexFecha) {
+                                                        arrayFinal.push({ ...itemCopia.fechas[i]})
+                                                    } else if (i === indexFecha) {
+                                                        arrayFinal.push({ ...itemCopia.fechas[i], ejecutado: (itemValue === 'si' ? true : false) })
+                                                    } else {
+                                                        arrayFinal.push({ ...itemCopia.fechas[i], ejecutado: false })
+                                                    }
+                                                }
+                                            
+                                                itemCopia.fechas = arrayFinal;
+                                            
+                                                console.log('itemCopia.fechas[indexFecha]: ', itemCopia.fechas[indexFecha]);
+                                                
+                                                
+                                                // actualizo el elemento en la base de datos usando la url /api/recordatorio/${recordatorioId}
+                                                url = API_URL + '/api/recordatorio/' + item._id;
+                                                fetch(url, {
+                                                    method: 'PUT',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify(itemCopia),
+                                                })
+                                                    .then((response) => response.json())
+                                                    .then((json) => {                
+                                                        setUpdate(true);
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error(error);
+                                                    });
+                                            }}
+                                        >
+                                            <Picker.Item label="No" value="no" style={{ fontSize: 14, color: 'black' }} />
+                                            <Picker.Item label="Si" value="si" style={{ fontSize: 14, color: 'black' }} />
+                                        </Picker>
+                                    </View>
+                                </View>
+
+                                <Text style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 5, marginTop: 5, fontSize: 16, fontFamily: 'GothamRoundedMedium' }}>{item?.tarea}</Text>
+                                <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16 }}>{(item?.descripcion ? item?.descripcion : 'Sin descripción')}</Text>
+
+                                <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16, marginTop: 15 }}>{item?.linkTitle}</Text>
+
+                                <Text style={{ color: 'blue', fontFamily: 'GothamRoundedMedium', fontSize: 16, marginTop: 5 }}>{item?.link}</Text>
+
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 0, alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={() => deleteRecordatorio(item._id)} style={{ width: '20%' }}>
+                                        <Text style={{ fontFamily: 'GothamRoundedBold', fontSize: 16 }}>Eliminar</Text>
+                                    </TouchableOpacity>
+                                    <View style={{ width: '50%', borderBottomColor: 'gray', borderBottomWidth: 1, padding: 0, margin: 0 }}>
+
+                                        <Picker
+                                            selectedValue={item?.statusRecordatorio || ' '}
+                                            onValueChange={(itemValue, itemIndex) => {
+                                                if (itemValue !== 'En curso') {
+                                                    setBlackScreen(true)
+                                                    // ubico el elemento en listaRecordatorios que tenga el id de item._id
+                                                    let index = listaRecordatorios.findIndex((itemLista) => itemLista._id === item._id);
+                                                    // creo una copia del elemento
+                                                    let itemCopia = { ...listaRecordatorios[index] };
+                                                    // cambio el valor del status en el elemento dentro de itemCopia al valor de itemValue
+                                                    itemCopia.status = itemValue;
+                                                    // actualizo el elemento en la base de datos usando la url /api/recordatorio/${recordatorioId}                                                
+                                                    url = API_URL + '/api/recordatorio/' + item._id;
+                                                    fetch(url, {
+                                                        method: 'PUT',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                        },
+                                                        body: JSON.stringify(itemCopia),
+                                                    })
+                                                        .then((response) => response.json())
+                                                        .then((json) => {
+                                                            setUpdate(true);
+                                                        })
+                                                        .catch((error) => {
+                                                            console.error(error);
+                                                        });
+                                                } else {
+                                                    setRecordatorioId(item._id);
+                                                    setFrecuenciaModal(true);
+                                                }
+                                            }}
+                                        >
+                                            <Picker.Item label="Aún no desarrollado" value="Aún no desarrollado" />
+                                            <Picker.Item label="En proceso de desarrollo" value="En proceso de desarrollo" />
+                                            <Picker.Item label="En curso" value="En curso" />
+                                            <Picker.Item label="Desestimado transitoriamente" value="Desestimado transitoriamente" />
+                                            <Picker.Item label="Resuelto" value="Resuelto" />
+                                            <Picker.Item label=" " value=" " />
+                                        </Picker>
+                                    </View>
+                                </View>
+                            </View>
+                            :
+                            <View key={index} style={{
+                                padding: 20,
+                                backgroundColor: 'rgb(234, 233, 233)',
+                                borderTopColor: colorStatus(item),
+                                borderTopWidth: 10,
+                                // sombra leve negra a los costados
+                                shadowColor: "black",
+                                fontFamily: 'GothamRoundedMedium',
+                                marginBottom: 30,
+                                shadowOffset: {
+                                    width: 2,
+                                    height: 2,
+                                },
+                            }}>
+                                <View>
+
+                                    <View style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        marginBottom: 0,
+                                    }}>
+                                        <Text style={styles.letrasRecortadorios}>{item?.frecuencia} <Text style={{
+                                            color: colorStatus(item),
+                                        }}>- {item?.fechaDeCard}</Text></Text>
+                                  
+                                    </View>
+                          
+                                </View>
+
+                                <Text style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 5, marginTop: 5, fontSize: 16, fontFamily: 'GothamRoundedMedium' }}>{item?.tarea}</Text>
+                                <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16 }}>{(item?.descripcion ? item?.descripcion : 'Sin descripción')}</Text>
+
+                                <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16, marginTop: 15 }}>{item?.linkTitle}</Text>
+
+                                <Text style={{ color: 'blue', fontFamily: 'GothamRoundedMedium', fontSize: 16, marginTop: 5 }}>{item?.link}</Text>
+
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 0, alignItems: 'center' }}>
+                     
+                            
+                                </View>
+                            </View>
+                    )
+                })}
+            </ScrollView>
             <ButtonBar navigation={navigation} />
         </View>
     );

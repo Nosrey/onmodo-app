@@ -16,6 +16,8 @@ import { useFonts } from 'expo-font';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 // importo icons de Feather
 import { Feather } from '@expo/vector-icons';
+// traigo FontAwesome5
+import { FontAwesome5 } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
 import BlackWindow from '../components/BlackWIndow';
 import { API_URL } from '../functions/globalFunctions'
@@ -34,6 +36,10 @@ export default SolicitudesEdicion = ({ navigation }) => {
 
     const [internalInput, setInternalInput] = useState('');
     const [indexSelected, setIndexSelected] = useState(0);
+    const [paginaActual, setPaginaActual] = useState(1);
+    const [paginaTotal, setPaginaTotal] = useState(1);
+    
+    const elementsPerPage = 8
 
     const itemListContainer = {
         display: "flex",
@@ -144,7 +150,11 @@ export default SolicitudesEdicion = ({ navigation }) => {
 
                 arrayFinal = arrayTemp;
 
+                // setLegajosFound(arrayFinal);
+                // seteo los ultimos 5 elementos de arrayFinal en legajosFound
                 setLegajosFound(arrayFinal);
+                // en base a que cada pagina tiene elementsPerPage elementos, calculo la cantidad de paginas que tendre en arrayFinal y la asigno a paginaTotal
+                setPaginaTotal(Math.ceil(arrayFinal.length / elementsPerPage));
                 setLegajos(arrayFinal);
             })
             .catch((error) => console.error(error));
@@ -262,10 +272,53 @@ export default SolicitudesEdicion = ({ navigation }) => {
             </View>
 
             <FlatList
-                data={legajosFound}
+                // hago que en data solo se muestre de 10 en elementsPerPage en base a la pagina actual
+
+                data={
+                    legajosFound.slice((paginaActual - 1) * elementsPerPage, paginaActual * elementsPerPage)
+                }
                 renderItem={renderItem}
                 keyExtractor={(item) => item.value._id}
             />
+
+            <View style={{
+                // los alineo horitozanlmente a cada extremo pero el tercero en el centro
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 10,
+                marginBottom: 10,
+
+            }}>        
+                <TouchableOpacity style={[styles.buttonForm, {
+                    backgroundColor: (
+                        "#7BC100"
+                    ), marginTop: 5
+                }]} onPress={() => {
+                    paginaActual > 1 ? setPaginaActual(paginaActual - 1) : null
+                }
+                }>
+                           <FontAwesome5 name="arrow-left" size={24} color="white" />
+                </TouchableOpacity>
+
+                <Text style={{
+                    alignSelf: 'center',
+                    // lo alieno verticalmente
+                    textAlign: 'center',
+                    fontSize: 16,
+                }}>PAG {paginaActual}/{paginaTotal}</Text>
+
+                <TouchableOpacity style={[styles.buttonForm, {
+                    backgroundColor: (
+                        "#7BC100"
+                    ), marginTop: 5
+                }]} onPress={() => {
+                    paginaActual < paginaTotal ? setPaginaActual(paginaActual + 1) : null
+                }
+                }>
+                    {/* // pongo arrow-circle-right */}
+                    <FontAwesome5 name="arrow-right" size={24} color="white" />
+                </TouchableOpacity>
+            </View>
 
             <ButtonBar navigation={navigation} />
         </View>
@@ -311,6 +364,11 @@ const styles = StyleSheet.create({
         // justifyContent: 'space-around',
         // marginTop: 20,
     },
+    buttonFormText: {
+        color: '#fff',
+        fontSize: 16,
+        fontFamily: "GothamRoundedMedium",
+    },
     box: {
         // width: 150,
         width: "45%",
@@ -328,6 +386,18 @@ const styles = StyleSheet.create({
         fontFamily: "GothamRoundedMedium",
         fontSize: 12,
 
+    },
+    buttonForm: {
+        marginVertical: 20,
+        backgroundColor: '#7BC100',
+        width: '20%',
+        marginHorizontal: '1%',
+        height: 50,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // lo alineo a la derecha
+        alignSelf: 'flex-end',
     },
     title: {
         fontSize: 24,

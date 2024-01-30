@@ -42,6 +42,7 @@ const initialState = {
   cardToCheck: {},
   objectToCheck: {},
   editMode: false,
+  listaRecordatorios: [],
 }
 
 const counterSlice = createSlice({
@@ -51,6 +52,9 @@ const counterSlice = createSlice({
     // creo una accion que cambie el estado logged a true o false dependiendo del valor recibido
     setLogged(state, action) {
       state.logged = action.payload;
+    },
+    setListaRecordatorios(state, action) {
+      state.listaRecordatorios = action.payload;
     },
     setObjectToCheck(state, action) {
       state.objectToCheck = action.payload;

@@ -541,13 +541,6 @@ export default function FormType3View({ setViewInfo, navigation, setNotif }) {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => {
-                console.log('inputsValues', inputsValues)
-                
-            }}>
-                <Text>Prueba</Text>
-            </TouchableOpacity>
-
             {cardToCheck.inputs?.map((input, index) => {
                 if (input.tipo === "picker") {
                     return (
