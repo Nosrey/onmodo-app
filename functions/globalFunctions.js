@@ -1101,7 +1101,8 @@ export const formulariosData = [
                     { name: "Peso real", tipo: "text" },
                     // Desvío
                     { name: "Desvío", tipo: "text" },
-                    { name: "Acciones de correción", tipo: "text" },
+                    // { name: "Acciones de correción", tipo: "text" },un select con una unica opcion de "Enviar a calibrar"
+                    { name: "Acciones de correción", tipo: "select", options: ["Enviar a calibrar"] },
                 ]
             },
         ]
@@ -1162,7 +1163,9 @@ export const formulariosData = [
                     { name: "Punto 100", tipo: "text" },
                     // Desvío
                     { name: "Desvío", tipo: "text" },
-                    { name: "Acciones de correción", tipo: "text" },
+                    // { name: "Acciones de correción", tipo: "text" },
+                    // debe ser un select con las opciones Calibrar , Reemplazar
+                    { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar"] },
                 ]
             },
             // otro row con titulo TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER
@@ -1178,7 +1181,7 @@ export const formulariosData = [
                     { name: "Temp. termón evaluado", tipo: "text" },
                     // Desvío
                     { name: "Desvío", tipo: "text" },
-                    { name: "Acciones de correción", tipo: "text" },
+                    { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar"] },
                 ]
             }
 
@@ -1250,35 +1253,35 @@ export const verificacionTermometros = (values) => {
                 let tipoValue = "PIN"
                 if (values[i].value[j][1].value.length > 0) tipoValue = values[i].value[j][1].value
                 let reglonIndividual = {
-                    codigo: values[i].value[j][0].value,
-                    tipo: tipoValue,
-                    responsable: values[i].value[j][2].value,
-                    area: values[i].value[j][3].value,
+                    código: values[i].value[j][0].value,
+                    "Tipo (PIN/IR)": tipoValue,
+                    responsabledeluso: values[i].value[j][2].value,
+                    área: values[i].value[j][3].value,
                     punto0: values[i].value[j][4].value,
-                    desvio0: values[i].value[j][5].value,
+                    desvío0: values[i].value[j][5].value,
                     punto100: values[i].value[j][6].value,
-                    desvio100: values[i].value[j][7].value,
-                    acciones: values[i].value[j][8].value,
+                    desvío100: values[i].value[j][7].value,
+                    "Acciones de corrección": values[i].value[j][8].value,
                 }
                 arraySemestral.push(reglonIndividual)
             }
-            objetoFinal = { ...objetoFinal, inputsSemestral: arraySemestral }
+            objetoFinal = { ...objetoFinal, inputsTrimestral: arraySemestral }
         }
         // ahora con TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER hacia inputsSemestral
         else if (values[i].name === "TERMÓMETROS DE CÁMARAS, ANTECAMARAS, HELADERAS Y FREEZER") {
             let arrayTrimestral = []
             for (let j = 0; j < values[i].value.length; j++) {
                 let reglonIndividual = {
-                    codigo: values[i].value[j][0].value,
-                    area: values[i].value[j][1].value,
-                    termoReferencia: values[i].value[j][2].value,
-                    termoEvaluado: values[i].value[j][3].value,
-                    desvio: values[i].value[j][4].value,
-                    acciones: values[i].value[j][5].value,
+                    código: values[i].value[j][0].value,
+                    área: values[i].value[j][1].value,
+                    "temp.termómreferencia": values[i].value[j][2].value,
+                    "temp.termómevaluado": values[i].value[j][3].value,
+                    desvío: values[i].value[j][4].value,
+                    "Acciones de corrección": values[i].value[j][5].value,
                 }
                 arrayTrimestral.push(reglonIndividual)
             }
-            objetoFinal = { ...objetoFinal, inputsTrimestral: arrayTrimestral }
+            objetoFinal = { ...objetoFinal, inputsSemestral: arrayTrimestral }
         }
     }
 
@@ -1295,14 +1298,14 @@ export const verificacionBalanzas = (values) => {
             let inputTemp = values[i].value.map((inputGroup, index) => {
                 let temp = {};
                 inputGroup.forEach((input) => {
-                    if (input.name === "Código") temp.codigo = input.value;
-                    else if (input.name === "Tipo") temp.tipo = input.value === "" ? "BP" : input.value;
-                    else if (input.name === "Responsable del uso") temp.responsableUso = input.value;
-                    else if (input.name === "Área") temp.area = input.value;
-                    else if (input.name === "Peso Masa ref/Pto balanza") temp.pesoMasa = input.value;
-                    else if (input.name === "Peso real") temp.pesoReal = input.value;
-                    else if (input.name === "Desvío") temp.desvio = input.value;
-                    else if (input.name === "Acciones de correción") temp.accionesCorrecion = input.value;
+                    if (input.name === "Código") temp.código = input.value;
+                    else if (input.name === "Tipo") temp["Tipo (BP/BR)"] = input.value === "" ? "BP" : input.value;
+                    else if (input.name === "Responsable del uso") temp["responsabledeluso"] = input.value;
+                    else if (input.name === "Área") temp.área = input.value;
+                    else if (input.name === "Peso Masa ref/Pto balanza") temp["pesomasaref/ptobalanza"] = input.value;
+                    else if (input.name === "Peso real") temp["pesoreal"] = input.value;
+                    else if (input.name === "Desvío") temp.desvío = input.value;
+                    else if (input.name === "Acciones de correción") temp["Acciones de corrección"] = input.value;
                     temp.id = index;
                 });
                 return temp;

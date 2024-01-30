@@ -38,17 +38,100 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
 
             // Establecer reglones
-            let reglones2 = [null, null];
-            reglones2.push(objectToCheck.inputsSemestral.map(input => ({
-                values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
-            })));
-            reglones2.push(objectToCheck.inputsTrimestral.map(input => ({
-                values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
-            })));
-            console.log('reglones2: ', JSON.stringify(reglones2))
-            // aplico el setReglones(reglones2); medio segundo despues
+            // let reglones2 = [null, null];
+            // reglones2.push(objectToCheck.inputsSemestral.map(input => ({
+            //     values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
+            // })));
+            // reglones2.push(objectToCheck.inputsTrimestral.map(input => ({
+            //     values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
+            // })));
+            // console.log('reglones2: ', JSON.stringify(reglones2))
+            // // aplico el setReglones(reglones2); medio segundo despues
+            // setTimeout(() => {
+            //     setReglones(reglones2);
+            // }, 0.1);
+
+            let reglonesCopy = [null, null, [], []]
+
+            console.log('entrada hacia los reglones')
+
+            for (let i = 0; i < objectToCheck?.inputsTrimestral?.length; i++) {
+                reglonesCopy[2].push({
+                    values: [
+                        {
+                            "name": "Código",
+                            "value": objectToCheck?.inputsTrimestral[i]?.código
+                        },
+                        {
+                            "name": "Tipo",
+                            "value": objectToCheck?.inputsTrimestral[i]?.["Tipo (PIN/IR)"]
+                        },
+                        {
+                            "name": "Responsable del uso",
+                            "value": objectToCheck?.inputsTrimestral[i]?.responsabledeluso
+                        },
+                        {
+                            "name": "Área",
+                            "value": objectToCheck?.inputsTrimestral[i]?.área
+                        },
+                        {
+                            "name": "Punto 0",
+                            "value": objectToCheck?.inputsTrimestral[i]?.punto0
+                        },
+                        {
+                            "name": "Desvío",
+                            "value": objectToCheck?.inputsTrimestral[i]?.desvío0
+                        },
+                        {
+                            "name": "Punto 100",
+                            "value": objectToCheck?.inputsTrimestral[i]?.punto100
+                        },
+                        {
+                            "name": "Desvío",
+                            "value": objectToCheck?.inputsTrimestral[i]?.desvío100
+                        },
+                        {
+                            "name": "Acciones de correción",
+                            "value": objectToCheck?.inputsTrimestral[i]?.["Acciones de corrección"]
+                        },
+                    ]
+                })
+            }
+
+            for (let i = 0; i < objectToCheck?.inputsSemestral?.length; i++) {
+                reglonesCopy[3].push({
+                    values: [
+                        {
+                            "name": "Código",
+                            "value": objectToCheck?.inputsSemestral[i]?.código
+                        },
+                        {
+                            "name": "Área",
+                            "value": objectToCheck?.inputsSemestral[i]?.área
+                        },
+                        {
+                            "name": "Temp. termón referencia",
+                            "value": objectToCheck?.inputsSemestral[i]?.["temp.termómreferencia"]
+                        },
+                        {
+                            "name": "Temp. termón evaluado",
+                            "value": objectToCheck?.inputsSemestral[i]?.["temp.termómevaluado"]
+                        },
+                        {
+                            "name": "Desvío",
+                            "value": objectToCheck?.inputsSemestral[i]?.desvío
+                        },
+                        {
+                            "name": "Acciones de correción",
+                            "value": objectToCheck?.inputsSemestral[i]?.["Acciones de corrección"]
+                        },
+                    ]
+                })
+            }
+            console.log('salida de inputs')
+            // seteo reglonesCopy 0.1 seg despues
             setTimeout(() => {
-                setReglones(reglones2);
+                setReglones(reglonesCopy);
             }, 0.1);
 
             setInputsValues([
@@ -66,22 +149,24 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                 { name: "Instrumento", value: objectToCheck.balanza },
                 { name: "Identificación Balanza", value: "" }
             ];
+            console.log('inputsValues FINAL: ', JSON.stringify(inputsValues))
             setInputsValues(inputsValues);
 
             if (objectToCheck.inputs?.length > 0) {
                 let reglones = [null, null];
                 reglones.push(objectToCheck.inputs.map(input => ({
                     values: [
-                        { name: "Código", value: input.codigo },
-                        { name: "Tipo", value: input.tipo === "BP" ? "" : input.tipo },
-                        { name: "Responsable del uso", value: input.responsableUso },
-                        { name: "Área", value: input.area },
-                        { name: "Peso Masa ref/Pto balanza", value: input.pesoMasa },
-                        { name: "Peso real", value: input.pesoReal },
-                        { name: "Desvío", value: input.desvio },
-                        { name: "Acciones de correción", value: input.accionesCorrecion }
+                        { name: "Código", value: input.código },
+                        { name: "Tipo", value: input["Tipo (BP/BR)"] === "BP" ? "" : input["Tipo (BP/BR)"] },
+                        { name: "Responsable del uso", value: input["responsabledeluso"] },
+                        { name: "Área", value: input.área },
+                        { name: "Peso Masa ref/Pto balanza", value: input["pesomasaref/ptobalanza"] },
+                        { name: "Peso real", value: input["pesoreal"] },
+                        { name: "Desvío", value: input.desvío },
+                        { name: "Acciones de correción", value: input["Acciones de corrección"] }
                     ]
                 })));
+                console.log('reglones FINAL: ', JSON.stringify(reglones))
                 setTimeout(() => {
                     setReglones(reglones);
                 }, 0.1);
@@ -679,6 +764,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 editable={false}
+                                enabled={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
                                 onValueChange={(itemValue, itemIndex) => {
