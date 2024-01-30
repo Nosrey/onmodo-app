@@ -17,7 +17,7 @@ export default function Recordatorios({ navigation }) {
 
     const rol = useSelector(state => state.rol);
     const business = useSelector(state => state.business);
-    const [status, setStatus] = useState('Todas');
+    const [status, setStatus] = useState('En curso');
     const [tareas, setTareas] = useState('Todas');
     const [blackWindow, setBlackWindow] = useState(false);
     const [blackScreen, setBlackScreen] = useState(false);
@@ -36,6 +36,24 @@ export default function Recordatorios({ navigation }) {
     const [listaTareas, setListaTareas] = useState([])
     const [listaTareasFiltradas, setListaTareasFiltradas] = useState([])
     const [listaRecordatorios, setListaRecordatorios] = useState([])
+
+    const arrayTareas = [
+        { value: 'Vencimiento de Limpieza de Tanques.'},
+        { value: 'Vencimiento de Limpieza de Cámaras Graseras.'},
+        { value: 'Vencimiento de Libretas Sanitarias.'},
+        { value: 'Vencimiento de Cursos de Manipulador.'},
+        { value: 'Vencimiento de Matriz IPER.'},
+        { value: 'Vencimientos de Análisis de Agua Fisicoquímicos.'},
+        { value: 'Vencimientos de Análisis de Agua Bacteriológicos.'},
+        { value: 'Vencimiento de Extintores.'},
+        { value: 'Vencimiento de Medición de Puesta a Tierra.'},
+        { value: 'Vencimiento de Evaluaciones Ergonómicos por Puesto.'},
+        { value: 'Vencimiento de Medición de Ruido.'},
+        { value: 'Vencimiento de Medición de Carga Térmica.'},
+        { value: 'Vencimiento de Medición de Iluminación.'},
+        { value: 'Vencimiento de Estudio de Carga de Fuego.'},
+        { value: 'Vencimiento de Fumigación.'},
+    ]
 
     let cajaText = [
         { title: '| Mi cuenta', style: "titleProfile" },
@@ -244,9 +262,44 @@ export default function Recordatorios({ navigation }) {
                         }
                     }
 
+                    function obtenerFecha(item) {
+                        if (item?.fechas?.length) {
+                            // retorno el primer elemento de item.fechas[i] cuyo valor .ejecutado sea true
+                            let index = item.fechas.findIndex((fecha) => fecha.ejecutado === true);
+                            if (index === -1) {
+                                return null
+                            } else {
+                                // recorro item.fechas y compruebo si tiene una estructura asi 2023-12-27 y si es el caso la retorno en formato 27/12/2023
+                                let fecha = item.fechas[index].fecha.split('-');
+                                if (fecha?.length === 3) {
+                                    fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
+                                    return fecha
+                                } else {
+                                    return item.fechas[index].fecha
+                                }
+                            }
+                        } else if (item?.fechaInicio) {
+                            console.log('entre a elif')
+                            // recorro item.fechaInicio y compruebo si tiene una estructura asi 2023-12-27 y si es el caso la retorno en formato 27/12/2023
+                            let fecha = item.fechaInicio.split('-');
+                            if (fecha?.length === 3) {
+                                fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
+                                return fecha
+                            } else {
+                                return item?.fechaInicio
+                            }
+
+                        } else {
+                            // "createdAt": "2023-12-27T00:07:20.742Z",
+                            let fecha = item.createdAt.split('T')[0].split('-');
+                            fecha = fecha[2] + '/' + fecha[1] + '/' + fecha[0];
+                            return fecha
+                        }
+                    }
+
                     let itemFinal = {}
 
-                    if (!item?.fechas?.length || item?.status !== 'En curso') {
+                    if (item?.status !== 'En curso') {
                         itemFinal = {
                             _id: item._id,
                             // status: evaluarFechaYFrecuencia(proxFecha?.fecha, item.frecuencia),
@@ -260,35 +313,34 @@ export default function Recordatorios({ navigation }) {
                             frecuencia: item.frecuencia,
                             fechaInicio: item.fechaInicio,
                             fechas: item.fechas,
-                            fechaDeCard: gestionarFechas(item)
+                            fechaDeCard: obtenerFecha(item),
+                            businessName: item?.businessName,
+                            idUser: item?.idUser
                         }
                         array.push(itemFinal);
                     } 
                     else {
                         // obtengo el indice del elemento en item.fechas que tenga la fecha mas proxima y que tenga la propiedad ejecutado en false
-                        let index = item.fechas.findIndex((fecha) => fecha.ejecutado === false);
-                        // si no hay ninguno que tenga la propiedad ejecutado en false, obtengo el ultimo elemento del array
-                        if (index === -1) {
-                            index = item?.fechas?.length - 1;
+
+                        let itemFinalInterno = {
+                            _id: item._id,
+                            status: evaluarFechaYFrecuencia(proxFecha?.fecha, item.frecuencia),
+                            tarea: item.tarea,
+                            descripcion: item.descripcion,
+                            link: item.link,
+                            linkTitle: item.linkTitle,
+                            statusRecordatorio: item.status,
+                            realizado: gestionarRealizado(item, gestionarFechas(item)),
+                            frecuencia: item.frecuencia,
+                            fechaInicio: item.fechaInicio,
+                            fechas: item.fechas,
+                            // fechaDeCard: item?.fechas[j]?.fecha
+                            fechaDeCard: proxFecha?.fecha,
+                            businessName: item?.businessName,
+                            idUser: item?.idUser
                         }
-                        // ahora pusheo en array todos los elementos hasta el indice que obtuve
-                        for (let j = 0; j < index + 1; j++) {
-                            let itemFinalInterno = {
-                                _id: item._id,
-                                status: evaluarFechaYFrecuencia(item.fechas[j].fecha, item.frecuencia),
-                                tarea: item.tarea,
-                                descripcion: item.descripcion,
-                                link: item.link,
-                                linkTitle: item.linkTitle,
-                                statusRecordatorio: item.status,
-                                realizado: gestionarRealizado(item, item?.fechas[j]?.fecha),
-                                frecuencia: item.frecuencia,
-                                fechaInicio: item?.fechas[j]?.fecha,
-                                fechas: item.fechas,
-                                fechaDeCard: item?.fechas[j]?.fecha
-                            }
-                            array.push(itemFinalInterno);
-                        }
+                        array.push(itemFinalInterno);
+
                     }
                 }
                 // ordeno el array en base a su fechaDeCard colocando primero los que tengan fecha mas proxima
@@ -379,6 +431,13 @@ export default function Recordatorios({ navigation }) {
                         CREAR NUEVO
                     </Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={[styles.buttonForm, { backgroundColor: "#7BC100", marginVertical: 10 }]} onPress={() => {
+                    console.log('listaTareas: ', listaTareas)
+                }}>
+                    <Text style={styles.buttonFormText}>
+                        Prueba
+                    </Text>
+                </TouchableOpacity>
 
                 <Text style={{ fontSize: 20, marginBottom: 15, fontFamily: 'GothamRoundedMedium' }}>Eventos</Text>
 
@@ -419,21 +478,21 @@ export default function Recordatorios({ navigation }) {
                         }
                     >
                         <Picker.Item label="Todas" value="Todas" />
-                        <Picker.Item label="Vencimiento de Limpieza de Tanques." value="Vencimiento de Limpieza de Tanques." />
-                        <Picker.Item label="Vencimiento de Limpieza de Cámaras Graseras." value="Vencimiento de Limpieza de Cámaras Graseras." />
-                        <Picker.Item label="Vencimiento de Libretas Sanitarias." value="Vencimiento de Libretas Sanitarias." />
-                        <Picker.Item label="Vencimiento de Cursos de Manipulador." value="Vencimiento de Cursos de Manipulador." />
-                        <Picker.Item label="Vencimiento de Matriz IPER." value="Vencimiento de Matriz IPER." />
-                        <Picker.Item label="Vencimientos de Análisis de Agua Fisicoquímicos." value="Vencimientos de Análisis de Agua Fisicoquímicos." />
-                        <Picker.Item label="Vencimientos de Análisis de Agua Bacteriológicos." value="Vencimientos de Análisis de Agua Bacteriológicos." />
-                        <Picker.Item label="Vencimiento de Extintores." value="Vencimiento de Extintores." />
-                        <Picker.Item label="Vencimiento de Medición de Puesta a Tierra." value="Vencimiento de Medición de Puesta a Tierra." />
-                        <Picker.Item label="Vencimiento de Evaluaciones Ergonómicos por Puesto." value="Vencimiento de Evaluaciones Ergonómicos por Puesto." />
-                        <Picker.Item label="Vencimiento de Medición de Ruido." value="Vencimiento de Medición de Ruido." />
-                        <Picker.Item label="Vencimiento de Medición de Carga Térmica." value="Vencimiento de Medición de Carga Térmica." />
-                        <Picker.Item label="Vencimiento de Medición de Iluminación." value="Vencimiento de Medición de Iluminación." />
-                        <Picker.Item label="Vencimiento de Estudio de Carga de Fuego." value="Vencimiento de Estudio de Carga de Fuego." />
-                        <Picker.Item label="Vencimiento de Fumigación." value="Vencimiento de Fumigación." />                        
+                        <Picker.Item label="Vencimiento de Limpieza de Tanques." value="0" />
+                        <Picker.Item label="Vencimiento de Limpieza de Cámaras Graseras." value="1" />
+                        <Picker.Item label="Vencimiento de Libretas Sanitarias." value="2" />
+                        <Picker.Item label="Vencimiento de Cursos de Manipulador." value="3" />
+                        <Picker.Item label="Vencimiento de Matriz IPER." value="4" />
+                        <Picker.Item label="Vencimientos de Análisis de Agua Fisicoquímicos." value="5" />
+                        <Picker.Item label="Vencimientos de Análisis de Agua Bacteriológicos." value="6" />
+                        <Picker.Item label="Vencimiento de Extintores." value="7" />
+                        <Picker.Item label="Vencimiento de Medición de Puesta a Tierra." value="8" />
+                        <Picker.Item label="Vencimiento de Evaluaciones Ergonómicos por Puesto." value="9" />
+                        <Picker.Item label="Vencimiento de Medición de Ruido." value="10" />
+                        <Picker.Item label="Vencimiento de Medición de Carga Térmica." value="11" />
+                        <Picker.Item label="Vencimiento de Medición de Iluminación." value="12" />
+                        <Picker.Item label="Vencimiento de Estudio de Carga de Fuego." value="13" />
+                        <Picker.Item label="Vencimiento de Fumigación." value="14" />
                     </Picker>
                 </View>
 
@@ -471,7 +530,7 @@ export default function Recordatorios({ navigation }) {
                                         justifyContent: 'space-between',
                                         marginBottom: 0,
                                     }}>
-                                        <Text style={styles.letrasRecortadorios}>{item?.frecuencia} <Text style={{
+                                        <Text style={[styles.letrasRecortadorios, {display: (item?.fechas?.length ? 'flex' : 'none')}]}>{item?.frecuencia} <Text style={{
                                             color: colorStatus(item),
                                         }}>- {item?.fechaDeCard}</Text></Text>
                                               <Text style={[styles.letrasRecortadorios, {
@@ -487,14 +546,12 @@ export default function Recordatorios({ navigation }) {
                                                 // ubico el elemento en listaRecordatorios que tenga el id de item._id
                                                 let index = listaRecordatorios.findIndex((itemLista) => itemLista._id === item._id);
                                                 // creo una copia profunda del elemento
-                                                let itemCopia = JSON.parse(JSON.stringify(listaRecordatorios[index]));
-                                            
-                                                let indexTareas = listaTareas.findIndex((itemLista) => itemLista._id === item._id);
-                                                
-                                                // cambio el valor de ejecutado en el elemento dentro de itemCopia.fechas cuya fecha coincida con item.fechaDeCard al valor de itemValue
+                                                let itemCopia = JSON.parse(JSON.stringify(listaRecordatorios[index])); 
+
+                                                // ubico el elemento en itemCopia.fechas que tenga la fecha igual a item.fechaDeCard                                                
                                                 let indexFecha = itemCopia.fechas.findIndex((fecha) => fecha.fecha === item?.fechaDeCard);
 
-                                                // recorro el array de itemCopia.fechas y en let arrayFinal guardo una copia de este donde el valor ejecutado de el item con indexFecha sea igual al valor de itemValue y todos los demas valores ADELANTE de indexFecha sean false
+                                                // creo un arrayFinal que es una copia de itemCopia.fechas pero con el elemento en indexFecha con el valor de ejecutado igual a itemValue
                                                 let arrayFinal = [];
                                                 for (let i = 0; i < itemCopia.fechas.length; i++) {
                                                     if (i < indexFecha) {
@@ -507,10 +564,7 @@ export default function Recordatorios({ navigation }) {
                                                 }
                                             
                                                 itemCopia.fechas = arrayFinal;
-                                            
-                                                console.log('itemCopia.fechas[indexFecha]: ', itemCopia.fechas[indexFecha]);
-                                                
-                                                
+
                                                 // actualizo el elemento en la base de datos usando la url /api/recordatorio/${recordatorioId}
                                                 url = API_URL + '/api/recordatorio/' + item._id;
                                                 fetch(url, {
@@ -521,6 +575,50 @@ export default function Recordatorios({ navigation }) {
                                                     body: JSON.stringify(itemCopia),
                                                 })
                                                     .then((response) => response.json())
+                                                    .then((json) => {
+                                                        // si y solo si el usuario eligio Si en "resuelto" entonces ahora posteo en let url = API_URL + '/api/recordatorio' un objeto nuevo igual a item pero en .fechas sera un array de un elemento con la fecha de item.fechaDeCard y ejecutado en true
+                                                        if (itemValue === 'si') {
+                                                            console.log('entre al if para postear')
+                                                            let fecha = item.fechaDeCard.split('/');
+                                                            fecha = fecha[2] + '-' + fecha[1] + '-' + fecha[0];
+
+                                                            // estructuro el objeto
+                                                            let objeto = {
+                                                                tarea: item.tarea,
+                                                                descripcion: item.descripcion,
+                                                                link: item.link,
+                                                                linkTitle: item.linkTitle,
+                                                                status: 'Resuelto',
+                                                                frecuencia: item.frecuencia,
+                                                                fechaInicio: fecha,
+                                                                idUser: item.idUser,
+                                                                businessName: item.businessName,
+                                                                fechas: [{
+                                                                    fecha: fecha,
+                                                                    ejecutado: true
+                                                                }]                                                                
+                                                            }
+                                                         
+                                                            console.log('objeto: ', objeto)
+                                                            url = API_URL + '/api/recordatorio';
+                                                            fetch(url, {
+                                                                method: 'POST',
+                                                                headers: {
+                                                                    'Content-Type': 'application/json',
+                                                                },
+                                                                body: JSON.stringify(objeto),
+                                                            })
+                                                                .then((response) => response.json())
+                                                                .then((json) => {
+                                                                    console.log('json: ', json)
+                                                                })
+                                                                .catch((error) => {
+                                                                    console.error(error);
+                                                                });
+                                                        } else {
+                                                            setUpdate(true);
+                                                        }
+                                                    })
                                                     .then((json) => {                
                                                         setUpdate(true);
                                                     })
@@ -535,7 +633,7 @@ export default function Recordatorios({ navigation }) {
                                     </View>
                                 </View>
 
-                                <Text style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 5, marginTop: 5, fontSize: 16, fontFamily: 'GothamRoundedMedium' }}>{item?.tarea}</Text>
+                                <Text style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginBottom: 5, marginTop: 5, fontSize: 16, fontFamily: 'GothamRoundedMedium' }}>{arrayTareas[item?.tarea]?.value}</Text>
                                 <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16 }}>{(item?.descripcion ? item?.descripcion : 'Sin descripción')}</Text>
 
                                 <Text style={{ fontFamily: 'GothamRoundedMedium', fontSize: 16, marginTop: 15 }}>{item?.linkTitle}</Text>
@@ -550,35 +648,38 @@ export default function Recordatorios({ navigation }) {
 
                                         <Picker
                                             selectedValue={item?.statusRecordatorio || ' '}
+                                            // si el statuso es diferente a En curso lo desactivo
+                                            enabled={item?.statusRecordatorio === 'En curso' ? true : false}
                                             onValueChange={(itemValue, itemIndex) => {
-                                                if (itemValue !== 'En curso') {
-                                                    setBlackScreen(true)
-                                                    // ubico el elemento en listaRecordatorios que tenga el id de item._id
-                                                    let index = listaRecordatorios.findIndex((itemLista) => itemLista._id === item._id);
-                                                    // creo una copia del elemento
-                                                    let itemCopia = { ...listaRecordatorios[index] };
-                                                    // cambio el valor del status en el elemento dentro de itemCopia al valor de itemValue
-                                                    itemCopia.status = itemValue;
-                                                    // actualizo el elemento en la base de datos usando la url /api/recordatorio/${recordatorioId}                                                
-                                                    url = API_URL + '/api/recordatorio/' + item._id;
-                                                    fetch(url, {
-                                                        method: 'PUT',
-                                                        headers: {
-                                                            'Content-Type': 'application/json',
-                                                        },
-                                                        body: JSON.stringify(itemCopia),
-                                                    })
-                                                        .then((response) => response.json())
-                                                        .then((json) => {
-                                                            setUpdate(true);
-                                                        })
-                                                        .catch((error) => {
-                                                            console.error(error);
-                                                        });
-                                                } else {
-                                                    setRecordatorioId(item._id);
-                                                    setFrecuenciaModal(true);
-                                                }
+                                                console.log('disabled status change')
+                                                // if (itemValue !== 'En curso') {
+                                                //     setBlackScreen(true)
+                                                //     // ubico el elemento en listaRecordatorios que tenga el id de item._id
+                                                //     let index = listaRecordatorios.findIndex((itemLista) => itemLista._id === item._id);
+                                                //     // creo una copia del elemento
+                                                //     let itemCopia = { ...listaRecordatorios[index] };
+                                                //     // cambio el valor del status en el elemento dentro de itemCopia al valor de itemValue
+                                                //     itemCopia.status = itemValue;
+                                                //     // actualizo el elemento en la base de datos usando la url /api/recordatorio/${recordatorioId}                                                
+                                                //     url = API_URL + '/api/recordatorio/' + item._id;
+                                                //     fetch(url, {
+                                                //         method: 'PUT',
+                                                //         headers: {
+                                                //             'Content-Type': 'application/json',
+                                                //         },
+                                                //         body: JSON.stringify(itemCopia),
+                                                //     })
+                                                //         .then((response) => response.json())
+                                                //         .then((json) => {
+                                                //             setUpdate(true);
+                                                //         })
+                                                //         .catch((error) => {
+                                                //             console.error(error);
+                                                //         });
+                                                // } else {
+                                                //     setRecordatorioId(item._id);
+                                                //     setFrecuenciaModal(true);
+                                                // }
                                             }}
                                         >
                                             <Picker.Item label="Aún no desarrollado" value="Aún no desarrollado" />

@@ -240,11 +240,12 @@ export const PUESTOS_N2 = [
     'Jefe Técnico especial de oficio'
 ]
 
-// export const API_URL = 'http://192.168.1.107:8080';
 
 // exporto API_URL como http://localhost:8080
 // en modo online es https://api.onmodoapp.com
-export const API_URL = 'https://api.onmodoapp.com';
+
+export const API_URL = 'http://192.168.1.107:8080';
+// export const API_URL = 'https://api.onmodoapp.com';
 
 const URL_API = API_URL
 
