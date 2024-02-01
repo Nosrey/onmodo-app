@@ -159,6 +159,11 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             if (cardToCheck.title === "Rechazo /  Devolución de Materias Primas") {
                 if (objectToCheck) {
                     let array = [
+                        { name: "Fecha", value: objectToCheck?.dia },
+                        { name: "Proveedor", value: objectToCheck.proveedor },
+                        { name: "Producto", value: objectToCheck.producto },
+                        { name: "Nro. lote", value: objectToCheck.nroLote },
+
                         { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", value: "" },
                         { name: "Condiciones de entrega", value: "" },
                         { name: "Atrasado", value: objectToCheck.condicionesEntrega[0]?.checked ? "Si" : "No" },
@@ -352,7 +357,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         { name: "foto de disposición final", value: objectToCheck.certificadoDisposicion[index] },
                     ]
                 }));
-               
+
                 // hago que esto se aplique 0.1s despues
                 setTimeout(() => {
                     setReglones([array]);
@@ -363,7 +368,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             let parsedObject = {};
 
             for (let [key, value] of Object.entries(objectToCheck)) {
-                if (key !== 'firma' && key !== "updatedAt" && key !== "createdAt" && key !== "idUser" && key !== "businessName" && key !== "nombre" && key !== "status" && key !== "_id" && key !== "temas" && key !== "observaciones" && key !== "instructor" && key !== "fecha" && key !== "tiempoDuracion")  {
+                if (key !== 'firma' && key !== "updatedAt" && key !== "createdAt" && key !== "idUser" && key !== "businessName" && key !== "nombre" && key !== "status" && key !== "_id" && key !== "temas" && key !== "observaciones" && key !== "instructor" && key !== "fecha" && key !== "tiempoDuracion") {
                     try {
                         parsedObject[key] = JSON.parse(value);
                     } catch (error) {
@@ -381,7 +386,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
             // Ahora puedes usar parsedObject
             console.log("parsed: ", parsedObject);
-            
+
             // recibire fecha asi 2023-11-23 pero quiero que se vea asi 2023-11-23T17:41:50.449Z (la informacion que no tienes ponla en 0)
             let newFecha = ''
             if (parsedObject.fecha !== '') newFecha = parsedObject.fecha + "T00:00:00.000Z"
@@ -462,14 +467,14 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             const reglones2 = [
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, reglon
                 // Aquí mapeas los valores de "asistentes" a su correspondiente entrada en "reglones"
-                
-            ];            
+
+            ];
 
             // espero 0.1 segundo
             setTimeout(() => {
                 setReglones(reglones2);
             }, 0.1);
-                
+
 
         }
         else {
@@ -783,7 +788,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                             <Text style={{ marginBottom: 5, display: (inputsValues[index]?.value ? 'flex' : 'none') }}>{
                                 (inputsValues[index]?.value ? inputsValues[index]?.value?.split("/")[inputsValues[index]?.value?.split("/").length - 1] : '')
                             }</Text>
-                
+
                         </View>
                     )
                 }

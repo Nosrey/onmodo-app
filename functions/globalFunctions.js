@@ -1074,7 +1074,16 @@ export const formulariosData = [
             { text: "* Una constancia para el comedor.", tipo: "text" },
             { text: "* Otra para el proveedor.", tipo: "text" },
         ],
-        inputs: [
+        inputs: [  
+            
+            // un tipo fecha llamado Fecha
+            { name: "Fecha", tipo: "date" },
+            // un Proveedor tipo text
+            { name: "Proveedor", tipo: "text" },
+            // igual pero Producto
+            { name: "Producto", tipo: "text" },
+            // uno Nro. lote
+            { name: "Nro. lote", tipo: "text" },       
             { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", tipo: "title" },
             // subtitle Condiciones de entrega
             { name: "Condiciones de entrega", tipo: "subTitle" },
@@ -1140,7 +1149,6 @@ export const formulariosData = [
             { name: "Cantidad", tipo: "text" },
             { name: "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)", tipo: "select", options: ["No", "Si"] },
             { name: "Cantidad", tipo: "text" },
-
         ],
     },
     {
@@ -1401,124 +1409,131 @@ export const verificacionBalanzas = (values) => {
 };
 
 export const reporterechazo = (values) => {
+    let dia = values[0]?.value
+    // transformo dia de formato 2024-02-01T05:55:11.861Z a YYYY-MM-DD
+    if (dia) {
+        dia = new Date(dia).toISOString().split('T')[0]
+    }
+    console.log('dia: ', dia);
+
     let objetoFinal = {
-        dia: "",
-        proveedor: "",
-        producto: "",
-        nroLote: "",
+        dia: dia,
+        proveedor: values[1]?.value,
+        producto: values[2]?.value,
+        nroLote: values[3]?.value,
         condicionesEntrega: [
             {
-                checked: values[2]?.value === "Si" ? true : false,
+                checked: values[6]?.value === "Si" ? true : false,
                 name: "Atrasado",
-                description: values[3]?.value
+                description: values[7]?.value
             },
             {
-                checked: values[4]?.value === "Si" ? true : false,
+                checked: values[8]?.value === "Si" ? true : false,
                 name: "Adelantado",
-                description: values[5]?.value
+                description: values[9]?.value
             }
         ],
         calidad: [
             {
-                checked: values[7]?.value === "Si" ? true : false,
-                name: "Temperatura",
-                description: values[8]?.value,
-            },
-            {
-                checked: values[9]?.value === "Si" ? true : false,
-                name: "Vida útil",
-                description: values[10]?.value
-            },
-            {
                 checked: values[11]?.value === "Si" ? true : false,
-                name: "Embalaje",
+                name: "Temperatura",
                 description: values[12]?.value,
             },
             {
                 checked: values[13]?.value === "Si" ? true : false,
-                name: "Rótulo",
+                name: "Vida útil",
                 description: values[14]?.value
             },
             {
                 checked: values[15]?.value === "Si" ? true : false,
-                name: "Calibre",
-                description: values[16]?.value
+                name: "Embalaje",
+                description: values[16]?.value,
             },
             {
                 checked: values[17]?.value === "Si" ? true : false,
-                name: "Color",
+                name: "Rótulo",
                 description: values[18]?.value
             },
             {
                 checked: values[19]?.value === "Si" ? true : false,
-                name: "Signos de maduración",
-                description: values[20]?.value,
+                name: "Calibre",
+                description: values[20]?.value
             },
             {
                 checked: values[21]?.value === "Si" ? true : false,
-                name: "Consistencia/Textura",
+                name: "Color",
                 description: values[22]?.value
             },
             {
                 checked: values[23]?.value === "Si" ? true : false,
+                name: "Signos de maduración",
+                description: values[24]?.value,
+            },
+            {
+                checked: values[25]?.value === "Si" ? true : false,
+                name: "Consistencia/Textura",
+                description: values[26]?.value
+            },
+            {
+                checked: values[27]?.value === "Si" ? true : false,
                 name: "Olor",
-                description: values[24]?.value
+                description: values[28]?.value
             }
         ],
         diferencias: [
             {
-                checked: values[26]?.value === "Si" ? true : false,
+                checked: values[30]?.value === "Si" ? true : false,
                 name: "Precio",
-                description: values[27]?.value
+                description: values[31]?.value
             },
             {
-                checked: values[28]?.value === "Si" ? true : false,
+                checked: values[32]?.value === "Si" ? true : false,
                 name: "Cantidad",
-                description: values[29]?.value
+                description: values[33]?.value
             }
         ],
         transporte: [
             {
-                checked: values[31]?.value === "Si" ? true : false,
-                name: "Temperatura de la caja",
-                description: values[32]?.value,
-            },
-            {
-                checked: values[33]?.value === "Si" ? true : false,
-                name: "Uniforme del proveedor",
-                description: values[34]?.value,
-            },
-            {
                 checked: values[35]?.value === "Si" ? true : false,
-                name: "Predisposición /Conducta",
+                name: "Temperatura de la caja",
                 description: values[36]?.value,
             },
             {
                 checked: values[37]?.value === "Si" ? true : false,
-                name: "Vehículo",
+                name: "Uniforme del proveedor",
                 description: values[38]?.value,
             },
             {
                 checked: values[39]?.value === "Si" ? true : false,
-                name: "Otras Faltas",
+                name: "Predisposición /Conducta",
                 description: values[40]?.value,
+            },
+            {
+                checked: values[41]?.value === "Si" ? true : false,
+                name: "Vehículo",
+                description: values[42]?.value,
+            },
+            {
+                checked: values[43]?.value === "Si" ? true : false,
+                name: "Otras Faltas",
+                description: values[44]?.value,
             }
         ],
         medidasTomadas: [
             {
-                checked: values[42]?.value === "Si" ? true : false,
-                name: "Rechazo  (en el momento de la recepción)",
-                description: values[43]?.value,
-            },
-            {
-                checked: values[44]?.value === "Si" ? true : false,
-                name: "Devolución (lotes ya ingresados)",
-                description: values[45]?.value,
-            },
-            {
                 checked: values[46]?.value === "Si" ? true : false,
-                name: "Aceptado condicional",
+                name: "Rechazo  (en el momento de la recepción)",
                 description: values[47]?.value,
+            },
+            {
+                checked: values[48]?.value === "Si" ? true : false,
+                name: "Devolución (lotes ya ingresados)",
+                description: values[49]?.value,
+            },
+            {
+                checked: values[50]?.value === "Si" ? true : false,
+                name: "Aceptado condicional",
+                description: values[51]?.value,
             }
         ],
     }
