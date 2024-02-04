@@ -304,8 +304,8 @@ export const PUESTOS_N2 = [
 // exporto API_URL como http://localhost:8080
 // en modo online es https://api.onmodoapp.com
 
-export const API_URL = 'http://192.168.1.107:8080';
-// export const API_URL = 'https://api.onmodoapp.com';
+// export const API_URL = 'http://192.168.1.107:8080';
+export const API_URL = 'https://api.onmodoapp.com';
 
 const URL_API = API_URL
 
@@ -367,8 +367,10 @@ export const formulariosData = [
             { name: "Turno", tipo: "select", options: ['Turno Mañana', 'Turno Tarde', 'Turno Noche'] },
             {
                 name: "Servicios", tipo: "row", rolIndex: 0, options: [
-                    { name: "Equipo", tipo: "text" },
-                    { name: "Nro y Nombre", tipo: "text" },
+
+                    // { name: "Equipo", tipo: "text" }, Equipo debe ser un desplegable con las opciones Heladera/ Freezer /Camara
+                    { name: "Equipo", tipo: "select", options: ['Heladera', 'Freezer', 'Camara'] },
+                    { name: "Identificación", tipo: "text" },
                     { name: "Hora", tipo: "time" },
                     { name: "Temperatura Equipo", tipo: "text" },
                     { name: "Alimento", tipo: "text" },
@@ -381,37 +383,37 @@ export const formulariosData = [
             },
         ]
     },
-    {
-        title: "Control de Vidrios",
-        rolNeeded: 1,
-        formType: 2,
-        url: API_URL + "/api/controlvidrios",
+    // {
+    //     title: "Control de Vidrios",
+    //     rolNeeded: 1,
+    //     formType: 2,
+    //     url: API_URL + "/api/controlvidrios",
 
-        inputs: [
+    //     inputs: [
 
-            // { name: "Registro de envases de vidrio y roturas", tipo: "title" },
-            { name: "Registro de envases de vidrio y roturas", tipo: "subTitle" },
-            {
-                name: "Recepción", tipo: "row", options: [
-                    { name: "Fecha de Recepción", tipo: "date" },
-                    { name: "Proveedor", tipo: "text" },
-                    { name: 'Alimento contenido en vidrio', tipo: 'text' },
-                    { name: 'Responsable de control', tipo: 'text' },
-                ]
-            },
-            {
-                name: 'Daños', tipo: 'row', options: [
-                    { name: 'Fecha', tipo: 'date' },
-                    // envase de vidrio roto text
-                    { name: 'Envase de vidrio roto', tipo: 'text' },
-                    // 'Acción correctiva sobre el alimento' text
-                    { name: 'Acción correctiva sobre el alimento', tipo: 'text' },
-                    // responsable text
-                    { name: 'Responsable', tipo: 'text' },
-                ]
-            },
-        ]
-    },
+    //         // { name: "Registro de envases de vidrio y roturas", tipo: "title" },
+    //         { name: "Registro de envases de vidrio y roturas", tipo: "subTitle" },
+    //         {
+    //             name: "Recepción", tipo: "row", options: [
+    //                 { name: "Fecha de Recepción", tipo: "date" },
+    //                 { name: "Proveedor", tipo: "text" },
+    //                 { name: 'Alimento contenido en vidrio', tipo: 'text' },
+    //                 { name: 'Responsable de control', tipo: 'text' },
+    //             ]
+    //         },
+    //         {
+    //             name: 'Daños', tipo: 'row', options: [
+    //                 { name: 'Fecha', tipo: 'date' },
+    //                 // envase de vidrio roto text
+    //                 { name: 'Envase de vidrio roto', tipo: 'text' },
+    //                 // 'Acción correctiva sobre el alimento' text
+    //                 { name: 'Acción correctiva sobre el alimento', tipo: 'text' },
+    //                 // responsable text
+    //                 { name: 'Responsable', tipo: 'text' },
+    //             ]
+    //         },
+    //     ]
+    // },
     {
         title: "Chequeo de uso de EPP",
         rolNeeded: 2,
@@ -472,18 +474,20 @@ export const formulariosData = [
                     { name: "Fecha", tipo: "date" },
                     { name: "Producto", tipo: "text" },
 
-                    { name: "Hora", tipo: "timeHeader", titulo: "PROCESO DE ARMADO/FRACCIONAMIENTO", cabecera: "INICIO" }, { name: "Temp. Interna", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", cabecera: "FINAL" }, { name: "Temp. Interna", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeHeader", titulo: "PROCESO DE ARMADO/FRACCIONAMIENTO", cabecera: "INICIO" }, { name: "Temperatura Interna", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", cabecera: "FINAL" }, { name: "Temperatura Interna", tipo: "textFooter" },
 
                     // las opciones deben ser
                     // - Refrigerar
                     // - Desechar
                     // - Sin acción de corrección
-                    { name: "Acciones correción", tipo: "select", options: [
-                        "Refrigerar",
-                        "Desechar",
-                        "Sin acción de corrección"
-                    ] },
+                    {
+                        name: "Acciones correción", tipo: "select", options: [
+                            "Refrigerar",
+                            "Desechar",
+                            "Sin acción de corrección"
+                        ]
+                    },
                 ]
             }
         ],
@@ -691,17 +695,17 @@ export const formulariosData = [
                     // - El campo "Alimento" debe haber un desplegable con las siguientes opciones; 1. "Carne vacuna, cerdo, cordero". 2. "Pollo y otras aves de corral". 3. "Pescado". 4 "Pastas rellenas". 5. "Huevos y alimentos preparados"
                     { name: "Alimento", tipo: "select", options: ["Carne vacuna, cerdo, cordero", "Pollo y otras aves de corral", "Pescado", "Pastas rellenas", "Huevos y alimentos preparados"] },
                     // un timeTop de titulo Cocción de header Final
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Cocción" }, { name: "Temp.", tipo: "textFooter" },
-                    // otro timeHeader de titulo Enfriamiento de header Inicio con un textFooter que siempre sera de Temp., luego otros 3 timeTop de cabecera 2 hs., 4hs. y 6hs. que estaran solos
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio", titulo: "Enfriamiento" }, { name: "Temp.", tipo: "textMiddle" },
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Cocción" }, { name: "Temperatura", tipo: "textFooter" },
+                    // otro timeHeader de titulo Enfriamiento de header Inicio con un textFooter que siempre sera de Temperatura, luego otros 3 timeTop de cabecera 2 hs., 4hs. y 6hs. que estaran solos
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio", titulo: "Enfriamiento" }, { name: "Temperatura", tipo: "textMiddle" },
                     // ahora los 3 mencionados 
-                    { name: "Temp.", tipo: "textTop", cabecera: "2 hs." },
-                    { name: "Temp.", tipo: "textTop", cabecera: "4 hs." },
-                    { name: "Temp.", tipo: "textTop", cabecera: "6 hs." },
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Regeneración" }, { name: "Temp.", tipo: "textFooter" },
-                    { name: "Temp.", cabecera: "Inicio", titulo: "Mantenimiento en caliente", tipo: "textHeader" },
-                    { name: "Temp.", tipo: "textTop", cabecera: "1 hs." },
-                    { name: "Temp.", tipo: "textTop", cabecera: "2 hs." },
+                    { name: "Temperatura", tipo: "textTop", cabecera: "2 hs." },
+                    { name: "Temperatura", tipo: "textTop", cabecera: "4 hs." },
+                    { name: "Temperatura", tipo: "textTop", cabecera: "6 hs." },
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Regeneración" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Temperatura", cabecera: "Inicio", titulo: "Mantenimiento en caliente", tipo: "textHeader" },
+                    { name: "Temperatura", tipo: "textTop", cabecera: "1 hs." },
+                    { name: "Temperatura", tipo: "textTop", cabecera: "2 hs." },
                     // { name: "Acciones de corrección", tipo: "text" },
                     { name: "Acciones de corrección", tipo: "select", options: ["Sin acción correctiva"] },
 
@@ -830,11 +834,11 @@ export const formulariosData = [
                             "Cocción directa",
                         ]
                     },
-                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Inicio" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 1" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 2" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 3" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Final" }, { name: "Temp", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Inicio" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 1" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 2" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 3" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Final" }, { name: "Temperatura", tipo: "textFooter" },
                     // { name: "Acciones de correción", tipo: "text" },
                     { name: "Acciones de correción", tipo: "select", options: ["Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" },
@@ -892,15 +896,15 @@ export const formulariosData = [
                     { name: "Servicio", tipo: "select", options: ["Desayuno", "Almuerzo", "Merienda", "Cena"] },
                     // preparacion tipo text
                     { name: "Preparación", tipo: "textGrande" },
-                    { name: "Hora", tipo: "timeTop", cabecera: "Despacho", titulo: "Distribución/Expedición" }, { name: "Temp", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", cabecera: "Despacho", titulo: "Distribución/Expedición" }, { name: "Temperatura", tipo: "textFooter" },
 
-                    { name: "Hora", tipo: "timeTop", cabecera: "Recepción" }, { name: "Temp", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", cabecera: "Recepción" }, { name: "Temperatura", tipo: "textFooter" },
                     // un select con las siguientes opciones llamado acciones correctivas
                     // *Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.
                     // * Desechar porque la temperatura está por debajo de 55 °C,
                     // * Desechar porque la temperatura está por encima de 15°C.
                     // * Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C.
-                    // * Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C.
+                    // * Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C.                
                     { name: "Acciones correctivas", tipo: "selectShow", options: ["Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.", "Desechar porque la temperatura está por debajo de 55 °C", "Desechar porque la temperatura está por encima de 15°C", "Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C", "Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C", "Sin Acción Correctiva"] },
                 ]
             },
@@ -943,7 +947,13 @@ export const formulariosData = [
                     { name: "Enjuague", tipo: "selectTop", cabecera: "ENJUAGUE FINAL", options: ["Si", "No"] },
                     // tipo text acciones de correcion
                     // { name: "Acciones de correción", tipo: "text" },
-                    { name: "Acciones de correción", tipo: "select", options: ["Sin acción correctiva"] },
+                    // Diluir, Dosificar, Sin acción de correccion
+                    {
+                        name: "Acciones de correción", tipo: "select", options: [
+                            "Diluir",
+                            "Dosificar",
+                            "Sin acción correctiva"]
+                    },
                     // responsable
                     { name: "Responsable", tipo: "text" },
                 ]
@@ -966,7 +976,7 @@ export const formulariosData = [
             { text: "Las preparaciones calientes deben mantenerse a temperaturas mayores a 65ºC, por un tiempo máximo de 2 horas.", tipo: "text" },
             { text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text" },
             { text: "SERVICIO LÍNEA FRIA", tipo: "title" },
-            { text: "Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºCpor un máximo de 2 horas.", tipo: "text" },
+            { text: "Las preparaciones servidas en frio, entradas, postres y ensaladas deben mantenerse a temperaturas inferiores a 10ºC por un máximo de 2 horas.", tipo: "text" },
             { text: "Los productos sobrantes deberán ser eliminados si fueron presentados en la línea.", tipo: "text" },
             // { text: "Contratos certificados con IRAM BPM: mantener a menos de 4ºC.", tipo: "text" },
         ],
@@ -974,13 +984,14 @@ export const formulariosData = [
             { name: "Fecha", tipo: "date" },
             {
                 name: "Servicios", tipo: "row", rolIndex: 0, options: [
-                    { name: "Servicio", tipo: "text" },
+                    // { name: "Servicio", tipo: "text" }, El campo Servicio debe ser un deplegable con las opciones  servicio en caliente /servicio en frío
+                    { name: "Servicio", tipo: "select", options: ["Servicio en caliente", "Servicio en frío"] },
                     { name: "Preparación", tipo: "text" },
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio", titulo: "Mantenimiento" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 1" }, { name: "Temp", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", cabecera: "Mantenimiento 2" }, { name: "Temp", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio", titulo: "Mantenimiento" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", cabecera: "Control 1" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeTop", cabecera: "Control 2" }, { name: "Temperatura", tipo: "textFooter" },
                     // { name: "Acciones correctivas", tipo: "text" },
-                    { name: "Acciones correctivas", tipo: "select", options: ["Sin acción correctiva"] },
+                    { name: "Acciones correctivas", tipo: "select", options: ["Desechar", "Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" }
                 ]
             },
@@ -993,7 +1004,7 @@ export const formulariosData = [
         title: "Recuperación de Productos",
         url: API_URL + "/api/recuperacionproducto",
         rolNeeded: 1,
-        title2: "Registro para el comedor",
+        title2: "Registro",
         inputs: [
             { name: "Fecha de alerta", tipo: "date" },
             { name: "Fecha de recuperación", tipo: "date" },
@@ -1074,8 +1085,8 @@ export const formulariosData = [
             { text: "* Una constancia para el comedor.", tipo: "text" },
             { text: "* Otra para el proveedor.", tipo: "text" },
         ],
-        inputs: [  
-            
+        inputs: [
+
             // un tipo fecha llamado Fecha
             { name: "Fecha", tipo: "date" },
             // un Proveedor tipo text
@@ -1083,7 +1094,7 @@ export const formulariosData = [
             // igual pero Producto
             { name: "Producto", tipo: "text" },
             // uno Nro. lote
-            { name: "Nro. lote", tipo: "text" },       
+            { name: "Nro. lote", tipo: "text" },
             { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", tipo: "title" },
             // subtitle Condiciones de entrega
             { name: "Condiciones de entrega", tipo: "subTitle" },
@@ -1105,8 +1116,8 @@ export const formulariosData = [
             { name: "Descripción de no conformidad", tipo: "text" },
             { name: "Rótulo", tipo: "select", options: ["No", "Si"] },
             { name: "Descripción de no conformidad", tipo: "text" },
-            { name: "Calibre", tipo: "select", options: ["No", "Si"] },
-            { name: "Descripción de no conformidad", tipo: "text" },
+            { name: "Calibre", tipo: "selectInvisible", options: ["No", "Si"] },
+            { name: "Descripción de no conformidad", tipo: "textInvisible" },
             { name: "Color", tipo: "select", options: ["No", "Si"] },
             { name: "Descripción de no conformidad", tipo: "text" },
             { name: "Signos de maduración", tipo: "select", options: ["No", "Si"] },
@@ -1267,8 +1278,8 @@ export const formulariosData = [
                     // Área
                     { name: "Área", tipo: "textFooter" },
                     // punto 0
-                    { name: "Temp. termón referencia", tipo: "text" },
-                    { name: "Temp. termón evaluado", tipo: "text" },
+                    { name: "Temperatura termón referencia", tipo: "text" },
+                    { name: "Temperatura termón evaluado", tipo: "text" },
                     // Desvío
                     { name: "Desvío", tipo: "text" },
                     // { name: "Acciones de correción", tipo: "select", options: ["Calibrar", "Reemplazar"] },
@@ -1365,8 +1376,8 @@ export const verificacionTermometros = (values) => {
                 let reglonIndividual = {
                     código: values[i].value[j][0].value,
                     área: values[i].value[j][1].value,
-                    "temp.termómreferencia": values[i].value[j][2].value,
-                    "temp.termómevaluado": values[i].value[j][3].value,
+                    "Temperatura.termómreferencia": values[i].value[j][2].value,
+                    "Temperatura.termómevaluado": values[i].value[j][3].value,
                     desvío: values[i].value[j][4].value,
                     "Acciones de corrección": values[i].value[j][5].value,
                 }

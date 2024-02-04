@@ -11,6 +11,7 @@ import { Feather } from '@expo/vector-icons';
 import { API_URL, registroCapacitacion, verificacionTermometros, verificacionBalanzas, reporterechazo, entregabidones } from '../functions/globalFunctions'
 import * as DocumentPicker from 'expo-document-picker';
 
+
 export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const dispatch = useDispatch();
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
@@ -907,7 +908,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     }
                 ],
                 editEnabled: false
-                }
+            }
 
         } else if (cardToCheck.title === 'Verificación Balanzas') {
             let inputsFinalReglones = []
@@ -928,7 +929,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
                 objetoFinal = {
                     ...objectToCheck,
-                    fecha: inputsValues[0]?.value,                    
+                    fecha: inputsValues[0]?.value,
                     inputs: inputsFinalReglones,
                     editEnabled: false
                 }
@@ -1169,7 +1170,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     "observaciones": inputsValues[21]?.value,
                     "instructor": inputsValues[22]?.value,
                     "firma": inputsValues[23]?.value,
-                }           
+                }
 
                 // reviso si en .firma hay algo (y algo en .firma.uri) y si no es asi substraigno esa propiedad
                 if (!inputsFinal.firma || !inputsFinal.firma.uri) {
@@ -1452,6 +1453,25 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         </View>
                     )
                 }
+                else if (input.tipo === "textInvisible") {
+                    return (
+                        <View key={index} style={{ display: 'none', backgroundColor: 'red', marginTop: 5, marginBottom: 100 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
+                            <View style={styles.passwordInputContainer}>
+                                <TextInput
+                                    style={styles.userInput}
+                                    placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
+                                    value={inputsValues[index]?.value}
+                                    onChangeText={(value) => {
+                                        let array = [...inputsValues];
+                                        array[index] = { name: input.name, value: value };
+                                        setInputsValues(array);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                    )
+                }
                 else if (input.tipo === "fileUpload") {
                     return (
                         <View key={index} style={{ marginTop: 5, marginBottom: 20, alignItems: 'center' }} >
@@ -1513,6 +1533,30 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 else if (input.tipo === "select") {
                     return (
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValues];
+                                    console.log('cambiando select')
+                                    array[index] = { name: input.name, value: itemValue };
+                                    console.log('array', array)
+                                    setInputsValues(array);
+                                }}
+                            >
+                                {input.options?.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "selectInvisible") {
+                    return (
+                        <View key={index} style={{ display: 'none', marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 selectedValue={inputsValues[index]?.value || input.options[0]}

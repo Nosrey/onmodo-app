@@ -14,6 +14,7 @@ import dotRed from '../assets/dotRed.png'
 import * as ImagePicker from 'expo-image-picker';
 
 
+
 export default function CrearServicio({ navigation, params }) {
     const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked, dot, setDot } = params
     const [row, setRow] = useState([])
@@ -614,6 +615,8 @@ export default function CrearServicio({ navigation, params }) {
                             </View>
                         )
                     }
+
+          
 
                 })}
 
