@@ -44,7 +44,7 @@ function getTitle(title) {
     } else if (title === 'distribucion') {
         return 'Distribución / Expedición';
     } else if (title === 'planillaarmado') {
-        return 'Planilla de Armado y Fraccionamiento';
+        return 'Planilla de Armado y Fraccionamiento en frio';
     } else if (title === 'despachoproduccion') {
         return 'Despacho a Producción';
     } else if (title === 'sanitizacion') {
@@ -104,7 +104,7 @@ function returnTitle(title) {
         return 'descongelamiento';
     } else if (title === 'Distribucion / Expedicion') {
         return 'distribucion';
-    } else if (title === 'Planilla de Armado y Fraccionamiento') {
+    } else if (title === 'Planilla de Armado y Fraccionamiento en frio') {
         return 'planillaarmado';
     } else if (title === 'Despacho a Produccion') {
         return 'despachoproduccion';
@@ -372,12 +372,15 @@ export const formulariosData = [
                     { name: "Equipo", tipo: "select", options: ['Heladera', 'Freezer', 'Camara'] },
                     { name: "Identificación", tipo: "text" },
                     { name: "Hora", tipo: "time" },
-                    { name: "Temperatura Equipo", tipo: "text" },
+                    { name: "Temperatura Equipo", tipo: "textTemp", guia: 0 },
                     { name: "Alimento", tipo: "text" },
                     { name: "Temperatura Alimento", tipo: "text" },
-                    // select con Sin Acción Correctiva
-                    // { name: "Acción de correción", tipo: "text" },
-                    { name: "Acción de correción", tipo: "select", options: ["Sin acción correctiva"] },
+                    // { name: "Acción de correción", tipo: "select", options: ["Sin acción correctiva"] },En control de equipos de frio las acciones de corrección deberían ser las siguientes :
+                    // -Rechequear temperatura
+                    // -Utilizar alimentos
+                    // -Desechar alimentos
+                    // -Sin acción correctiva
+                    { name: "Acción de correción", tipo: "select", options: ["Rechequear temperatura", "Utilizar alimentos", "Desechar alimentos", "Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" },
                 ]
             },
@@ -449,7 +452,7 @@ export const formulariosData = [
 
     },
     {
-        title: "Planilla de Armado y Fraccionamiento",
+        title: "Planilla de Armado y Fraccionamiento en frio",
         rolNeeded: 1,
         formType: 2,
         url: API_URL + "/api/planillaarmado",
@@ -470,12 +473,12 @@ export const formulariosData = [
         ],
         inputs: [
             {
-                name: "Planilla de Armado/Fraccionamiento", tipo: "row", options: [
+                name: "Planilla de Armado y Fraccionamiento en frio", tipo: "row", options: [
                     { name: "Fecha", tipo: "date" },
                     { name: "Producto", tipo: "text" },
 
-                    { name: "Hora", tipo: "timeHeader", titulo: "PROCESO DE ARMADO/FRACCIONAMIENTO", cabecera: "INICIO" }, { name: "Temperatura Interna", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", cabecera: "FINAL" }, { name: "Temperatura Interna", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeHeader", titulo: "PROCESO DE ARMADO/FRACCIONAMIENTO", cabecera: "INICIO" }, { name: "Temperatura Interna", tipo: "textTempFooter", guia: 0 },
+                    { name: "Hora", tipo: "timeTop", cabecera: "FINAL" }, { name: "Temperatura Interna", tipo: "textTempFooter", guia: 0 },
 
                     // las opciones deben ser
                     // - Refrigerar
@@ -695,19 +698,23 @@ export const formulariosData = [
                     // - El campo "Alimento" debe haber un desplegable con las siguientes opciones; 1. "Carne vacuna, cerdo, cordero". 2. "Pollo y otras aves de corral". 3. "Pescado". 4 "Pastas rellenas". 5. "Huevos y alimentos preparados"
                     { name: "Alimento", tipo: "select", options: ["Carne vacuna, cerdo, cordero", "Pollo y otras aves de corral", "Pescado", "Pastas rellenas", "Huevos y alimentos preparados"] },
                     // un timeTop de titulo Cocción de header Final
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Cocción" }, { name: "Temperatura", tipo: "textFooter" },
-                    // otro timeHeader de titulo Enfriamiento de header Inicio con un textFooter que siempre sera de Temperatura, luego otros 3 timeTop de cabecera 2 hs., 4hs. y 6hs. que estaran solos
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio", titulo: "Enfriamiento" }, { name: "Temperatura", tipo: "textMiddle" },
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Cocción" }, { name: "Temperatura ", tipo: "textTempFooter", guia: 0 },
+                    { name: "Acciones de corrección", tipo: "select", options: ["Continuar la cocción", "Descartar", "Sin acción correctiva"] },
+   
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio", titulo: "Enfriamiento" }, { name: "Temperatura ", tipo: "textTempMiddle", guia: 0 },
                     // ahora los 3 mencionados 
-                    { name: "Temperatura", tipo: "textTop", cabecera: "2 hs." },
-                    { name: "Temperatura", tipo: "textTop", cabecera: "4 hs." },
-                    { name: "Temperatura", tipo: "textTop", cabecera: "6 hs." },
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Regeneración" }, { name: "Temperatura", tipo: "textFooter" },
-                    { name: "Temperatura", cabecera: "Inicio", titulo: "Mantenimiento en caliente", tipo: "textHeader" },
-                    { name: "Temperatura", tipo: "textTop", cabecera: "1 hs." },
-                    { name: "Temperatura", tipo: "textTop", cabecera: "2 hs." },
+                    { name: "Temperatura ", tipo: "textTempTop", cabecera: "2 hs.", guia: 0 },
+                    { name: "Temperatura ", tipo: "textTempTop", cabecera: "4 hs.", guia: 0 },
+                    { name: "Temperatura ", tipo: "textTempTop", cabecera: "6 hs.", guia: 0 },
+                    { name: "Acciones de corrección", tipo: "select", options: ["Refrigerar", "Regenerar", "Descartar", "Sin acción correctiva"] },
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Final", titulo: "Regeneración" }, { name: "Temperatura ", tipo: "textTempFooter", guia: 0 },
+                    { name: "Acciones de corrección", tipo: "select", options: ["Refrigerar", "Regenerar", "Descartar", "Sin acción correctiva"] },
+                    { name: "Temperatura", cabecera: "Inicio", titulo: "Mantenimiento en caliente", tipo: "textTempHeader", guia: 0 },
+                    
+                    { name: "Temperatura ", tipo: "textTempTop", cabecera: "1 hs.", guia: 0 },
+                    { name: "Temperatura ", tipo: "textTempTop", cabecera: "2 hs.", guia: 0 },
                     // { name: "Acciones de corrección", tipo: "text" },
-                    { name: "Acciones de corrección", tipo: "select", options: ["Sin acción correctiva"] },
+                    { name: "Acciones de corrección", tipo: "select", options: ["Refrigerar", "Regenerar", "Descartar", "Sin acción correctiva"] },
 
                 ]
             }
@@ -840,7 +847,13 @@ export const formulariosData = [
                     { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Monitoreo 3" }, { name: "Temperatura", tipo: "textFooter" },
                     { name: "Hora", tipo: "timeTop", titulo: "", cabecera: "Final" }, { name: "Temperatura", tipo: "textFooter" },
                     // { name: "Acciones de correción", tipo: "text" },
-                    { name: "Acciones de correción", tipo: "select", options: ["Sin acción correctiva"] },
+                    // { name: "Acciones de correción", tipo: "select", options: ["Sin acción correctiva"] },
+                    //                     Acciones correctivas>
+                    // Cocinar
+                    // Descartar
+
+                    // Sin acción correctiva
+                    { name: "Acciones de correción", tipo: "select", options: ["Cocinar", "Descartar", "Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" },
                 ]
             },
@@ -905,7 +918,14 @@ export const formulariosData = [
                     // * Desechar porque la temperatura está por encima de 15°C.
                     // * Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C.
                     // * Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C.                
-                    { name: "Acciones correctivas", tipo: "selectShow", options: ["Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.", "Desechar porque la temperatura está por debajo de 55 °C", "Desechar porque la temperatura está por encima de 15°C", "Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C", "Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C", "Sin Acción Correctiva"] },
+                    // { name: "Acciones correctivas", tipo: "selectShow", options: ["Desechar porque el tiempo transcurrido entre el despacho y la recepción fue mayor a 2 horas.", "Desechar porque la temperatura está por debajo de 55 °C", "Desechar porque la temperatura está por encima de 15°C", "Si la temperatura está en un rango ente 55°C y 64°C recalentar hasta alcanzar más de 65°C", "Si la temperatura está en un rango entre 10°C y 15°refrigerar hasta alcanzar menos de 10°C", "Sin Acción Correctiva"] },
+                    // Las accioens correctivas para distribucion y exp reemplazar por >
+
+                    // Desechar alimentos
+                    // Recalentar preparación
+                    // Sin acción correctivas
+                    { name: "Acciones correctivas", tipo: "select", options: ["Desechar alimentos", "Recalentar preparación", "Sin acción correctivas"] },
+                    { name: "Responsable", tipo: "text" },
                 ]
             },
         ]
@@ -987,11 +1007,16 @@ export const formulariosData = [
                     // { name: "Servicio", tipo: "text" }, El campo Servicio debe ser un deplegable con las opciones  servicio en caliente /servicio en frío
                     { name: "Servicio", tipo: "select", options: ["Servicio en caliente", "Servicio en frío"] },
                     { name: "Preparación", tipo: "text" },
-                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio", titulo: "Mantenimiento" }, { name: "Temperatura", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", cabecera: "Control 1" }, { name: "Temperatura", tipo: "textFooter" },
-                    { name: "Hora", tipo: "timeTop", cabecera: "Control 2" }, { name: "Temperatura", tipo: "textFooter" },
+                    { name: "Hora", tipo: "timeHeader", cabecera: "Inicio del servicio", titulo: "Mantenimiento" }, { name: "Temperatura", tipo: "textTempFooter", guia: 0 },
+                    { name: "Hora", tipo: "timeTop", cabecera: "Control 1" }, { name: "Temperatura", tipo: "textTempFooter", guia: 0 },
+                    { name: "Hora", tipo: "timeTop", cabecera: "Control 2" }, { name: "Temperatura", tipo: "textTempFooter", guia: 0 },
                     // { name: "Acciones correctivas", tipo: "text" },
-                    { name: "Acciones correctivas", tipo: "select", options: ["Desechar", "Sin acción correctiva"] },
+                    // { name: "Acciones correctivas", tipo: "select", options: ["Desechar", "Sin acción correctiva"] },
+                    //                     Rechequear temperatura
+                    // Utilizar alimentos
+                    // Desechar alimentos
+                    // Sin acción correctiva
+                    { name: "Acciones correctivas", tipo: "select", options: ["Rechequear temperatura", "Utilizar alimentos", "Desechar alimentos", "Sin acción correctiva"] },
                     { name: "Responsable", tipo: "text" }
                 ]
             },
