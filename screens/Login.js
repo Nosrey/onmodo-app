@@ -22,8 +22,8 @@ export default function Login({ navigation }) {
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false
     // const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña2eKgjc19
     // const [legajoInput, setLegajoInput] = useState(''); // Estado para guardar el valor del input de legajo
-    const [legajoInput, setLegajoInput] = useState('333'); // 3986722 -- Estado para guardar el valor del input de legajo
-    const [passwordInput, setPasswordInput] = useState('123'); // Estado para guardar el valor del input de contraseña
+    const [legajoInput, setLegajoInput] = useState(''); // 333 -- Estado para guardar el valor del input de legajo
+    const [passwordInput, setPasswordInput] = useState(''); // 123- Estado para guardar el valor del input de contraseña
     const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
@@ -456,7 +456,7 @@ export default function Login({ navigation }) {
                 <TouchableOpacity style={buttonFooterStyle} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Ingresar</Text>
                 </TouchableOpacity>
-                <Text style={styles.footerText} onPress={() => navigation.navigate('PasswordRecovery')}>Olvidé mi contraseña</Text>
+                {/* <Text style={styles.footerText} onPress={() => navigation.navigate('PasswordRecovery')}>Olvidé mi contraseña</Text> */}
             </View>
         </View>
     );
