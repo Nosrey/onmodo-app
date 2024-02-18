@@ -4,6 +4,9 @@ import logo from '../assets/on-modo-grande.png';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import Header from '../components/Header';
+// para obtener las dimensiones de la pantalla
+import { Dimensions } from 'react-native';
+import { API_URL } from '../functions/globalFunctions';
 
 export default function PasswordRecovery({ navigation }) {
     const [keyboardShow, setKeyboardShow] = useState();
@@ -14,12 +17,17 @@ export default function PasswordRecovery({ navigation }) {
     const [correoInput, setCorreoInput] = useState('');
     const [inputError, setInputError] = useState(false); // Estado para mostrar/ocultar el error de input [true/false]
 
+    // creo la consntante para obtener el ancho de la pantalla
+    const windowWidth = Dimensions.get('window').width;
+
     function handleCorreoInput(value) {
         setCorreoInput(value);
     }
 
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
     useEffect(() => {
-        if (correoInput.includes('@') && correoInput.includes('.com')) {
+        if (emailRegex.test(correoInput)) {
             setInputError(false);
         } else {
             setInputError(true);
@@ -76,7 +84,30 @@ export default function PasswordRecovery({ navigation }) {
 
     function handleSendButton() {
         if (!inputError) {
-            navigation.navigate('PasswordCreate');
+            fetch(`${API_URL}/api/restablecer-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: correoInput,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    if (data.success) {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'PasswordCreate' }],
+                        });
+                    } else {
+                        alert(JSON.stringify(data.response));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
     }
 
@@ -98,7 +129,7 @@ export default function PasswordRecovery({ navigation }) {
             {/* Header */}
 
             <Header cajaText={cajaTexto} unElemento={true} />
-            <Text style={styles.message}>Ingresa tu correo para restablecer la contraseña de tu cuenta. Te enviaremos un mail con los nuevos datos.</Text>
+            <Text style={[styles.message, { width: windowWidth * 0.8, marginTop: 10, marginBottom: 15, alignSelf: 'center' }]}>Ingresá tu correo para restablecer la contraseña de tu cuenta. Te enviaremos un mail con los nuevos datos.</Text>
 
             {/* formulario */}
             <View style={styles.inputContainer}>
@@ -115,7 +146,7 @@ export default function PasswordRecovery({ navigation }) {
             {/* Boton para ingresar */}
             <View style={footerContainer}>
                 <TouchableOpacity style={buttonFooterStyle} onPress={handleSendButton}>
-                    <Text style={styles.buttonText}>Enviar</Text>
+                    <Text style={styles.buttonText}>Restablecer</Text>
                 </TouchableOpacity>
             </View>
             <Text style={emailError}>Debes ingresar un Email</Text>
@@ -212,7 +243,7 @@ const styles = StyleSheet.create({
     },
     message: {
         fontFamily: "GothamRoundedMedium",
-        fontSize: 12,
+        fontSize: 14,
         textAlign: 'center',
     }
 });
