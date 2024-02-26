@@ -456,7 +456,7 @@ export default function Login({ navigation }) {
                 <TouchableOpacity style={buttonFooterStyle} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Ingresar</Text>
                 </TouchableOpacity>
-                {/* <Text style={styles.footerText} onPress={() => navigation.navigate('PasswordRecovery')}>Olvidé mi contraseña</Text> */}
+                <Text style={styles.footerText} onPress={() => navigation.navigate('PasswordRecovery')}>Olvidé mi contraseña</Text>
             </View>
         </View>
     );
