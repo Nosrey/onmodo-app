@@ -130,7 +130,7 @@ export default function CreateAccount({ navigation }) {
 
     function handleSaveButton() {
         // verifico si alguno de los campos estan vacios
-        if (profileInputs.nombre == '' || profileInputs.legajo == '' || profileInputs.telefono == '' || profileInputs.email == '' || profileInputs.puesto == '' || profileInputs.provincia == '' || profileInputs.localidad == '' || profileInputs.contratoComedor == '' || profileInputs.imagen == null) {
+        if (profileInputs.nombre == '' || profileInputs.legajo == '' || profileInputs.telefono == '' || profileInputs.email == '' || profileInputs.puesto == '' || profileInputs.provincia == '' || profileInputs.localidad == '' || profileInputs.contratoComedor == '') {
             setNotif({ view: true, message: "¡Ups! Faltan completar campos", color: "naranja" })
             // hago un console.log del elemento que falta
 
@@ -143,15 +143,14 @@ export default function CreateAccount({ navigation }) {
                                     (profileInputs.provincia == '') ? "provincia" :
                                         (profileInputs.localidad == '') ? "localidad" :
                                             (profileInputs.contratoComedor == '') ? "contratoComedor" :
-                                                (profileInputs.imagen == null) ? "imagen" : "validation complete")
+                                                "validation complete")
         }
         // verifico si el valor de email es un email valido usando una expresion regular
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileInputs.email)) {
             setNotif({ view: true, message: "¡Ups! El email ingresado no es válido", color: "naranja" })
         }
         else {
-            console.log('todo bien: ', profileInputs)
-            setNotif({ view: true, message: "¡Cuenta creada exitosamente!", color: "verde" })
+
             vaciarInputs();
             createNewUSer({
                 email: profileInputs.email,
@@ -198,9 +197,10 @@ export default function CreateAccount({ navigation }) {
         imgProfile,
     }) => {
         try {
-            console.log('business: ', business)
             const formData = new FormData();
-            formData.append('imgProfile', imgProfile);
+            if (imgProfile) {
+                formData.append('imgProfile', imgProfile);
+            }
             formData.append('email', email);
             formData.append('fullName', fullName);
             formData.append('legajo', legajo);
@@ -221,9 +221,17 @@ export default function CreateAccount({ navigation }) {
                 throw new Error(`HTTP Error! Status: ${response.status}`);
             }
 
+            // LOG  formData {"_parts": [["email", "nosrey135@gmail.com"], ["fullName", "Nosrey"], ["legajo", "123"], ["number", "123"], ["puesto", "Bodeguero"], ["contratoComedor", "test"], ["rol", "2"], ["business", "test"], ["provincia", "Buenos Aires"], ["localidad", "25 de Mayo"]]}
+            // LOG  data {"errors": ["El usuario ya existe"], "response": null, "success": false}
+
             const data = await response.json();
             console.log("formData", formData)
             console.log("data", data)
+            if (data.success) {
+                setNotif({ view: true, message: "¡Cuenta creada exitosamente!", color: "verde" })
+            } else {
+                setNotif({ view: true, message: data.errors[0], color: "naranja" })
+            }
             return data;
         } catch (error) {
             console.error('Error:', error);

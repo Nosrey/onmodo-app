@@ -156,7 +156,7 @@ export default function ProfileLegajos({ navigation }) {
     
 
     let cajaText = [
-        {title: '| Mi cuenta', style: "titleProfile"},
+        {title: ' ', style: "titleProfile"},
     ]
 
     return (
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 75,
         borderWidth: 2,
-        marginTop: 20,
-        marginBottom: 10,
+        marginTop: 0,
+        marginBottom: 15,
     },
 });

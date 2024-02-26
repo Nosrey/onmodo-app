@@ -11,6 +11,7 @@ import { Feather } from '@expo/vector-icons';
 import { API_URL, registroCapacitacion, verificacionTermometros, verificacionBalanzas, reporterechazo, entregabidones } from '../functions/globalFunctions'
 import * as DocumentPicker from 'expo-document-picker';
 
+
 export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm, navigation, visibleForm, reglones, setReglones, setViewDelete, setReglonPicked, editionMode, setEditionMode, setViewInfo, setNotif, setCortina, cortina }) {
     const dispatch = useDispatch();
     const [inputsValues, setInputsValues] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
@@ -132,7 +133,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                             },
                             {
                                 "name": "Producto decomisado",
-                                "value": objectToCheck.inputs[i].productoDecomisado
+                                "value": objectToCheck.inputs[i].productodecomisado
                             },
                             {
                                 "name": "Cantidad",
@@ -183,54 +184,66 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
                 console.log("objectToCheck 1: ", objectToCheck)
 
-                inputsValuesCopy[0] = { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", value: '' }
-                inputsValuesCopy[1] = { name: "Condiciones de entrega", value: '' }
-                inputsValuesCopy[2] = { name: "Atrasado", value: objectToCheck?.condicionesEntrega[0]?.checked ? "Si" : "No" }
-                inputsValuesCopy[3] = { name: "Descripción de no conformidad", value: objectToCheck?.condicionesEntrega[0]?.description }
-                inputsValuesCopy[4] = { name: "Adelantado", value: objectToCheck?.condicionesEntrega[1]?.checked ? "Si" : "No" }
-                inputsValuesCopy[5] = { name: "Descripción de no conformidad", value: objectToCheck?.condicionesEntrega[1]?.description }
-                inputsValuesCopy[6] = { name: "Calidad", value: '' }
-                inputsValuesCopy[7] = { name: "Temperatura", value: objectToCheck?.calidad[0]?.checked ? "Si" : "No" }
-                inputsValuesCopy[8] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[0]?.description }
-                inputsValuesCopy[9] = { name: "Vida útil", value: objectToCheck?.calidad[1]?.checked ? "Si" : "No" }
-                inputsValuesCopy[10] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[1]?.description }
-                inputsValuesCopy[11] = { name: "Embalaje", value: objectToCheck?.calidad[2]?.checked ? "Si" : "No" }
-                inputsValuesCopy[12] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[2]?.description }
-                inputsValuesCopy[13] = { name: "Rótulo", value: objectToCheck?.calidad[3]?.checked ? "Si" : "No" }
-                inputsValuesCopy[14] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[3]?.description }
-                inputsValuesCopy[15] = { name: "Calibre", value: objectToCheck?.calidad[4]?.checked ? "Si" : "No" }
-                inputsValuesCopy[16] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[4]?.description }
-                inputsValuesCopy[17] = { name: "Color", value: objectToCheck?.calidad[5]?.checked ? "Si" : "No" }
-                inputsValuesCopy[18] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[5]?.description }
-                inputsValuesCopy[19] = { name: "Signos de maduración", value: objectToCheck?.calidad[6]?.checked ? "Si" : "No" }
-                inputsValuesCopy[20] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[6]?.description }
-                inputsValuesCopy[21] = { name: "Consistencia/Textura", value: objectToCheck?.calidad[7]?.checked ? "Si" : "No" }
-                inputsValuesCopy[22] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[7]?.description }
-                inputsValuesCopy[23] = { name: "Olor", value: objectToCheck?.calidad[8]?.checked ? "Si" : "No" }
-                inputsValuesCopy[24] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[8]?.description }
-                inputsValuesCopy[25] = { name: "Diferencias", value: '' }
-                inputsValuesCopy[26] = { name: "Precio", value: objectToCheck?.diferencias[0]?.checked ? "Si" : "No" }
-                inputsValuesCopy[27] = { name: "Descripción de no conformidad", value: objectToCheck?.diferencias[0]?.description }
-                inputsValuesCopy[28] = { name: "Cantidad", value: objectToCheck?.diferencias[1]?.checked ? "Si" : "No" }
-                inputsValuesCopy[29] = { name: "Descripción de no conformidad", value: objectToCheck?.diferencias[1]?.description }
-                inputsValuesCopy[30] = { name: "Transporte", value: '' }
-                inputsValuesCopy[31] = { name: "Temperatura de la caja", value: objectToCheck?.transporte[0]?.checked ? "Si" : "No" }
-                inputsValuesCopy[32] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[0]?.description }
-                inputsValuesCopy[33] = { name: "Uniforme del proveedor", value: objectToCheck?.transporte[1]?.checked ? "Si" : "No" }
-                inputsValuesCopy[34] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[1]?.description }
-                inputsValuesCopy[35] = { name: "Predisposición/Conducta", value: objectToCheck?.transporte[2]?.checked ? "Si" : "No" }
-                inputsValuesCopy[36] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[2]?.description }
-                inputsValuesCopy[37] = { name: "Vehículo", value: objectToCheck?.transporte[3]?.checked ? "Si" : "No" }
-                inputsValuesCopy[38] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[3]?.description }
-                inputsValuesCopy[39] = { name: "Otras faltas", value: objectToCheck?.transporte[4]?.checked ? "Si" : "No" }
-                inputsValuesCopy[40] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[4]?.description }
-                inputsValuesCopy[41] = { name: "MEDIDAS TOMADAS", value: '' }
-                inputsValuesCopy[42] = { name: "Rechazo (en el momento de la recepción)", value: objectToCheck?.medidasTomadas[0]?.checked ? "Si" : "No" }
-                inputsValuesCopy[43] = { name: "Cantidad", value: objectToCheck?.medidasTomadas[0]?.description }
-                inputsValuesCopy[44] = { name: "Devolución (lotes ya ingresados)", value: objectToCheck?.medidasTomadas[1]?.checked ? "Si" : "No" }
-                inputsValuesCopy[45] = { name: "Cantidad", value: objectToCheck?.medidasTomadas[1]?.description }
-                inputsValuesCopy[46] = { name: "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)", value: objectToCheck?.medidasTomadas[2]?.checked ? "Si" : "No" }
-                inputsValuesCopy[47] = { name: "Cantidad", value: objectToCheck?.medidasTomadas[2]?.description }
+                // { name: "Fecha", tipo: "date" },
+                // // un Proveedor tipo text
+                // { name: "Proveedor", tipo: "text" },
+                // // igual pero Producto
+                // { name: "Producto", tipo: "text" },
+                // // uno Nro. lote
+                // { name: "Nro. lote", tipo: "text" }
+                inputsValuesCopy[0] = { name: "Fecha", value: new Date(objectToCheck?.dia) }
+                inputsValuesCopy[1] = { name: "Proveedor", value: objectToCheck?.proveedor }
+                inputsValuesCopy[2] = { name: "Producto", value: objectToCheck?.producto }
+                inputsValuesCopy[3] = { name: "Nro. lote", value: objectToCheck?.nroLote }
+
+                inputsValuesCopy[0 + 4] = { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", value: '' }
+                inputsValuesCopy[1 + 4] = { name: "Condiciones de entrega", value: '' }
+                inputsValuesCopy[2 + 4] = { name: "Atrasado", value: objectToCheck?.condicionesEntrega[0]?.checked ? "Si" : "No" }
+                inputsValuesCopy[3 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.condicionesEntrega[0]?.description }
+                inputsValuesCopy[4 + 4] = { name: "Adelantado", value: objectToCheck?.condicionesEntrega[1]?.checked ? "Si" : "No" }
+                inputsValuesCopy[5 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.condicionesEntrega[1]?.description }
+                inputsValuesCopy[6 + 4] = { name: "Calidad", value: '' }
+                inputsValuesCopy[7 + 4] = { name: "Temperatura", value: objectToCheck?.calidad[0]?.checked ? "Si" : "No" }
+                inputsValuesCopy[8 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[0]?.description }
+                inputsValuesCopy[9 + 4] = { name: "Vida útil", value: objectToCheck?.calidad[1]?.checked ? "Si" : "No" }
+                inputsValuesCopy[10 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[1]?.description }
+                inputsValuesCopy[11 + 4] = { name: "Embalaje", value: objectToCheck?.calidad[2]?.checked ? "Si" : "No" }
+                inputsValuesCopy[12 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[2]?.description }
+                inputsValuesCopy[13 + 4] = { name: "Rótulo", value: objectToCheck?.calidad[3]?.checked ? "Si" : "No" }
+                inputsValuesCopy[14 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[3]?.description }
+                inputsValuesCopy[15 + 4] = { name: "Calibre", value: objectToCheck?.calidad[4]?.checked ? "Si" : "No" }
+                inputsValuesCopy[16 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[4]?.description }
+                inputsValuesCopy[17 + 4] = { name: "Color", value: objectToCheck?.calidad[5]?.checked ? "Si" : "No" }
+                inputsValuesCopy[18 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[5]?.description }
+                inputsValuesCopy[19 + 4] = { name: "Signos de maduración", value: objectToCheck?.calidad[6]?.checked ? "Si" : "No" }
+                inputsValuesCopy[20 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[6]?.description }
+                inputsValuesCopy[21 + 4] = { name: "Consistencia/Textura", value: objectToCheck?.calidad[7]?.checked ? "Si" : "No" }
+                inputsValuesCopy[22 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[7]?.description }
+                inputsValuesCopy[23 + 4] = { name: "Olor", value: objectToCheck?.calidad[8]?.checked ? "Si" : "No" }
+                inputsValuesCopy[24 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.calidad[8]?.description }
+                inputsValuesCopy[25 + 4] = { name: "Diferencias", value: '' }
+                inputsValuesCopy[26 + 4] = { name: "Precio", value: objectToCheck?.diferencias[0]?.checked ? "Si" : "No" }
+                inputsValuesCopy[27 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.diferencias[0]?.description }
+                inputsValuesCopy[28 + 4] = { name: "Cantidad", value: objectToCheck?.diferencias[1]?.checked ? "Si" : "No" }
+                inputsValuesCopy[29 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.diferencias[1]?.description }
+                inputsValuesCopy[30 + 4] = { name: "Transporte", value: '' }
+                inputsValuesCopy[31 + 4] = { name: "Temperatura de la caja", value: objectToCheck?.transporte[0]?.checked ? "Si" : "No" }
+                inputsValuesCopy[32 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[0]?.description }
+                inputsValuesCopy[33 + 4] = { name: "Uniforme del proveedor", value: objectToCheck?.transporte[1]?.checked ? "Si" : "No" }
+                inputsValuesCopy[34 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[1]?.description }
+                inputsValuesCopy[35 + 4] = { name: "Predisposición/Conducta", value: objectToCheck?.transporte[2]?.checked ? "Si" : "No" }
+                inputsValuesCopy[36 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[2]?.description }
+                inputsValuesCopy[37 + 4] = { name: "Vehículo", value: objectToCheck?.transporte[3]?.checked ? "Si" : "No" }
+                inputsValuesCopy[38 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[3]?.description }
+                inputsValuesCopy[39 + 4] = { name: "Otras faltas", value: objectToCheck?.transporte[4]?.checked ? "Si" : "No" }
+                inputsValuesCopy[40 + 4] = { name: "Descripción de no conformidad", value: objectToCheck?.transporte[4]?.description }
+                inputsValuesCopy[41 + 4] = { name: "MEDIDAS TOMADAS", value: '' }
+                inputsValuesCopy[42 + 4] = { name: "Rechazo (en el momento de la recepción)", value: objectToCheck?.medidasTomadas[0]?.checked ? "Si" : "No" }
+                inputsValuesCopy[43 + 4] = { name: "Cantidad", value: objectToCheck?.medidasTomadas[0]?.description }
+                inputsValuesCopy[44 + 4] = { name: "Devolución (lotes ya ingresados)", value: objectToCheck?.medidasTomadas[1]?.checked ? "Si" : "No" }
+                inputsValuesCopy[45 + 4] = { name: "Cantidad", value: objectToCheck?.medidasTomadas[1]?.description }
+                inputsValuesCopy[46 + 4] = { name: "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)", value: objectToCheck?.medidasTomadas[2]?.checked ? "Si" : "No" }
+                inputsValuesCopy[47 + 4] = { name: "Cantidad", value: objectToCheck?.medidasTomadas[2]?.description }
 
                 setInputsValues(inputsValuesCopy)
             } else if (cardToCheck.title === 'Verificación Balanzas') {
@@ -240,22 +253,18 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 let fechaTemp = new Date(objectToCheck?.fecha)
                 // checo si el resultado es una fecha
                 if (fechaTemp.toString() !== "Invalid Date") {
-                    console.log('fecha es valida -----------------')
-                    console.log('fechaTemp: ', fechaTemp)
                 } else {
                     fechaTemp = 'Sin fecha'
-                    console.log('fecha es Invalida -----------------')
-                    console.log('fechaTemp: ', fechaTemp)
                 }
                 inputsValuesCopy[0] = { name: "Fecha", value: fechaTemp }
-                inputsValuesCopy[1] = { name: "Instrumento", value: objectToCheck?.balanza }
+                // inputsValuesCopy[1] = { name: "Instrumento", value: objectToCheck?.balanza }
 
-                inputsValuesCopy[2] = { name: "Código", value: '' }
+                // inputsValuesCopy[2] = { name: "Código", value: '' }
 
-                reglonesCopy = [null, null, []]
+                reglonesCopy = [null, []]
 
                 for (let i = 0; i < objectToCheck.inputs.length; i++) {
-                    reglonesCopy[2].push({
+                    reglonesCopy[1].push({
                         values: [
                             {
                                 "name": "Código",
@@ -393,7 +402,7 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     console.log('entre a bidones')
                     let array = objectToCheck.inputs.map((input, index) => ({
                         values: [
-                            { name: "Fecha", value: input.fecha },
+                            { name: "Fecha", value: new Date(input.fecha) },
                             { name: "Cantidad de litros entregados", value: input.cantidaddelitrosentregados },
                             { name: "Responsable de entrega", value: input.responsabledeentrega },
                             { name: "Responsable de retiro", value: input.responsablederetiro },
@@ -741,11 +750,24 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
             let inputFinal = [];
 
             for (let i = 0; i < reglones[0].length; i++) {
+                let fechaTemp = new Date(reglones[0][i]?.values[0]?.value);
+                if (fechaTemp.toString() !== "Invalid Date") {
+                    let year = fechaTemp.getFullYear();
+                    let month = fechaTemp.getMonth() + 1;
+                    let date = fechaTemp.getDate();
+                    // Agregar un cero al principio si el mes o el día son menores que 10
+                    month = month < 10 ? '0' + month : month;
+                    date = date < 10 ? '0' + date : date;
+                    fechaTemp = year + "-" + month + "-" + date;
+                } else {
+                    fechaTemp = "";
+                }
+
                 inputFinal.push({
                     "id": i,
-                    "fecha": reglones[0][i]?.values[0]?.value,
+                    "fecha": fechaTemp,
                     "turno": reglones[0][i]?.values[1]?.value,
-                    "productoDecomisado": reglones[0][i]?.values[2]?.value,
+                    "productodecomisado": reglones[0][i]?.values[2]?.value,
                     "cantidad": reglones[0][i]?.values[3]?.value,
                     "causa": reglones[0][i]?.values[4]?.value,
                 })
@@ -758,122 +780,131 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
             }
 
         } else if (cardToCheck.title === 'Rechazo /  Devolución de Materias Primas') {
+            let dia = inputsValues[0]?.value
+            // transformo dia de formato 2024-02-01T05:55:11.861Z a YYYY-MM-DD
+            if (dia) {
+                dia = new Date(dia).toISOString().split('T')[0]
+            }
 
             objetoFinal = {
                 ...objectToCheck,
+                dia: dia,
+                proveedor: inputsValues[1]?.value,
+                producto: inputsValues[2]?.value,
+                nroLote: inputsValues[3]?.value,
                 condicionesEntrega: [
                     {
-                        "checked": inputsValues[2]?.value === "Si" ? true : false,
+                        "checked": inputsValues[6]?.value === "Si" ? true : false,
                         "name": "Atrasado",
-                        "description": inputsValues[3]?.value
+                        "description": inputsValues[7]?.value
                     },
                     {
-                        "checked": inputsValues[4]?.value === "Si" ? true : false,
+                        "checked": inputsValues[8]?.value === "Si" ? true : false,
                         "name": "Adelantado",
-                        "description": inputsValues[5]?.value
+                        "description": inputsValues[9]?.value
                     }
                 ],
                 calidad: [
                     {
-                        "checked": inputsValues[7]?.value === "Si" ? true : false,
-                        "name": "Temperatura",
-                        "description": inputsValues[8]?.value
-                    },
-                    {
-                        "checked": inputsValues[9]?.value === "Si" ? true : false,
-                        "name": "Vida útil",
-                        "description": inputsValues[10]?.value
-                    },
-                    {
                         "checked": inputsValues[11]?.value === "Si" ? true : false,
-                        "name": "Embalaje",
+                        "name": "Temperatura",
                         "description": inputsValues[12]?.value
                     },
                     {
                         "checked": inputsValues[13]?.value === "Si" ? true : false,
-                        "name": "Rótulo",
+                        "name": "Vida útil",
                         "description": inputsValues[14]?.value
                     },
                     {
                         "checked": inputsValues[15]?.value === "Si" ? true : false,
-                        "name": "Calibre",
+                        "name": "Embalaje",
                         "description": inputsValues[16]?.value
                     },
                     {
                         "checked": inputsValues[17]?.value === "Si" ? true : false,
-                        "name": "Color",
+                        "name": "Rótulo",
                         "description": inputsValues[18]?.value
                     },
                     {
                         "checked": inputsValues[19]?.value === "Si" ? true : false,
-                        "name": "Signos de maduración",
+                        "name": "Calibre",
                         "description": inputsValues[20]?.value
                     },
                     {
                         "checked": inputsValues[21]?.value === "Si" ? true : false,
-                        "name": "Consistencia/Textura",
+                        "name": "Color",
                         "description": inputsValues[22]?.value
                     },
                     {
                         "checked": inputsValues[23]?.value === "Si" ? true : false,
-                        "name": "Olor",
+                        "name": "Signos de maduración",
                         "description": inputsValues[24]?.value
+                    },
+                    {
+                        "checked": inputsValues[25]?.value === "Si" ? true : false,
+                        "name": "Consistencia/Textura",
+                        "description": inputsValues[26]?.value
+                    },
+                    {
+                        "checked": inputsValues[27]?.value === "Si" ? true : false,
+                        "name": "Olor",
+                        "description": inputsValues[28]?.value
                     }
                 ],
                 diferencias: [
                     {
-                        "checked": inputsValues[26]?.value === "Si" ? true : false,
+                        "checked": inputsValues[30]?.value === "Si" ? true : false,
                         "name": "Precio",
-                        "description": inputsValues[27]?.value
+                        "description": inputsValues[31]?.value
                     },
                     {
-                        "checked": inputsValues[28]?.value === "Si" ? true : false,
+                        "checked": inputsValues[32]?.value === "Si" ? true : false,
                         "name": "Cantidad",
-                        "description": inputsValues[29]?.value
+                        "description": inputsValues[33]?.value
                     }
                 ],
                 transporte: [
                     {
-                        "checked": inputsValues[31]?.value === "Si" ? true : false,
-                        "name": "Temperatura de la caja",
-                        "description": inputsValues[32]?.value
-                    },
-                    {
-                        "checked": inputsValues[33]?.value === "Si" ? true : false,
-                        "name": "Uniforme del proveedor",
-                        "description": inputsValues[34]?.value
-                    },
-                    {
                         "checked": inputsValues[35]?.value === "Si" ? true : false,
-                        "name": "Predisposición/Conducta",
+                        "name": "Temperatura de la caja",
                         "description": inputsValues[36]?.value
                     },
                     {
                         "checked": inputsValues[37]?.value === "Si" ? true : false,
-                        "name": "Vehículo",
+                        "name": "Uniforme del proveedor",
                         "description": inputsValues[38]?.value
                     },
                     {
                         "checked": inputsValues[39]?.value === "Si" ? true : false,
-                        "name": "Otras faltas",
+                        "name": "Predisposición/Conducta",
                         "description": inputsValues[40]?.value
+                    },
+                    {
+                        "checked": inputsValues[41]?.value === "Si" ? true : false,
+                        "name": "Vehículo",
+                        "description": inputsValues[42]?.value
+                    },
+                    {
+                        "checked": inputsValues[43]?.value === "Si" ? true : false,
+                        "name": "Otras faltas",
+                        "description": inputsValues[44]?.value
                     }
                 ],
                 medidasTomadas: [
                     {
-                        "checked": inputsValues[42]?.value === "Si" ? true : false,
-                        "name": "Rechazo (en el momento de la recepción)",
-                        "description": inputsValues[43]?.value
-                    },
-                    {
-                        "checked": inputsValues[44]?.value === "Si" ? true : false,
-                        "name": "Devolución (lotes ya ingresados)",
-                        "description": inputsValues[45]?.value
-                    },
-                    {
                         "checked": inputsValues[46]?.value === "Si" ? true : false,
-                        "name": "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)",
+                        "name": "Rechazo (en el momento de la recepción)",
                         "description": inputsValues[47]?.value
+                    },
+                    {
+                        "checked": inputsValues[48]?.value === "Si" ? true : false,
+                        "name": "Devolución (lotes ya ingresados)",
+                        "description": inputsValues[49]?.value
+                    },
+                    {
+                        "checked": inputsValues[50]?.value === "Si" ? true : false,
+                        "name": "Aceptado condicional (ante cambios de calidad de mercadería, sin peligros de inocuidad)",
+                        "description": inputsValues[51]?.value
                     }
                 ],
                 editEnabled: false
@@ -881,23 +912,24 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
 
         } else if (cardToCheck.title === 'Verificación Balanzas') {
             let inputsFinalReglones = []
+            console.log('inputsValues: ', JSON.stringify(inputsValues))
+            console.log('reglones: ', JSON.stringify(reglones))
 
-            for (let i = 0; i < reglones[2].length; i++) {
+            for (let i = 0; i < reglones[1].length; i++) {
                 inputsFinalReglones.push({
-                    "código": reglones[2][i]?.values[0]?.value,
-                    "Tipo (BP/BR)": reglones[2][i]?.values[1]?.value,
-                    "responsabledeluso": reglones[2][i]?.values[2]?.value,
-                    "área": reglones[2][i]?.values[3]?.value,
-                    "pesomasaref/ptobalanza": reglones[2][i]?.values[4]?.value,
-                    "pesoreal": reglones[2][i]?.values[5]?.value,
-                    "desvío": reglones[2][i]?.values[6]?.value,
-                    "Acciones de corrección": reglones[2][i]?.values[7]?.value,
+                    "código": reglones[1][i]?.values[0]?.value,
+                    "Tipo (BP/BR)": reglones[1][i]?.values[1]?.value,
+                    "responsabledeluso": reglones[1][i]?.values[2]?.value,
+                    "área": reglones[1][i]?.values[3]?.value,
+                    "pesomasaref/ptobalanza": reglones[1][i]?.values[4]?.value,
+                    "pesoreal": reglones[1][i]?.values[5]?.value,
+                    "desvío": reglones[1][i]?.values[6]?.value,
+                    "Acciones de corrección": reglones[1][i]?.values[7]?.value,
                 })
 
                 objetoFinal = {
                     ...objectToCheck,
                     fecha: inputsValues[0]?.value,
-                    balanza: inputsValues[1]?.value,
                     inputs: inputsFinalReglones,
                     editEnabled: false
                 }
@@ -1137,14 +1169,12 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                     "asistentes": [],
                     "observaciones": inputsValues[21]?.value,
                     "instructor": inputsValues[22]?.value,
+                    "firma": inputsValues[23]?.value,
                 }
-                // "firma": inputsValues[23]?.value,
 
-                if (inputsValues[23]?.value?.uri) {
-                    inputsFinal = {
-                        ...inputsFinal,
-                        firma: inputsValues[23]?.value
-                    }
+                // reviso si en .firma hay algo (y algo en .firma.uri) y si no es asi substraigno esa propiedad
+                if (!inputsFinal.firma || !inputsFinal.firma.uri) {
+                    delete inputsFinal.firma
                 }
 
                 console.log('inputsValues: ', JSON.stringify(inputsValues))
@@ -1215,7 +1245,28 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 if (cardToCheck.exception2) {
                     let inputFinal = [];
                     for (let i = 0; i < copiaInputsValue[0].value.length; i++) {
-                        inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productoDecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
+
+                        let fechaTemp = new Date(copiaInputsValue[0].value[i][0]?.value);
+                        if (fechaTemp.toString() !== "Invalid Date") {
+                            let year = fechaTemp.getFullYear();
+                            let month = fechaTemp.getMonth() + 1;
+                            let date = fechaTemp.getDate();
+                            // Agregar un cero al principio si el mes o el día son menores que 10
+                            month = month < 10 ? '0' + month : month;
+                            date = date < 10 ? '0' + date : date;
+                            fechaTemp = year + "-" + month + "-" + date;
+                        } else {
+                            fechaTemp = "";
+                        }
+
+                        inputFinal.push({
+                            id: i,
+                            fecha: fechaTemp,
+                            turno: copiaInputsValue[0].value[i][1].value,
+                            productodecomisado: copiaInputsValue[0].value[i][2].value,
+                            cantidad: copiaInputsValue[0].value[i][3].value,
+                            causa: copiaInputsValue[0].value[i][4].value
+                        })
                     }
                     objeto.inputs = inputFinal
                 } else {
@@ -1402,6 +1453,25 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                         </View>
                     )
                 }
+                else if (input.tipo === "textInvisible") {
+                    return (
+                        <View key={index} style={{ display: 'none', backgroundColor: 'red', marginTop: 5, marginBottom: 100 }} >
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{input.name}</Text>
+                            <View style={styles.passwordInputContainer}>
+                                <TextInput
+                                    style={styles.userInput}
+                                    placeholder={(input.name.length >= 18 ? (input.name.substring(0, 18) + "...") : input.name)}
+                                    value={inputsValues[index]?.value}
+                                    onChangeText={(value) => {
+                                        let array = [...inputsValues];
+                                        array[index] = { name: input.name, value: value };
+                                        setInputsValues(array);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                    )
+                }
                 else if (input.tipo === "fileUpload") {
                     return (
                         <View key={index} style={{ marginTop: 5, marginBottom: 20, alignItems: 'center' }} >
@@ -1463,6 +1533,30 @@ export default function FormType2({ indexPicked, setIndexPicked, setVisibleForm,
                 else if (input.tipo === "select") {
                     return (
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                            <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
+                            <Picker
+                                selectedValue={inputsValues[index]?.value || input.options[0]}
+                                style={styles.userInput}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    let array = [...inputsValues];
+                                    console.log('cambiando select')
+                                    array[index] = { name: input.name, value: itemValue };
+                                    console.log('array', array)
+                                    setInputsValues(array);
+                                }}
+                            >
+                                {input.options?.map((option, index) => {
+                                    return (
+                                        <Picker.Item key={index} label={option} value={option} />
+                                    )
+                                })}
+                            </Picker>
+                        </View>
+                    )
+                }
+                else if (input.tipo === "selectInvisible") {
+                    return (
+                        <View key={index} style={{ display: 'none', marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 selectedValue={inputsValues[index]?.value || input.options[0]}

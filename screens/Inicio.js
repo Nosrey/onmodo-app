@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image, ScrollView, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import logo from '../assets/on-modo-grande.png';
 import ButtonBar from '../components/ButtonBar';
@@ -9,6 +9,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
+import { API_URL } from '../functions/globalFunctions';
 // traigo FontAwesome
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -18,7 +19,8 @@ export default function Inicio({ navigation }) {
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
     const logged = useSelector((state) => state.logged);
-
+    const business = useSelector(state => state.business);
+    const document = useSelector(state => state.documento);
     if (logged == false) {
         navigation.replace('Login');
     }
@@ -56,7 +58,16 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Documentación',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => {
+                    // voy a este link en google drive si hay algo en document, si no no hago nada
+                    if (document) {
+                        console.log('abriendo link: ', document)
+                        Linking.openURL(document)
+                            .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
+                    }
+                }
             },
             {
                 title: 'Recordatorios',
@@ -76,7 +87,16 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Documentación',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => {
+                    // voy a este link en google drive si hay algo en document, si no no hago nada
+                    if (document) {
+                        console.log('abriendo link: ', document)
+                        Linking.openURL(document)
+                            .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
+                    }
+                }
             },
             {
                 title: 'Recordatorios',
@@ -100,7 +120,7 @@ export default function Inicio({ navigation }) {
         cards = [
             {
                 title: 'Estadísticas',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Estadisticas')
             },
             {
                 title: 'Formularios',
@@ -112,7 +132,16 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Documentación',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => {
+                    // voy a este link en google drive si hay algo en document, si no no hago nada
+                    if (document) {
+                        console.log('abriendo link: ', document)
+                        Linking.openURL(document)
+                            .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
+                    }
+                }
             },
             {
                 title: 'Solicitudes de Edición',
@@ -131,7 +160,7 @@ export default function Inicio({ navigation }) {
         cards = [
             {
                 title: 'Estadísticas',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Estadisticas')
             },
             {
                 title: 'Solicitudes de Edición',
@@ -163,6 +192,20 @@ export default function Inicio({ navigation }) {
         }
         prepare();
     }, []);
+
+    // useEffect(() => {
+    //     let url = API_URL + "/api/newbusiness/" + business;
+    //     console.log('url', url)
+    //     fetch(url)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data) {
+    //                 console.log('data: ', data)
+    //                 setDocument(data.response.linkDocumentacion);
+    //             }
+    //         })
+    //         .catch(error => console.log(error));
+    // }, [])
 
     if (!fontsLoaded) return undefined;
     else SplashScreen.hideAsync();

@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useSelector } from 'react-redux';
 // import useFonts
 import { useFonts } from 'expo-font';
 
-const FiltradorLegajos = ({ states, setStates, params }) => {
-    const rol = useSelector(state => state.rol);
+const FiltradorFormularios = ({ states, setStates }) => {
     const [selectedOption, setSelectedOption] = useState('most-recent');
-    const {paginaActual, paginaTotal, setPaginaTotal, setPaginaActual, elementsPerPage } = params;
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
@@ -16,24 +13,30 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
 
     const handleSort = (option) => {
         setSelectedOption(option);
-        let array = [...states]
         switch (option) {
-            case 'Nivel 1':
-                // cada elemento tendra la propiedad .rol y sera un string numerico, si es nivel 1 traera todos los q sean 1, no los que sean diferentes a 1
-                setStates([...states].filter((element) => element.rol == '1'));
-                return array.filter((element) => element.rol == '1')
+            case 'a-z':
+                setStates([...states].sort((a, b) => {
+                    if (typeof a.title === 'string' && typeof b.title === 'string') {
+                        return a.title.localeCompare(b.title);
+                    }
+                    return 0;
+                }));
                 break;
-            case 'Nivel 2':
-                setStates([...states].filter((element) => element.rol == '2'));
-                return array.filter((element) => element.rol == '2')
+            case 'z-a':
+                setStates([...states].sort((a, b) => {
+                    if (typeof a.title === 'string' && typeof b.title === 'string') {
+                        return b.title.localeCompare(a.title);
+                    }
+                    return 0;
+                }));
                 break;
-            case 'Nivel 3':
-                setStates([...states].filter((element) => element.rol == '3'));
-                return array.filter((element) => element.rol == '3')
-                break;
-            case 'Alfabetico':
-                setStates([...states].sort((a, b) => a.fullName.localeCompare(b.fullName)));
-                return array.sort((a, b) => a.fullName.localeCompare(b.fullName))
+            case 'most-recent':
+                setStates([...states].sort((a, b) => {
+                    if (typeof a.date === 'string' && typeof b.date === 'string') {
+                        return new Date(b.date) - new Date(a.date);
+                    }
+                    return 0;
+                }));
                 break;
             default:
                 break;
@@ -47,18 +50,10 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
                 <View style={styles.passwordInputContainer}>
                     <Picker
                         selectedValue={selectedOption}
-                        onValueChange={(value) => {
-                            let arrayFinal = handleSort(value)
-                            setPaginaActual(1)
-                            setPaginaTotal(Math.ceil(arrayFinal.length / elementsPerPage))
-                            return
-                        }}
-                        style={styles.userInput}>
-
-                        <Picker.Item style={{fontSize: 12}} label="Nivel 1" value="Nivel 1" />
-                        {rol > 2 && <Picker.Item style={{fontSize: 12}} label="Nivel 2" value="Nivel 2" />}
-                        {rol > 3 && <Picker.Item style={{fontSize: 12}} label="Nivel 3" value="Nivel 3" />}
-                        <Picker.Item style={{fontSize: 12}} label="Alfabetico" value="Alfabetico" />
+                        onValueChange={(value) => handleSort(value)}
+                        style={styles.userInput}>                       
+                        <Picker.Item style={{fontSize: 12}} label="A-Z" value="a-z" />
+                        <Picker.Item style={{fontSize: 12}} label="Z-A" value="z-a" />
                     </Picker>
                 </View>
             </View>
@@ -66,7 +61,7 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
     );
 };
 
-export default FiltradorLegajos;
+export default FiltradorFormularios;
 
 
 const styles = StyleSheet.create({

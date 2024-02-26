@@ -200,7 +200,7 @@ export default function FormulariosCargados({ navigation }) {
     };
 
 
-    const handleInputChange = (value) => {
+    const handleInputChange = (value, array = []) => {
         // guardo el valor del input en el estado inputValue
         setInputValue(value);
         let inputLocal = value;
@@ -208,7 +208,8 @@ export default function FormulariosCargados({ navigation }) {
         inputLocal = inputLocal.toLowerCase();
         inputLocal = inputLocal.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         // creo un array donde guardaré los buttons que coincidan con el valor del input al filtrar
-        setCardsFiltered(cardsFound.filter((item) => {
+        if (array.length == 0) array = cardsFound
+        setCardsFiltered(array.filter((item) => {
             let itemTitle = item.title.toLowerCase();
             itemTitle = itemTitle.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
             if (itemTitle.includes(inputLocal)) return item
@@ -244,11 +245,7 @@ export default function FormulariosCargados({ navigation }) {
                                 entries: item?.entries
                             }
                         });
-
-                        console.log('itemToFormDetails: ', {
-                                ...formCoincidence,
-                                entries: item?.entries
-                            })
+                      
                         navigation.navigate('FormDetails');
                     },
                     entries: item.entries,
@@ -267,6 +264,7 @@ export default function FormulariosCargados({ navigation }) {
         cards = [...cards];
         setCopiaCardsInicial(cards)
         setCardsFound(cards)
+        handleInputChange(inputValue, cards)
     }, [formularios]);
 
     return (
@@ -283,7 +281,7 @@ export default function FormulariosCargados({ navigation }) {
             }>
                 <View style={styles.containerBox}>
                     {/* si cardFound.length es 0, muestro un mensaje de que no hay resultados */}
-                    {cardsFound.length == 0 ? <Text style={[styles.title, styles.notFoundMsg]}>No hay resultados</Text>
+                    {(inputValue.length ? cardsFiltered.length == 0 : cardsFound.length == 0) ? <Text style={[styles.title, styles.notFoundMsg]}>No hay resultados</Text>
                         : (
                             (inputValue.length ? cardsFiltered : cardsFound).map((boton, i) => {
                                 if (boton.entries?.length) {
@@ -365,14 +363,14 @@ const styles = StyleSheet.create({
     },
     box: {
         // width: 150,
-        width: "45%",
-        marginHorizontal: "2.5%",
+        width: "48%",
+        marginHorizontal: "1%",
         height: 100,
         borderRadius: 10,
         marginTop: 15,
         backgroundColor: '#E7E7E7',
         justifyContent: 'center',
-        padding: 5,
+        padding: 1.5,
     },
     boxTitle: {
         textAlign: 'center',

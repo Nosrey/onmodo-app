@@ -34,23 +34,6 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             let card = formulariosData.find((card) => card.title === "Verificación de Termómetros")
             console.log('objectToCheck: ', JSON.stringify(objectToCheck))
 
-            // Establecer inputsValues
-
-
-            // Establecer reglones
-            // let reglones2 = [null, null];
-            // reglones2.push(objectToCheck.inputsSemestral.map(input => ({
-            //     values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
-            // })));
-            // reglones2.push(objectToCheck.inputsTrimestral.map(input => ({
-            //     values: Object.keys(input).map(key => ({ name: key, value: input[key] }))
-            // })));
-            // console.log('reglones2: ', JSON.stringify(reglones2))
-            // // aplico el setReglones(reglones2); medio segundo despues
-            // setTimeout(() => {
-            //     setReglones(reglones2);
-            // }, 0.1);
-
             let reglonesCopy = [null, null, [], []]
 
             console.log('entrada hacia los reglones')
@@ -153,7 +136,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             setInputsValues(inputsValues);
 
             if (objectToCheck.inputs?.length > 0) {
-                let reglones = [null, null];
+                let reglones = [null];
                 reglones.push(objectToCheck.inputs.map(input => ({
                     values: [
                         { name: "Código", value: input.código },
@@ -176,6 +159,11 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             if (cardToCheck.title === "Rechazo /  Devolución de Materias Primas") {
                 if (objectToCheck) {
                     let array = [
+                        { name: "Fecha", value: objectToCheck?.dia },
+                        { name: "Proveedor", value: objectToCheck.proveedor },
+                        { name: "Producto", value: objectToCheck.producto },
+                        { name: "Nro. lote", value: objectToCheck.nroLote },
+
                         { name: "Posibles no conformidades: Marcar la casilla y completar con la descripción de la no conformidad.", value: "" },
                         { name: "Condiciones de entrega", value: "" },
                         { name: "Atrasado", value: objectToCheck.condicionesEntrega[0]?.checked ? "Si" : "No" },
@@ -369,6 +357,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         { name: "foto de disposición final", value: objectToCheck.certificadoDisposicion[index] },
                     ]
                 }));
+
                 // hago que esto se aplique 0.1s despues
                 setTimeout(() => {
                     setReglones([array]);
@@ -379,7 +368,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             let parsedObject = {};
 
             for (let [key, value] of Object.entries(objectToCheck)) {
-                if (key !== 'firma' && key !== "updatedAt" && key !== "createdAt" && key !== "idUser" && key !== "businessName" && key !== "nombre" && key !== "status" && key !== "_id" && key !== "temas" && key !== "observaciones" && key !== "instructor" && key !== "fecha" && key !== "tiempoDuracion")  {
+                if (key !== 'firma' && key !== "updatedAt" && key !== "createdAt" && key !== "idUser" && key !== "businessName" && key !== "nombre" && key !== "status" && key !== "_id" && key !== "temas" && key !== "observaciones" && key !== "instructor" && key !== "fecha" && key !== "tiempoDuracion") {
                     try {
                         parsedObject[key] = JSON.parse(value);
                     } catch (error) {
@@ -397,7 +386,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
             // Ahora puedes usar parsedObject
             console.log("parsed: ", parsedObject);
-            
+
             // recibire fecha asi 2023-11-23 pero quiero que se vea asi 2023-11-23T17:41:50.449Z (la informacion que no tienes ponla en 0)
             let newFecha = ''
             if (parsedObject.fecha !== '') newFecha = parsedObject.fecha + "T00:00:00.000Z"
@@ -407,7 +396,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
             // recorro checkboxes de parsedObject y si el check es true entonces le asigno el valor "Si" y si es false le asigno "No"
             for (let i = 0; i < parsedObject.checkboxes.length; i++) {
-                if (parsedObject.checkboxes[i].check === true) {
+                if (parsedObject.checkboxes[i]?.check === true) {
                     parsedObject.checkboxes[i].check = "Si"
                 } else {
                     parsedObject.checkboxes[i].check = "No"
@@ -416,7 +405,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
 
             // ahora con materialEntregado y materialExpuesto hago lo mismo
             for (let i = 0; i < parsedObject.materialEntregado.length; i++) {
-                if (parsedObject.materialEntregado[i].check === true) {
+                if (parsedObject.materialEntregado[i]?.check === true) {
                     parsedObject.materialEntregado[i].check = "Si"
                 } else {
                     parsedObject.materialEntregado[i].check = "No"
@@ -424,7 +413,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             }
 
             for (let i = 0; i < parsedObject.materialExpuesto.length; i++) {
-                if (parsedObject.materialExpuesto[i].check === true) {
+                if (parsedObject.materialExpuesto[i]?.check === true) {
                     parsedObject.materialExpuesto[i].check = "Si"
                 } else {
                     parsedObject.materialExpuesto[i].check = "No"
@@ -438,23 +427,23 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                     { "name": "Fecha", "value": data.fecha },
                     { "name": "Hora", "value": data.tiempoDuracion },
                     { "name": "Tipo de capacitación (Selecciona la opción que corresponda)", "value": "" },
-                    { "name": "Inducción", "value": data.checkboxes[0].check },
-                    { "name": "Campaña", "value": data.checkboxes[1].check },
-                    { "name": "Entrenamiento Puesto de trabajo", "value": data.checkboxes[2].check },
-                    { "name": "Capacitaciones gubernamentales", "value": data.checkboxes[3].check },
-                    { "name": "Capacitación sobre Normas o Certificaciones", "value": data.checkboxes[4].check },
-                    { "name": "Cierre Auditoría", "value": data.checkboxes[5].check },
+                    { "name": "Inducción", "value": data.checkboxes[0]?.check },
+                    { "name": "Campaña", "value": data.checkboxes[1]?.check },
+                    { "name": "Entrenamiento Puesto de trabajo", "value": data.checkboxes[2]?.check },
+                    { "name": "Capacitaciones gubernamentales", "value": data.checkboxes[3]?.check },
+                    { "name": "Capacitación sobre Normas o Certificaciones", "value": data.checkboxes[4]?.check },
+                    { "name": "Cierre Auditoría", "value": data.checkboxes[5]?.check },
                     { "name": "Temas dados", "value": data.temas },
                     { "name": "Material didáctico Entregado", "value": "" },
-                    { "name": "Manual /instructivo", "value": data.materialEntregado[0].check },
-                    { "name": "Folleto", "value": data.materialEntregado[1].check },
-                    { "name": "Procedimiento", "value": data.materialEntregado[2].check },
-                    { "name": "Otros", "value": data.materialEntregado[3].check, value2: data.materialEntregado[3].desc },
+                    { "name": "Manual /instructivo", "value": data.materialEntregado[0]?.check },
+                    { "name": "Folleto", "value": data.materialEntregado[1]?.check },
+                    { "name": "Procedimiento", "value": data.materialEntregado[2]?.check },
+                    { "name": "Otros", "value": data.materialEntregado[3]?.check, value2: data.materialEntregado[3]?.desc },
                     { "name": "Material didáctico Expuesto", "value": "" },
-                    { "name": "Video", "value": data.materialExpuesto[0].check },
-                    { "name": "Filminas", "value": data.materialExpuesto[1].check },
-                    { "name": "Disertación", "value": data.materialExpuesto[2].check },
-                    { "name": "Otros", "value": data.materialExpuesto[3].check, value2: data.materialExpuesto[3].desc },
+                    { "name": "Video", "value": data.materialExpuesto[0]?.check },
+                    { "name": "Filminas", "value": data.materialExpuesto[1]?.check },
+                    { "name": "Disertación", "value": data.materialExpuesto[2]?.check },
+                    { "name": "Otros", "value": data.materialExpuesto[3]?.check, value2: data.materialExpuesto[3]?.desc },
                     { "name": "ASISTENTES", "value": "" },
                     { "name": "Observaciones", "value": data.observaciones },
                     { "name": "Instructor", "value": data.instructor },
@@ -478,14 +467,14 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
             const reglones2 = [
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, reglon
                 // Aquí mapeas los valores de "asistentes" a su correspondiente entrada en "reglones"
-                
-            ];            
+
+            ];
 
             // espero 0.1 segundo
             setTimeout(() => {
                 setReglones(reglones2);
             }, 0.1);
-                
+
 
         }
         else {
@@ -560,7 +549,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                 if (cardToCheck.exception2) {
                     let inputFinal = [];
                     for (let i = 0; i < copiaInputsValue[0].value.length; i++) {
-                        inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productoDecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
+                        inputFinal.push({ id: i, fecha: copiaInputsValue[0].value[i][0].value, turno: copiaInputsValue[0].value[i][1].value, productodecomisado: copiaInputsValue[0].value[i][2].value, cantidad: copiaInputsValue[0].value[i][3].value, causa: copiaInputsValue[0].value[i][4].value })
                     }
                     objeto.inputs = inputFinal
                 } else {
@@ -787,7 +776,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         <View key={index} style={{ marginTop: 5, marginBottom: 20, alignItems: 'center' }} >
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 10 }}>{input.name}</Text>
                             <Image
-                                source={{ uri: inputsValues[index]?.value }}
+                                source={inputsValues[index]?.value ? { uri: inputsValues[index]?.value } : null}
                                 style={
                                     {
                                         width: 200,
@@ -799,7 +788,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                             <Text style={{ marginBottom: 5, display: (inputsValues[index]?.value ? 'flex' : 'none') }}>{
                                 (inputsValues[index]?.value ? inputsValues[index]?.value?.split("/")[inputsValues[index]?.value?.split("/").length - 1] : '')
                             }</Text>
-                
+
                         </View>
                     )
                 }
@@ -808,6 +797,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                         <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
+                                enabled={false}
                                 editable={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
@@ -833,6 +823,7 @@ export default function FormType2View({ indexPicked, setIndexPicked, setVisibleF
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 editable={false}
+                                enabled={false}
                                 selectedValue={inputsValues[index]?.value || input.options[0]}
                                 style={styles.userInput}
                                 onValueChange={(itemValue, itemIndex) => {

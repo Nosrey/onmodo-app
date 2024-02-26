@@ -1,5 +1,5 @@
 // creo un componente para que se muestre un popup donde confirmare una accion con dos botones de si o no
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useSelector, useDispatch } from 'react-redux';
@@ -13,18 +13,27 @@ import dotOrange from '../assets/dotOrange.png'
 import dotRed from '../assets/dotRed.png'
 import * as ImagePicker from 'expo-image-picker';
 
+
+
 export default function CrearServicio({ navigation, params }) {
-    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked } = params
+    const { visible, setVisible, reglones, setReglones, editionMode, reglonPicked, setEditionMode, index, cortina, setCortina, indexPicked, dot, setDot } = params
     const [row, setRow] = useState([])
+    const scrollRef = useRef(null);
     const [inputsValueRow, setInputsValueRow] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
-    const [dot, setDot] = useState([])
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
 
     // un useEffect que se ejecute una sola vez y establezca row
     useEffect(() => {
-        setRow(cardToCheck.inputs[index].options)    
+        setRow(cardToCheck.inputs[index].options)
+        // scrolleo al inicio del formulario
     }, [])
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ x: 0, y: 0, animated: true })
+        }
+    }, [visible])
 
     useEffect(() => {
         if (row.length > 0) {
@@ -33,30 +42,44 @@ export default function CrearServicio({ navigation, params }) {
                 for (let i = 0; i < row.length; i++) {
                     if (row[i].tipo === "select") array.push({ name: row[i].name, value: row[i].options[0] })
                     else array.push({ name: row[i].name, value: '' })
-            }
-            setInputsValueRow(array);
+                }
+                setInputsValueRow(array);
             }
             else if (editionMode) {
                 if (index === indexPicked) {
-                    console.log('editando', reglones[index][reglonPicked].values[0])
                     let array = [];
-                    console.log('index: ', index)
                     for (let i = 0; i < reglones[index][reglonPicked]?.values.length; i++) {
                         array.push({ name: reglones[index][reglonPicked]?.values[i]?.name ?? '', value: reglones[index][reglonPicked]?.values[i]?.value ?? 0 })
                     }
                     if (cardToCheck?.exceptionR1 === true) {
                         dotSelect(array[5]?.value, array[2]?.value)
                     }
-                    else if (cardToCheck?.exceptionP1 === true) {
+                    else if (cardToCheck?.title === 'Control de Equipos de Frío') {
                         for (let i = 0; i < inputsValueRow.length; i++) {
-                            if (inputsValueRow[i]?.name === "Temp.") dotSelect(reglones[index][reglonPicked].values[i].value, reglones[index][reglonPicked].values[0].value, i)
+                            if (inputsValueRow[i]?.name === "Temperatura Equipo") dotSelect(reglones[index][reglonPicked].values[i].value, reglones[index][reglonPicked].values[0].value, i)
+                        }
+                    } else if (cardToCheck?.title === 'Control de Equipos de Frío') {
+                        for (let i = 0; i < inputsValueRow.length; i++) {
+                            if (inputsValueRow[i]?.name === "Temperatura Equipo") dotSelect(reglones[index][reglonPicked].values[i].value, reglones[index][reglonPicked].values[0].value, i)
+                        }
+                    } else if (cardToCheck?.title === 'Servicios en línea') {
+                        for (let i = 0; i < inputsValueRow.length; i++) {
+                            if (inputsValueRow[i]?.name === "Temperatura") dotSelect(reglones[index][reglonPicked].values[i].value, reglones[index][reglonPicked].values[0].value, i)
+                        }
+                    } else if (cardToCheck?.title === 'Control de Procesos') {
+                        for (let i = 0; i < inputsValueRow.length; i++) {
+                            if (inputsValueRow[i]?.name === "Temperatura ") dotSelect(reglones[index][reglonPicked].values[i].value, reglones[index][reglonPicked].values[0].value, i)
+                        }
+                    } else if (cardToCheck?.title === 'Planilla de Armado y Fraccionamiento en frio') {
+                        for (let i = 0; i < inputsValueRow.length; i++) {
+                            if (inputsValueRow[i]?.name === "Temperatura Interna") dotSelect(reglones[index][reglonPicked].values[i].value, reglones[index][reglonPicked].values[0].value, i)
                         }
                     }
                     // setInputsValueRow(array)
                     setInputsValueRow(array)
                 }
             }
-            
+
         }
     }, [row, visible, reglones, editionMode])
 
@@ -170,20 +193,14 @@ export default function CrearServicio({ navigation, params }) {
                         break;
                 }
             } else setDot([])
-        } else if (cardToCheck?.exceptionP1 === true) {
+        } else if (cardToCheck?.title === "Control de Equipos de Frío") {
             // LÍMITE CRÍTICO
             // Carne vacuna, cerdo, cordero: Mayor o igual 65°C .
             // Pollo y otras aves de corral: Mayor o igual a 74°C .
             // Pescado: Mayor o igual a 63°C .
             // Pastas rellenas: Mayor o igual a 74°C.
             // Huevos y alimentos preparados: Mayor o igual a 74°C.
-            muestra = [
-                "Carne vacuna, cerdo, cordero",
-                "Pollo y otras aves de corral",
-                "Pescado",
-                "Pastas rellenas",
-                "Huevos y alimentos preparados",
-            ]
+            muestra = ['Heladera', 'Freezer', 'Camara']
 
             // ubico el index de la muestra en base a producto
             let indexMuestra = muestra.indexOf(producto)
@@ -193,35 +210,19 @@ export default function CrearServicio({ navigation, params }) {
             if (!isNaN(valueInNumber)) {
                 switch (indexMuestra) {
                     case 0:
-                        if (valueInNumber < 65) dotTemp = dotGreen
+                        if (valueInNumber <= 10) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)
                         break;
                     case 1:
-
-                        if (valueInNumber < 74) dotTemp = dotGreen
+                        if (valueInNumber <= -18) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)
                         break;
                     case 2:
-
-                        if (valueInNumber < 63) dotTemp = dotGreen
-                        else dotTemp = dotRed
-                        dotArray[index] = dotTemp
-                        setDot(dotArray)
-                        break;
-                    case 3:
-
-                        if (valueInNumber < 74) dotTemp = dotGreen
-                        else dotTemp = dotRed
-                        dotArray[index] = dotTemp
-                        setDot(dotArray)
-                        break;
-                    case 4:
-
-                        if (valueInNumber < 74) dotTemp = dotGreen
+                        if (valueInNumber <= 5) dotTemp = dotGreen
                         else dotTemp = dotRed
                         dotArray[index] = dotTemp
                         setDot(dotArray)
@@ -233,13 +234,164 @@ export default function CrearServicio({ navigation, params }) {
                 dotArray[index] = null
                 setDot(dotArray)
             }
+        } else if (cardToCheck?.title === "Servicios en línea") {
+            // LÍMITE CRÍTICO
+            // Carne vacuna, cerdo, cordero: Mayor o igual 65°C .
+            // Pollo y otras aves de corral: Mayor o igual a 74°C .
+            // Pescado: Mayor o igual a 63°C .
+            // Pastas rellenas: Mayor o igual a 74°C.
+            // Huevos y alimentos preparados: Mayor o igual a 74°C.
+            muestra = ["Servicio en caliente", "Servicio en frío"]
+
+            // ubico el index de la muestra en base a producto
+            let indexMuestra = muestra.indexOf(producto)
+
+            let dotTemp = dotGreen
+            let dotArray = dot
+            if (!isNaN(valueInNumber)) {
+                switch (indexMuestra) {
+                    case 0:
+                        if (valueInNumber >= 65) dotTemp = dotGreen
+                        else dotTemp = dotRed
+                        dotArray[index] = dotTemp
+                        setDot(dotArray)
+                        break;
+                    case 1:
+                        if (valueInNumber <= 10) dotTemp = dotGreen
+                        else dotTemp = dotRed
+                        dotArray[index] = dotTemp
+                        setDot(dotArray)
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                dotArray[index] = null
+                setDot(dotArray)
+            }
+        } else if (cardToCheck?.title === "Control de Procesos") {
+            // LÍMITE CRÍTICO
+            // Carne vacuna, cerdo, cordero: Mayor o igual 65°C .
+            // Pollo y otras aves de corral: Mayor o igual a 74°C .
+            // Pescado: Mayor o igual a 63°C .
+            // Pastas rellenas: Mayor o igual a 74°C.
+            // Huevos y alimentos preparados: Mayor o igual a 74°C.
+            muestra = ["Carne vacuna, cerdo, cordero", "Pollo y otras aves de corral", "Pescado", "Pastas rellenas", "Huevos y alimentos preparados"]
+
+            console.log('index: ', index)
+
+
+            // ubico el index de la muestra en base a producto
+            let indexMuestra = muestra.indexOf(producto)
+
+            let dotTemp = dotGreen
+            let dotArray = dot
+            if (index === 2) {
+                if (!isNaN(valueInNumber)) {
+                    switch (indexMuestra) {
+                        case 0:
+                            if (valueInNumber >= 65) dotTemp = dotGreen
+                            else dotTemp = dotRed
+                            dotArray[index] = dotTemp
+                            setDot(dotArray)
+                            break;
+                        case 1:
+                            if (valueInNumber >= 74) dotTemp = dotGreen
+                            else dotTemp = dotRed
+                            dotArray[index] = dotTemp
+                            setDot(dotArray)
+                            break;
+                        case 2:
+                            if (valueInNumber >= 63) dotTemp = dotGreen
+                            else dotTemp = dotRed
+                            dotArray[index] = dotTemp
+                            setDot(dotArray)
+                            break;
+                        case 3:
+                            if (valueInNumber >= 74) dotTemp = dotGreen
+                            else dotTemp = dotRed
+                            dotArray[index] = dotTemp
+                            setDot(dotArray)
+                            break;
+                        case 4:
+                            if (valueInNumber >= 74) dotTemp = dotGreen
+                            else dotTemp = dotRed
+                            dotArray[index] = dotTemp
+                            setDot(dotArray)
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    dotArray[index] = null
+                    setDot(dotArray)
+                }
+            } else if (index > 4 && index < 7) {
+                if (!isNaN(valueInNumber)) {
+                    // en las primeras 2 horas (es decir en la medicion inicial y la de 2 horas), si es menor a 21 es VERDE y si es igual o mayor, ROJO
+                    if (valueInNumber < 21) dotTemp = dotGreen
+                    else dotTemp = dotRed
+                    dotArray[index] = dotTemp
+                    setDot(dotArray)
+                } else {
+                    dotArray[index] = null
+                    setDot(dotArray)
+                }
+            } else if (index > 6 && index < 9) {
+                if (!isNaN(valueInNumber)) {
+                    // - en las siguientes dos mediciones , es decir a 4hr y 6 hr . si es menor a 6 grados es VERDE y si es mayor o igual ROJO
+                    if (valueInNumber < 6) dotTemp = dotGreen
+                    else dotTemp = dotRed
+                    dotArray[index] = dotTemp
+                    setDot(dotArray)
+                } else {
+                    dotArray[index] = null
+                    setDot(dotArray)
+                }
+            } else if (index === 11) {
+                // Regeneracion Temp final: 74 o mas es verde 
+                if (!isNaN(valueInNumber)) {
+                    if (valueInNumber >= 74) dotTemp = dotGreen
+                    else dotTemp = dotRed
+                    dotArray[index] = dotTemp
+                    setDot(dotArray)
+                } else {
+                    dotArray[index] = null
+                    setDot(dotArray)
+                }
+            } else if (index > 12 && index < 16) {
+                // Regeneracion Temperaturas de 1hrs y 2 hrs: 65 o mas es verde 
+                if (!isNaN(valueInNumber)) {
+                    if (valueInNumber >= 65) dotTemp = dotGreen
+                    else dotTemp = dotRed
+                    dotArray[index] = dotTemp
+                    setDot(dotArray)
+                } else {
+                    dotArray[index] = null
+                    setDot(dotArray)
+                }
+            }
+        } else if (cardToCheck?.title === "Planilla de Armado y Fraccionamiento en frio") {
+            let dotTemp = dotGreen
+            let dotArray = dot
+            if (!isNaN(valueInNumber)) {
+                // menor o igual a 13 , es verde14 o mas es rojo
+                if (valueInNumber <= 13) dotTemp = dotGreen
+                else dotTemp = dotRed
+                dotArray[index] = dotTemp
+                setDot(dotArray)
+            } else {
+                dotArray[index] = null
+                setDot(dotArray)
+            }
         }
+
     }
 
     const pickImage = async (index) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // Solo imágenes
-            allowsEditing: true,            
+            allowsEditing: true,
             quality: 1,
             // tamaño cuadrado
             aspect: [1, 1],
@@ -248,7 +400,7 @@ export default function CrearServicio({ navigation, params }) {
         if (!result.canceled) {
             console.log('result: ', result.assets[0])
             let copiaInputsValueRow = [...inputsValueRow];
-            copiaInputsValueRow[index] = {...copiaInputsValueRow[index], value: result.assets[0].uri, objeto: result.assets[0] };
+            copiaInputsValueRow[index] = { ...copiaInputsValueRow[index], value: result.assets[0].uri, objeto: result.assets[0] };
             setInputsValueRow(copiaInputsValueRow);
         }
     }
@@ -282,7 +434,7 @@ export default function CrearServicio({ navigation, params }) {
                     }} />
                 </TouchableOpacity>
             </View>
-            <ScrollView style={{ paddingHorizontal: 10 }}>
+            <ScrollView ref={scrollRef} style={{ paddingHorizontal: 10 }}>
                 {/* mapeo el array de row y si es tipo text o tipo date creare un componente diferente */}
                 {row?.map((input, index) => {
                     if (input.tipo === "date") {
@@ -309,7 +461,159 @@ export default function CrearServicio({ navigation, params }) {
                                 </View>
                             </View>
                         )
-                    } else if (input.tipo === "time") {
+                    }
+                    else if (input.tipo === "textTemp") {
+                        return (
+                            <View key={index} style={{ marginTop: 5, marginBottom: 20 }} >
+
+                                <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 5 }}>
+                                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 5, marginLeft: 2, marginBottom: 5 }}>{row[index].name}</Text>
+
+                                    <Image source={dot[index]} style={{ width: 25, height: 25, margin: 0, display: ((!dot[index])) ? 'none' : 'flex' }} />
+
+                                </View>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        keyboardType={"numeric"}
+                                        style={styles.userInput}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+
+                                        onChangeText={(value) => {
+                                            dotSelect(value, inputsValueRow[input?.guia]?.value, index)
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }
+                                        }
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textTempFooter") {
+                        return (
+                            <View key={index} style={{ marginBottom: 30, backgroundColor: "#f0f0f0", padding: 10 }} >
+
+                                <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 5 }}>
+                                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 5, marginLeft: 2, marginBottom: 5 }}>{row[index].name}</Text>
+
+                                    <Image source={dot[index]} style={{ width: 25, height: 25, margin: 0, display: ((!dot[index])) ? 'none' : 'flex' }} />
+
+                                </View>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        keyboardType={"numeric"}
+                                        style={styles.userInput}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+
+                                        onChangeText={(value) => {
+                                            dotSelect(value, inputsValueRow[input?.guia]?.value, index)
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }
+                                        }
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textTempMiddle") {
+                        return (
+                            <View key={index} style={{ marginBottom: 30, backgroundColor: "#f0f0f0", padding: 10 }} >
+
+                                <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 5 }}>
+                                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 5, marginLeft: 2, marginBottom: 5 }}>{row[index].name}</Text>
+
+                                    <Image source={dot[index]} style={{ width: 25, height: 25, margin: 0, display: ((!dot[index])) ? 'none' : 'flex' }} />
+
+                                </View>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        keyboardType={"numeric"}
+                                        style={styles.userInput}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+
+                                        onChangeText={(value) => {
+                                            dotSelect(value, inputsValueRow[input?.guia]?.value, index)
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }
+                                        }
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textTempTop") {
+                        return (
+                            <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }} >
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
+                                <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 5 }}>
+                                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 5, marginLeft: 2, marginBottom: 5 }}>{row[index].name}</Text>
+
+
+                                    <Image source={dot[index]} style={{ width: 25, height: 25, margin: 0, display: ((!dot[index])) ? 'none' : 'flex' }} />
+
+                                </View>
+                                <View style={styles.passwordInputContainer}>
+                                    <TextInput
+                                        keyboardType={"numeric"}
+                                        style={styles.userInput}
+                                        placeholder={row[index].name}
+                                        value={inputsValueRow[index]?.value || ''}
+
+                                        onChangeText={(value) => {
+                                            dotSelect(value, inputsValueRow[input?.guia]?.value, index)
+                                            let array = [...inputsValueRow];
+                                            array[index].value = value;
+                                            setInputsValueRow(array);
+                                        }
+                                        }
+                                    />
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "textTempHeader") {
+                        return (
+                            <View key={index} style={{ marginTop: 10 }}>
+                                <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10 }}>{input.titulo}</Text>
+                                <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, marginBottom: 25 }} />
+                                <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10 }} >
+                                    <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, backgroundColor: "#f0f0f0", paddingBottom: 10, paddingLeft: 5, paddingTop: 5, }}>{input.cabecera}</Text>
+                                    <View style={{ display: 'flex', flexDirection: 'row', marginBottom: 5 }}>
+                                        <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 5, marginLeft: 2, marginBottom: 5 }}>{row[index].name}</Text>
+
+
+                                        <Image source={dot[index]} style={{ width: 25, height: 25, margin: 0, display: ((!dot[index])) ? 'none' : 'flex' }} />
+
+                                    </View>
+                                    <View style={styles.passwordInputContainer}>
+                                        <TextInput
+                                            keyboardType={"numeric"}
+                                            style={styles.userInput}
+                                            placeholder={row[index].name}
+                                            value={inputsValueRow[index]?.value || ''}
+
+                                            onChangeText={(value) => {
+                                                dotSelect(value, inputsValueRow[input?.guia]?.value, index)
+                                                let array = [...inputsValueRow];
+                                                array[index].value = value;
+                                                setInputsValueRow(array);
+                                            }
+                                            }
+                                        />
+                                    </View>
+                                </View>
+                            </View>
+                        )
+                    }
+                    else if (input.tipo === "time") {
                         return (
                             <View key={index}>
                                 <TimePicker inputReceived={input} index={index} setInputsGlobal={setInputsGlobal} inputsValues={inputsValueRow} />
@@ -417,9 +721,9 @@ export default function CrearServicio({ navigation, params }) {
                         return (
                             <View key={index} style={{ backgroundColor: "#f0f0f0", padding: 10, marginTop: 25 }}>
                                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16, marginRight: 10, marginBottom: 5 }}>{"Selecciona una " + row[index].name}</Text>
-                                <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                <TouchableOpacity onPress={() => pickImage(index)} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                     <Text>{inputsValueRow[index]?.value}</Text>
-        
+
                                     <Image source={{ uri: (inputsValueRow[index]?.value.length ? inputsValueRow[index]?.value : null) }} style={{ width: 200, height: 200, marginVertical: 10, marginBottom: 20, display: (inputsValueRow[index]?.value ? 'flex' : 'none') }} />
                                     <TouchableOpacity onPress={() => pickImage(index)} style={[buttonFooterStyle, { width: "40%" }]}>
                                         <Text style={[styles.buttonText]}>{(inputsValueRow[index]?.value ? "Cambiar Imagen" : "Cargar Imagen")}</Text>
@@ -556,16 +860,37 @@ export default function CrearServicio({ navigation, params }) {
                         )
                     }
                     else if (input.tipo === "select") return (
-                        <View key={index} style={{ marginTop: 5, marginBottom: 20 }}>
+                        <View key={index} style={{ marginTop: 10, marginBottom: 20 }}>
                             <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 16 }}>{input.name}</Text>
                             <Picker
                                 selectedValue={inputsValueRow[index]?.value || input.options[0]}
                                 style={styles.userInput}
                                 onValueChange={(itemValue, itemIndex) => {
                                     if (cardToCheck.exceptionR1 === true) dotSelect(inputsValueRow[5]?.value, itemValue, index)
-                                    else if (cardToCheck?.exceptionP1 === true) {
+                                    else if (cardToCheck?.title === 'Control de Equipos de Frío') {
+                                        console.log('entrando a opcion')
                                         for (let i = 0; i < inputsValueRow.length; i++) {
-                                            if (inputsValueRow[i]?.name === "Temp.") dotSelect(inputsValueRow[i]?.value, itemValue, i)
+                                            if (inputsValueRow[i]?.name === "Temperatura Equipo") {
+                                                dotSelect(inputsValueRow[i]?.value, itemValue, i)
+                                            }
+                                        }
+                                    } else if (cardToCheck?.title === 'Servicios en línea') {
+                                        for (let i = 0; i < inputsValueRow.length; i++) {
+                                            if (inputsValueRow[i]?.name === "Temperatura") {
+                                                dotSelect(inputsValueRow[i]?.value, itemValue, i)
+                                            }
+                                        }
+                                    } else if (cardToCheck?.title === 'Control de Procesos') {
+                                        for (let i = 0; i < inputsValueRow.length; i++) {
+                                            if (inputsValueRow[i]?.name === "Temperatura ") {
+                                                dotSelect(inputsValueRow[i]?.value, itemValue, i)
+                                            }
+                                        }
+                                    } else if (cardToCheck?.title === 'Planilla de Armado y Fraccionamiento en frio') {
+                                        for (let i = 0; i < inputsValueRow.length; i++) {
+                                            if (inputsValueRow[i]?.name === "Temperatura Interna") {
+                                                dotSelect(inputsValueRow[i]?.value, itemValue, i)
+                                            }
                                         }
                                     }
 
@@ -606,6 +931,8 @@ export default function CrearServicio({ navigation, params }) {
                             </View>
                         )
                     }
+
+
 
                 })}
 

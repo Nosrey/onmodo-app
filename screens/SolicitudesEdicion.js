@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getTitle } from '../functions/globalFunctions';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
-import FiltradorPorEstado from '../components/FiltradorPorEstado';
+import FiltradorPorEstado from '../components/FiltradorPorEstadoSolicitudesEdicion';
 // importo los iconos de MaterialCommunityIcons
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 // importo icons de eye
@@ -19,8 +19,11 @@ import { Feather } from '@expo/vector-icons';
 // traigo FontAwesome5
 import { FontAwesome5 } from '@expo/vector-icons';
 import ConfirmScreen from '../components/ConfirmScreen';
+import ConfirmScreenInfo from '../components/ConfirmScreenInfo';
 import BlackWindow from '../components/BlackWIndow';
 import { API_URL } from '../functions/globalFunctions'
+// importo loading.png
+import loading from '../assets/loading.png';
 
 export default SolicitudesEdicion = ({ navigation }) => {
     // traigo business de redux
@@ -29,8 +32,9 @@ export default SolicitudesEdicion = ({ navigation }) => {
     const fullName = useSelector(state => state.fullName);
 
     const [viewEdit, setViewEdit] = useState(false);
+    const [viewInfo, setViewInfo] = useState(false);
     const [viewDelete, setViewDelete] = useState(false);
-    
+
     const [legajos, setLegajos] = useState([]);
     const [legajosFound, setLegajosFound] = useState([]);
 
@@ -38,7 +42,10 @@ export default SolicitudesEdicion = ({ navigation }) => {
     const [indexSelected, setIndexSelected] = useState(0);
     const [paginaActual, setPaginaActual] = useState(1);
     const [paginaTotal, setPaginaTotal] = useState(1);
-    
+    const [isLoading, setIsLoading] = useState(true);
+
+    const [update, setUpdate] = useState(false);
+
     const elementsPerPage = 8
 
     const itemListContainer = {
@@ -99,13 +106,16 @@ export default SolicitudesEdicion = ({ navigation }) => {
                 legajosFoundCopy[index].value.status = aprobado;
                 setLegajosFound(legajosFoundCopy);
             })
+            .then(() => {
+                setIsLoading(true);
+            })
             .catch((error) => console.error('algo salio mal: ', error));
     }
 
     useEffect(() => {
         // http://localhost:8080/api/pendingedition/:businessName
         let url = API_URL + '/api/pendingedition/' + business;
-        console.log('url:',  url)
+        console.log('url:', url)
         fetch(url, {
             method: 'GET',
             headers: {
@@ -156,9 +166,16 @@ export default SolicitudesEdicion = ({ navigation }) => {
                 // en base a que cada pagina tiene elementsPerPage elementos, calculo la cantidad de paginas que tendre en arrayFinal y la asigno a paginaTotal
                 setPaginaTotal(Math.ceil(arrayFinal.length / elementsPerPage));
                 setLegajos(arrayFinal);
+                setIsLoading(false)
             })
-            .catch((error) => console.error(error));
-    }, []);
+            .finally(() => {
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                setIsLoading(false);
+                console.error(error)
+            });
+    }, [isLoading]);
 
     const renderItem = ({ item, index }) => (
         <View>
@@ -169,15 +186,30 @@ export default SolicitudesEdicion = ({ navigation }) => {
             }]}>
                 {/* en la propiedad item.updatedAt hay una fecha en formato 2023-08-01T19:37:43.071Z y yo creare de ahi un texto en formato 12/04/24 sacado de esa informacion y otro en formato 14:54 hs sacado de esa informacion tambien*/}
                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{item.value.updatedAt.slice(8, 10) + '/' + item.value.updatedAt.slice(5, 7) + '/' + item.value.updatedAt.slice(2, 4)}</Text>
- 
+
                 <Text style={{ fontFamily: "GothamRoundedMedium", fontSize: 12, textAlign: 'left', width: "25%" }}>{new Date(item?.value?.updatedAt).toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}</Text>
                 {/* ahora hago una comparacion, si el id del elemento item.id es igual a la id que traje del redux entonces muestro el nombre que tengo en fullName */}
                 <Text style={[styles.textEditables, { width: "25%", textAlign: 'left', color: (item.value.status === 'approved' ? '#7BC100' : ((item.value.status === 'pending') ? '#FFB82F' : (item.value.status === 'denied') ? '#FF2E11' : 'black')) }]}>{(item.value.status === 'approved' ? 'Aprobado' : ((item.value.status === 'pending') ? 'Pendiente' : ((item.value.status === 'denied') ? 'Denegado' : '')))}</Text>
                 {/* agrego un boton para desplegar mas opciones, el que es como una V hacia abajo de icons */}
 
-                <TouchableOpacity onPress={() => { handleViewButton(item.value._id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "25%", position: 'relative' }}>
+                {/* <TouchableOpacity onPress={() => { handleViewButton(item.value._id) }} style={{ display: 'flex', alignContent: 'flex-end', justifyContent: 'center', width: "25%", position: 'relative' }}>
                     <Icon name="arrow-down" size={15} color="black" style={{ position: 'absolute', right: 25 }} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+                {(item?.value?.status == 'approved') ?
+                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
+                        <Feather name="alert-circle" size={20} color="black" onPress={() => {
+                            setIndexSelected(index);
+                            setViewInfo(true);
+                        }} />
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={{ display: 'flex', alignContent: 'center', justifyContent: 'flex-start', width: "25%", }}>
+                        <Feather name="edit-3" size={20} color="black" onPress={() => {
+                            setIndexSelected(index);
+                            setViewEdit(true);
+                        }} />
+                    </TouchableOpacity>
+                }
             </View>
 
 
@@ -234,16 +266,36 @@ export default SolicitudesEdicion = ({ navigation }) => {
         { title: "| Solicitudes de edición", style: "titleProfile" },
     ]
 
+    let paramsView = {
+        title: 'Solicitud Aprobada',
+        // message: ((legajosFound[indexSelected]?.value?.motivoPeticion !== undefined) ? 'Comentario del / la solicitante: "' + legajosFound[indexSelected]?.value?.motivoPeticion + '"' : '') ,
+        message: 'Solicitante: ' + legajosFound[indexSelected]?.value?.nombre,
+        // message2: 'Puedes dejar un comentario sobre la decisión que has tomado de esta solicitud.',
+        message2: 'Comentario del / la solicitante: "' + legajosFound[indexSelected]?.value?.motivoPeticion + '"',
+        message3: 'Referente: ' + legajosFound[indexSelected]?.value?.whoApproved,
+        message4: 'Comentario del referente: ' + legajosFound[indexSelected]?.value?.motivo,
+        viewWindow: viewInfo,
+        textField: '',
+        setViewWindow: setViewEdit,
+        action: sendEdit,
+        botonSendParams: false,
+        data: '',
+        botonNo: "",
+        botonYes: "",
+        typeable: false,
+        internalInput: internalInput,
+        setInternalInput: setInternalInput,
+    }
     let paramsEdit = {
         title: 'Aprobar o denegar solicitud de edición',
-        message: ((legajosFound[indexSelected]?.value?.motivoPeticion !== undefined) ? 'Comentario del / la solicitante: "' + legajosFound[indexSelected]?.value?.motivoPeticion + '"' : '') ,
+        message: ((legajosFound[indexSelected]?.value?.motivoPeticion !== undefined) ? 'Comentario del / la solicitante: "' + legajosFound[indexSelected]?.value?.motivoPeticion + '"' : ''),
         message2: 'Puedes dejar un comentario sobre la decisión que has tomado de esta solicitud.',
         viewWindow: viewEdit,
         textField: ' Motivos de la decisión',
         setViewWindow: setViewEdit,
         action: sendEdit,
         botonSendParams: true,
-        data: '',        
+        data: '',
         botonNo: "Denegar",
         botonYes: "Aprobar",
         typeable: true,
@@ -254,14 +306,23 @@ export default SolicitudesEdicion = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <BlackWindow visible={viewEdit} setVisible={setViewEdit} />
+            <BlackWindow visible={viewInfo} setVisible={setViewInfo} />
             <BlackWindow visible={viewDelete} setVisible={setViewDelete} />
             <ConfirmScreen navigation={navigation} params={paramsEdit} />
-            {/* <ConfirmScreen navigation={navigation} params={paramsDelete} /> */}
+            <ConfirmScreenInfo navigation={navigation} params={paramsView} />
 
             <View>
                 <Header cajaText={cajaText} unElemento={true} />
                 {/* <Buscador inputValue={inputValue} handleInputChange={handleInputChange} /> */}
-                <FiltradorPorEstado states={legajosFound} setStates={setLegajosFound} statesOriginal={legajos} />
+                <FiltradorPorEstado states={legajosFound} setStates={setLegajosFound} statesOriginal={legajos} params={
+                    {
+                        paginaActual: paginaActual,
+                        setPaginaActual: setPaginaActual,
+                        paginaTotal: paginaTotal,
+                        setPaginaTotal: setPaginaTotal,
+                        elementsPerPage: elementsPerPage,
+                    }
+                } />
             </View>
 
             <View style={{ display: 'flex', flexDirection: 'row', alignContent: 'center', justifyContent: 'space-between', marginTop: 15 }}>
@@ -271,11 +332,13 @@ export default SolicitudesEdicion = ({ navigation }) => {
                 <Text style={{ textAlign: 'left', fontSize: 12, width: "25%", fontFamily: "GothamRoundedMedium", color: "#636363" }}></Text>
             </View>
 
+            <Image source={loading} style={{ width: 150, height: 150, marginTop: 50, alignSelf: 'center', display: (isLoading ? 'flex' : 'none') }} />
+
             <FlatList
                 // hago que en data solo se muestre de 10 en elementsPerPage en base a la pagina actual
 
                 data={
-                    legajosFound.slice((paginaActual - 1) * elementsPerPage, paginaActual * elementsPerPage)
+                    (isLoading ? [] : legajosFound.slice((paginaActual - 1) * elementsPerPage, paginaActual * elementsPerPage))
                 }
                 renderItem={renderItem}
                 keyExtractor={(item) => item.value._id}
@@ -288,7 +351,7 @@ export default SolicitudesEdicion = ({ navigation }) => {
                 marginTop: 10,
                 marginBottom: 10,
 
-            }}>        
+            }}>
                 <TouchableOpacity style={[styles.buttonForm, {
                     backgroundColor: (
                         "#7BC100"
@@ -297,7 +360,7 @@ export default SolicitudesEdicion = ({ navigation }) => {
                     paginaActual > 1 ? setPaginaActual(paginaActual - 1) : null
                 }
                 }>
-                           <FontAwesome5 name="arrow-left" size={24} color="white" />
+                    <FontAwesome5 name="arrow-left" size={24} color="white" />
                 </TouchableOpacity>
 
                 <Text style={{

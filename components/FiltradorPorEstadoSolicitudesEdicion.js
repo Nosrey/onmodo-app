@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useSelector } from 'react-redux';
 // import useFonts
 import { useFonts } from 'expo-font';
 
-const FiltradorLegajos = ({ states, setStates, params }) => {
-    const rol = useSelector(state => state.rol);
+const FiltradorPorEstadoSolicitudesEdicion = ({ states, setStates, statesOriginal, params }) => {
     const [selectedOption, setSelectedOption] = useState('most-recent');
     const {paginaActual, paginaTotal, setPaginaTotal, setPaginaActual, elementsPerPage } = params;
     const [fontsLoaded] = useFonts({
@@ -16,25 +14,21 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
 
     const handleSort = (option) => {
         setSelectedOption(option);
-        let array = [...states]
+        // hago un switch para filtrar el array que recibo, si es "Todos" entonces muestro todos los elementos, si es "Pendientes de Edición" entonces muestro los elementos que tengan la propiedad  "status" en "pending y si es "Editados" entonces muestro los elementos que tengan "status" en approved, si la propiedad "status" no existe entonces lo tomo como que esta en false y solo se mostraran en Todos
+        let array = [...statesOriginal]
         switch (option) {
-            case 'Nivel 1':
-                // cada elemento tendra la propiedad .rol y sera un string numerico, si es nivel 1 traera todos los q sean 1, no los que sean diferentes a 1
-                setStates([...states].filter((element) => element.rol == '1'));
-                return array.filter((element) => element.rol == '1')
-                break;
-            case 'Nivel 2':
-                setStates([...states].filter((element) => element.rol == '2'));
-                return array.filter((element) => element.rol == '2')
-                break;
-            case 'Nivel 3':
-                setStates([...states].filter((element) => element.rol == '3'));
-                return array.filter((element) => element.rol == '3')
-                break;
-            case 'Alfabetico':
-                setStates([...states].sort((a, b) => a.fullName.localeCompare(b.fullName)));
-                return array.sort((a, b) => a.fullName.localeCompare(b.fullName))
-                break;
+            case 'Todos':
+                setStates(statesOriginal);
+                return array
+            case 'Pendientes de Edición':
+                setStates(statesOriginal.filter((item) => item.value.status === "pending"));
+                return array.filter((item) => item.value.status === "pending")
+            case 'Editados':
+                setStates(statesOriginal.filter((item) => item.value.status === "approved"));
+                return array.filter((item) => item.value.status === "approved")
+            case 'Denegados':
+                setStates(statesOriginal.filter((item) => item.value.status === "denied"));
+                return array.filter((item) => item.value.status === "denied")
             default:
                 break;
         }
@@ -42,7 +36,7 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
 
     return (
         <View styles={{padding: 12}}>
-            <View style={styles.inputContainer}>
+            <View style={[styles.inputContainer, {marginTop: 10}]}>
                 <Text style={styles.label}>Ordenar:</Text>
                 <View style={styles.passwordInputContainer}>
                     <Picker
@@ -55,10 +49,10 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
                         }}
                         style={styles.userInput}>
 
-                        <Picker.Item style={{fontSize: 12}} label="Nivel 1" value="Nivel 1" />
-                        {rol > 2 && <Picker.Item style={{fontSize: 12}} label="Nivel 2" value="Nivel 2" />}
-                        {rol > 3 && <Picker.Item style={{fontSize: 12}} label="Nivel 3" value="Nivel 3" />}
-                        <Picker.Item style={{fontSize: 12}} label="Alfabetico" value="Alfabetico" />
+                        <Picker.Item style={{fontSize: 12}} label="Todos" value="Todos" />
+                        <Picker.Item style={{fontSize: 12}} label="Pendientes de Edición" value="Pendientes de Edición" />
+                        <Picker.Item style={{fontSize: 12}} label="Editados" value="Editados" />
+                        <Picker.Item style={{fontSize: 12}} label="Denegados" value="Denegados" />
                     </Picker>
                 </View>
             </View>
@@ -66,7 +60,7 @@ const FiltradorLegajos = ({ states, setStates, params }) => {
     );
 };
 
-export default FiltradorLegajos;
+export default FiltradorPorEstadoSolicitudesEdicion;
 
 
 const styles = StyleSheet.create({
@@ -75,13 +69,13 @@ const styles = StyleSheet.create({
     },
     userInput: {
         flex: 1,
-        height: 40,
+        height: 10,
         color: '#C3C3C3',
         fontSize: 12,
         fontFamily: "GothamRoundedMedium",
     },
     pickerContainer: {
-        height: 40,
+        height: 30,
         borderWidth: 2,
         borderColor: '#C3C3C3',
     },

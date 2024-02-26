@@ -10,6 +10,7 @@ import Profile from './screens/Profile';
 import ProfileLegajos from './screens/ProfileLegajos';
 import FormulariosCargados from './screens/FormulariosCargados';
 import Formularios from './screens/Formularios';
+import Estadisticas from './screens/Estadisticas';
 import FormDetails from './screens/FormDetails';
 import FormDetailsLegajos from './screens/FormDetailsLegajos';
 import FormCreate from './screens/FormCreate';
@@ -23,15 +24,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
 // importo de reduxjs/toolkit configureStore y createSlice
 import { configureStore, createSlice } from '@reduxjs/toolkit';
-import { setJSExceptionHandler } from 'react-native-exception-handler';
-
-const errorHandler = (error, isFatal) => {
-  // Este es tu manejador de errores personalizado
-  // Puedes hacer lo que quieras con el error, como enviarlo a un servidor de logs
-  console.log(error, isFatal);
-};
-
-setJSExceptionHandler(errorHandler);
 
 const initialState = {
   // creo el estado logged para saber si el usuario esta logueado o no
@@ -56,6 +48,8 @@ const initialState = {
   listaRecordatorios: [],
   legajoProfile: {},
   formulariosLegajo: [],
+  logo: '',
+  documento: '',
 }
 
 const counterSlice = createSlice({
@@ -69,11 +63,17 @@ const counterSlice = createSlice({
     setLegajoProfile(state, action) {
       state.legajoProfile = action.payload;
     },
+    setDocumento(state, action) {
+      state.documento = action.payload;
+    },
     setListaRecordatorios(state, action) {
       state.listaRecordatorios = action.payload;
     },
     setFormulariosLegajo(state, action) {
       state.formulariosLegajo = action.payload;
+    },
+    setLogo(state, action) {
+      state.logo = action.payload;
     },
     setObjectToCheck(state, action) {
       state.objectToCheck = action.payload;
@@ -161,6 +161,11 @@ export default function App() {
             name="Login"
             component={Login}
             options={{ title: 'Login' }}
+          />
+          <Stack.Screen
+            name="Estadisticas"
+            component={Estadisticas}
+            options={{ title: 'Estadisticas' }}
           />
           <Stack.Screen
             name="Inicio"

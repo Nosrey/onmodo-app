@@ -42,7 +42,15 @@ export default FormDetails = ({ navigation }) => {
     const [listaEstados, setListaEstados] = useState(entries?.map((item) => {
         return { id: item._id, activado: false }
     }));
-    let entriesCopy = [...entries];
+    // let entriesCopy = [...entries]; pero una copia profunda
+    let entriesCopy = JSON.parse(JSON.stringify(entries));
+
+    for (let i = 0; i < entriesCopy.length; i++) {
+        // reviso cada elemento y si tiene el status 'approved' Y la propiedad editEnabled en false entonces cambio el status a '' un array vacio
+        if (entriesCopy[i].status === 'approved' && entriesCopy[i].editEnabled === false) {
+            entriesCopy[i].status = ''
+        }
+    }
 
     const [entriesFound, setEntriesFound] = useState(entriesCopy ? entriesCopy.reverse() : []);
     const [inputValue, setInputValue] = useState('');
@@ -109,6 +117,8 @@ export default FormDetails = ({ navigation }) => {
                         }
                     });
                     setEntriesFound(entriesFoundTemp);
+                } else {
+                    console.log('algo salio mal')
                 }
             })
             .catch((error) => {
@@ -211,7 +221,7 @@ export default FormDetails = ({ navigation }) => {
     }
 
     function editHandler(id) {
-        let item = entries?.find((element) => element?._id === id);
+        let item = entriesFound?.find((element) => element?._id === id);
         (item?.status === 'free' || item?.status === 'approved' ? goToEdit(id) : handleEditButton(id))
     }
 

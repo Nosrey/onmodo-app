@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
-export default function ConfirmScreen({ navigation, params }) {
+export default function ConfirmScreenInfo({ navigation, params }) {
     // obtengo y creo los valores title, message, action, data de params
     const { title, message, message2, message3, message4, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput, textField, botonSendParams} = params;
 
@@ -65,6 +65,7 @@ export default function ConfirmScreen({ navigation, params }) {
     const container = {
         flex: 1,
         padding: 6,
+        width: "75%",
         // padding top en 24px
         paddingTop: 15,
         backgroundColor: '#fff',
@@ -117,14 +118,7 @@ export default function ConfirmScreen({ navigation, params }) {
                     <Text style={styles.letterCounter}>{inputCounter+"/1000"}</Text>
                 </View>
             </View>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={handleNoButton}>
-                    <Text style={[styles.buttonText, styles.cancel]}>{botonNo}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleYesButton}>
-                    <Text style={[styles.buttonText, accept]}>{botonYes}</Text>
-                </TouchableOpacity>
-            </View>
+      
         </View>
     )
 }

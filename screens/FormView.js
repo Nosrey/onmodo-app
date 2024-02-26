@@ -27,10 +27,11 @@ export default function FormView({ navigation }) {
     const [viewInfo, setViewInfo] = useState(false);
     const [viewInfo2, setViewInfo2] = useState(false);
     const [viewCortinaNegra, setViewCortinaNegra] = useState(false);
-    const [notif, setNotif] = useState({view: false, message: '', color: 'naranja'}); // notif es un booleano que indica si se muestra o no la notificacion de guardado exitoso
+    const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion de guardado exitoso
     const [inputsValuesFormType2, setInputsValuesFormType2] = useState([]); // [ {name: "nombre", value: "valor"}, {name: "apellido", value: "valor"} aca se guardan los valores de los inputs de todo el formulario
 
-    const [reglones, setReglones] = useState([]); 
+    const [reglones, setReglones] = useState([]);
+    const [dot, setDot] = useState([])
 
     const cardToCheck = useSelector((state) => state.cardToCheck);
     const objectToCheck = useSelector((state) => state.objectToCheck);
@@ -45,7 +46,7 @@ export default function FormView({ navigation }) {
                 let item
                 if (formulario.exception2) {
                     item = objectToCheck.inputs
-                    // item es igual  {"cantidad": "1", "causa": "Otras Causas", "fecha": "2023-10-30T18:28:31.479Z", "id": 0, "productoDecomisado": "1", "turno": "Turno Noche"}
+                    // item es igual  {"cantidad": "1", "causa": "Otras Causas", "fecha": "2023-10-30T18:28:31.479Z", "id": 0, "productodecomisado": "1", "turno": "Turno Noche"}
 
                     let itemTemp = []
                     for (let j = 0; j < item?.length; j++) {
@@ -53,19 +54,19 @@ export default function FormView({ navigation }) {
                             values: [
                                 { name: "fecha", value: item[j].fecha },
                                 { name: "turno", value: item[j].turno },
-                                { name: "productoDecomisado", value: item[j].productoDecomisado },
+                                { name: "productodecomisado", value: item[j].productodecomisado },
                                 { name: "cantidad", value: item[j].cantidad },
                                 { name: "causa", value: item[j].causa }
                             ]
                         }
                     }
                     array[i] = itemTemp
-                } 
+                }
                 else {
                     item = objectToCheck.inputs?.find((input) => input.name === formulario.inputs[i].name)
                     array[i] = []
                     for (let j = 0; j < item?.value.length; j++) {
-                        array[i].push({values: item?.value[j]})
+                        array[i].push({ values: item?.value[j] })
                     }
                 }
             }
@@ -74,7 +75,7 @@ export default function FormView({ navigation }) {
 
         // array:  [[{"values":[{"name":"Fecha","value":"2023-10-30T14:33:42.495Z"},{"name":"Vegetal a desinfectar","value":"1"},{"name":"Lavado","value":"No"},{"name":"Concentración","value":"No"},{"name":"Minutos","value":"2"},{"name":"Enjuague","value":"No"},{"name":"Acciones de correción","value":"3"},{"name":"Responsable","value":"4"}]}]]
 
-        // array:  [[{"values":[{"name":"cantidad","value":"1"},{"name":"causa","value":"Otras Causas"},{"name":"fecha","value":"2023-10-30T18:28:31.479Z"},{"name":"id","value":0},{"name":"productoDecomisado","value":"1"},{"name":"turno","value":"Turno Noche"}]}]]
+        // array:  [[{"values":[{"name":"cantidad","value":"1"},{"name":"causa","value":"Otras Causas"},{"name":"fecha","value":"2023-10-30T18:28:31.479Z"},{"name":"id","value":0},{"name":"productodecomisado","value":"1"},{"name":"turno","value":"Turno Noche"}]}]]
 
     }, [])
 
@@ -142,15 +143,23 @@ export default function FormView({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Notification params={notif} notif={notif} setNotif={setNotif}/>
+            <Notification params={notif} notif={notif} setNotif={setNotif} />
             <Header cajaText={cajaText} unElemento={true} />
             <BlackWindow visible={viewDelete} setVisible={setViewDelete} />
-            <ConfirmScreen navigation={navigation} params={paramsDelete}/>
+            <ConfirmScreen navigation={navigation} params={paramsDelete} />
 
             <BlackWindow visible={viewInfo} setVisible={setViewInfo} />
-            <InfoScreen navigation={navigation} params={paramsInfo} msg/>        
+            <InfoScreen navigation={navigation} params={paramsInfo} msg />
 
             <BlackWindow visible={viewCortinaNegra} setVisible={() => {
+                setDot([])
+                let visibleCopia = [...visibleForm];
+                // visibleCopia[index] = false;
+                visibleCopia.map((item, index) => {
+                    visibleCopia[index] = false;
+                })
+                setVisibleForm(visibleCopia);
+                setViewCortinaNegra(false)
                 setEditionMode(false)
             }} />
 
@@ -171,11 +180,13 @@ export default function FormView({ navigation }) {
                             editionMode: editionMode,
                             setEditionMode: setEditionMode,
                             reglonPicked: reglonPicked,
+                            dot: dot,
+                            setDot: setDot,
                         }} />
                     )
                 }
             })
-            }                  
+            }
 
             <ScrollView>
                 {/* <Text style={styles.titleForm}>{cardToCheck.title}</Text> */}
@@ -189,19 +200,22 @@ export default function FormView({ navigation }) {
                     <Text style={{
                         fontSize: 18,
                         fontFamily: "GothamRoundedBold",
+                        width: "70%",
+                        // que el texto salte de linea si es muy largo
+                        flexWrap: 'wrap',
                     }}>{cardToCheck.title}</Text>
                     <Feather name={editMode ? "edit-3" : "eye"} size={25} style={{
-                        paddingRight: 20,                        
-                    }} color="black" onPress={() => { handleEditButton(item?._id) }} />
+                        paddingRight: 20,
+                    }} color="black" />
                 </View>
 
                 {cardToCheck.formType === 1 ? (
-                    <FormType1View navigation={navigation} setNotif={setNotif}/>
+                    <FormType1View navigation={navigation} setNotif={setNotif} />
                 ) : cardToCheck.formType === 2 ? (
-                    <FormType2View setCortina={setViewCortinaNegra} cortina={viewCortinaNegra} indexPicked={indexPicked} setIndexPicked={setIndexPicked} setNotif={setNotif} navigation={navigation} visibleForm={visibleForm} setVisibleForm={setVisibleForm} reglones={reglones} setReglones={setReglones} setViewDelete={setViewDelete} reglonPicked={reglonPicked} setReglonPicked={setReglonPicked} editionMode={editionMode} setEditionMode={setEditionMode}  viewInfo={viewInfo} setViewInfo={setViewInfo} inputsValues={inputsValuesFormType2} setInputsValues={setInputsValuesFormType2}/>
+                    <FormType2View setCortina={setViewCortinaNegra} cortina={viewCortinaNegra} indexPicked={indexPicked} setIndexPicked={setIndexPicked} setNotif={setNotif} navigation={navigation} visibleForm={visibleForm} setVisibleForm={setVisibleForm} reglones={reglones} setReglones={setReglones} setViewDelete={setViewDelete} reglonPicked={reglonPicked} setReglonPicked={setReglonPicked} editionMode={editionMode} setEditionMode={setEditionMode} viewInfo={viewInfo} setViewInfo={setViewInfo} inputsValues={inputsValuesFormType2} setInputsValues={setInputsValuesFormType2} />
                 ) : null}
                 {cardToCheck.formType === 3 ? (
-                    <FormType3View setNotif={setNotif} navigation={navigation} setViewInfo={setViewInfo}/>
+                    <FormType3View setNotif={setNotif} navigation={navigation} setViewInfo={setViewInfo} />
                 ) : null}
             </ScrollView>
             <ButtonBar navigation={navigation} />
