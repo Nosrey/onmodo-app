@@ -1,25 +1,75 @@
 // creo un componente para formularios cargados
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Alert } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, Image, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
-import Filtrador from '../components/Filtrador';
+import FiltradorFormCargados from '../components/FiltradorFormCargados';
 // importo getTitle de globalFunctions
 import { getTitle } from '../functions/globalFunctions';
 import ButtonBar from '../components/ButtonBar';
+import Notification from '../components/Notification';
+import { API_URL, formulariosData } from '../functions/globalFunctions'
 
 export default function FormulariosCargados({ navigation }) {
     const dispatch = useDispatch();
     // traigo formularios del redux
-    const formularios = useSelector((state) => state.formularios);    
+    const formularios = useSelector((state) => state.formularios);
+    const id = useSelector((state) => state.id);
     const [fontsLoaded] = useFonts({
         "GothamRoundedMedium": require('../assets/fonts/GothamRoundedMedium_21022.ttf'),
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion
+
+    // estado para el FiltradorFormCargados
+    // el estado del filtro elegido
+    const [selectedOption, setSelectedOption] = useState('most-recent');
+    const [copiaCardsInicial, setCopiaCardsInicial] = useState([])
+    const [cardsFiltered, setCardsFiltered] = useState([])
+
+
+
+    function update() {
+        fetch(`${API_URL}/api/business/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                // reviso json2.response[0] y a todos los elementos que sean un array los guardo en otro array llamado formularios que sera un let
+                let formularios = [];
+                // recordamos que json2.response[0] es un objeto y ahora debo identificar que propiedades de dicho objeto es un array y guardarlas en formularios
+                for (const [key, value] of Object.entries(json.response[0])) {
+                    if (Array.isArray(value)) {
+                        formularios.push({ title: key, entries: value });
+                    }
+                }
+
+                // hago un dispatch que setee formularios con el valor de formularios
+   
+                setNotif({ view: true, message: '¡Actualizado correctamente!', color: 'verde' });
+                dispatch({ type: 'counter/setFormularios', payload: formularios });
+            })
+            .catch((error) => {
+                setNotif({ view: true, message: 'Ups, algo salio mal', color: 'naranja' });
+                console.error('Error:', error);
+            });
+
+        // Lógica para actualizar los datos
+        setIsRefreshing(false);
+    }
+
+    const onRefresh = useCallback(() => {
+        setIsRefreshing(true);
+        update();
+    }, []);
 
     // creo una funcion que reciba un array de objetos donde revisara en cada objeto el valor de la propiedad createdAt y tras revisar todos, devolvera la propiedad createdAt del objeto con el valor mas reciente
     const getMostRecent = (array) => {
@@ -101,38 +151,8 @@ export default function FormulariosCargados({ navigation }) {
             __v: 0
         },
     ]
-    let cards2 = [ {
-        title: 'PRUEBA',
-        onPress: () => {
-            dispatch({ type: 'counter/setCardToCheck', payload: { title: 'PRUEBA', entries: entriesTemp } });
-            navigation.navigate('FormDetails');
-        },
-        entries: entriesTemp,
-        date: '2023-08-01T20:17:51.036Z'
-    }]
 
-    let cards = formularios.map((item) => {
-        return {
-            title: getTitle(item.title),
-            onPress: () => {
-                // creo un useDispatch para establecer cardToCheck    
-                dispatch({ type: 'counter/setCardToCheck', payload: item });
-                navigation.navigate('FormDetails');
-            },
-            entries: item.entries,
-            date: (item.entries?.length) ? getMostRecent(item.entries) : null
-        }
-    }).sort((a, b) => {
-        if (typeof a.date === 'string' && typeof b.date === 'string') {
-            return new Date(b.date) - new Date(a.date);
-        }
-        return 0;
-    }).reverse(); // add this line to reverse the order
-
-    // unifico cards 2 encima de cards
-    cards = [...cards2, ...cards];
-
-
+    let cards = []
 
     const [cardsFound, setCardsFound] = useState(cards);
     const [inputValue, setInputValue] = useState('');
@@ -140,43 +160,139 @@ export default function FormulariosCargados({ navigation }) {
         { title: '| Formularios cargados', style: 'titleProfile' },
     ]
 
+    // funcion para el FiltradorFormCargados
+    const handleSort = (option) => {
+        let cardFoundCopy = [...copiaCardsInicial];
+        let sortedCards;
+    
+        switch (option) {
+            case 'a-z':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    if (a.title > b.title) return 1;
+                    if (a.title < b.title) return -1;
+                    return 0;
+                });
+                break;
+            case 'z-a':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    if (a.title > b.title) return -1;
+                    if (a.title < b.title) return 1;
+                    return 0;
+                });
+                break;
+            case 'most-recent':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    let recentA = a.entries && a.entries.length > 0 ? new Date(a.entries[a.entries.length - 1].updatedAt) : new Date(0);
+                    let recentB = b.entries && b.entries.length > 0 ? new Date(b.entries[b.entries.length - 1].updatedAt) : new Date(0);
+                    return recentB - recentA;
+                });
+                break;
+            case 'most-used':
+                sortedCards = cardFoundCopy.sort((a, b) => {
+                    return b.entries.length - a.entries.length;
+                });
+                break;
+            default:
+                break;
+        }
+    
+        setCardsFound(sortedCards);
+    };
 
-    const handleInputChange = (value) => {
+
+    const handleInputChange = (value, array = []) => {
         // guardo el valor del input en el estado inputValue
         setInputValue(value);
         let inputLocal = value;
         // convierto el inputLocal en minusculas
         inputLocal = inputLocal.toLowerCase();
+        inputLocal = inputLocal.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
         // creo un array donde guardaré los buttons que coincidan con el valor del input al filtrar
-        setCardsFound(cards.filter((item) => {
+        if (array.length == 0) array = cardsFound
+        setCardsFiltered(array.filter((item) => {
             let itemTitle = item.title.toLowerCase();
+            itemTitle = itemTitle.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
             if (itemTitle.includes(inputLocal)) return item
         }))
     }
 
+    // // ejecuto un useEffect al cargar la pantalla para que se ejecute una sola vez
+    // useEffect(() => {
+    //     update()
+    // }, []);
+
+    // ejecuto update si retrocedo a esta pantalla
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            update()
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+    useEffect(() => {
+        let cards = formularios.map((item) => {
+            let formCoincidence = formulariosData.find((element) => element.url?.includes(item.title));
+
+            if (formCoincidence !== undefined) {
+                return {
+                    title: getTitle(item.title),
+                    onPress: () => {
+                        // creo un useDispatch para establecer cardToCheck 
+                        // hago que payload sea formCoincidence pero con el entries de item   
+                        dispatch({
+                            type: 'counter/setCardToCheck', payload: {
+                                ...formCoincidence,
+                                entries: item?.entries
+                            }
+                        });
+                      
+                        navigation.navigate('FormDetails');
+                    },
+                    entries: item.entries,
+                    date: (item.entries?.length) ? getMostRecent(item.entries) : null
+                }
+            } else {
+                return undefined
+            }
+        }).filter((item) => item !== undefined).sort((a, b) => {
+            let recentA = a.entries && a.entries.length > 0 ? new Date(a.entries[a.entries.length - 1].updatedAt) : new Date(0);
+            let recentB = b.entries && b.entries.length > 0 ? new Date(b.entries[b.entries.length - 1].updatedAt) : new Date(0);
+            return recentB - recentA;
+        })
+
+        // unifico cards 2 encima de cards
+        cards = [...cards];
+        setCopiaCardsInicial(cards)
+        setCardsFound(cards)
+        handleInputChange(inputValue, cards)
+    }, [formularios]);
+
     return (
         <View style={styles.container}>
+            <Notification params={notif} notif={notif} setNotif={setNotif} />
             <Header cajaText={cajaText} unElemento={true} />
-            <View style={{marginBottom: 5}}>
-
-            <Buscador inputValue={inputValue} handleInputChange={handleInputChange} />
-            <Filtrador states={cardsFound} setStates={setCardsFound} />
+            <View style={{ marginBottom: 5 }}>
+                <Buscador inputValue={inputValue} handleInputChange={handleInputChange} />
+                <FiltradorFormCargados states={cardsFound} setStates={setCardsFound} handleSortImported={handleSort} selectedOption={selectedOption} setSelectedOption={setSelectedOption} />
             </View>
 
-            <ScrollView>
+            <ScrollView refreshControl={
+                <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            }>
                 <View style={styles.containerBox}>
                     {/* si cardFound.length es 0, muestro un mensaje de que no hay resultados */}
-                    {cardsFound.length == 0 ? <Text style={[styles.title, styles.notFoundMsg]}>No hay resultados</Text>
+                    {(inputValue.length ? cardsFiltered.length == 0 : cardsFound.length == 0) ? <Text style={[styles.title, styles.notFoundMsg]}>No hay resultados</Text>
                         : (
-                            cardsFound.map((boton, i) => {
+                            (inputValue.length ? cardsFiltered : cardsFound).map((boton, i) => {
                                 if (boton.entries?.length) {
-                                return (
-                                    <TouchableOpacity key={i} style={styles.box} onPress={boton.onPress}>
-                                        <Text style={styles.boxTitle}>
-                                            {boton.title}
-                                        </Text>
-                                    </TouchableOpacity>
-                                )}
+                                    return (
+                                        <TouchableOpacity key={i} style={styles.box} onPress={boton.onPress}>
+                                            <Text style={styles.boxTitle}>
+                                                {boton.title}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
                                 else return null
                             }
                             )
@@ -247,21 +363,21 @@ const styles = StyleSheet.create({
     },
     box: {
         // width: 150,
-        width: "45%",
-        marginHorizontal: "2.5%",
+        width: "48%",
+        marginHorizontal: "1%",
         height: 100,
         borderRadius: 10,
         marginTop: 15,
         backgroundColor: '#E7E7E7',
         justifyContent: 'center',
-        padding: 5,
+        padding: 1.5,
     },
     boxTitle: {
         textAlign: 'center',
         justifyContent: 'center',
         fontFamily: "GothamRoundedMedium",
         fontSize: 12,
-
+        paddingHorizontal: 10,
     },
     title: {
         fontSize: 24,

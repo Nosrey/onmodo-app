@@ -1,15 +1,18 @@
 // creo un componente para que se muestre un popup donde confirmare una accion con dos botones de si o no
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
-export default function ConfirmScreen({ navigation, params }) {
+export default function InfoScreen({ navigation, params }) {
+    const screenWidth = Dimensions.get('window').width;
+    const screenHeight = Dimensions.get('window').height;
     // obtengo y creo los valores title, message, action, data de params
-    const { title, message, message2, message3, message4, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput, textField, botonSendParams} = params;
-
+    const { mensajes, action, data, viewWindow, setViewWindow, botonYes, botonNo, typeable, internalInput, setInternalInput } = params;
+    
     const [inputCounter, setInputCounter] = useState(0);
 
     const [fontsLoaded] = useFonts({
@@ -29,25 +32,13 @@ export default function ConfirmScreen({ navigation, params }) {
 
     const handleYesButton = () => {
         // ejecuto la accion recibida
-        // reviso data, si es un solo valor ejecuto la accion con ese valor, si es un array ejecuto la accion con el array es decir [prop1, prop2, prop3] => action(prop1, prop2, prop3)
-        if (data) {
-            if (Array.isArray(data)) {
-                action(...data)
-            } else {
-                action(data)
-            }
-        } else {
-            if (botonSendParams) action('yes')
-            else action()
-        }
-
+        action(data);
         if (setInternalInput) setInternalInput('')
         setViewWindow(false)
     }
 
     const handleNoButton = () => {
         // vuelvo a la pantalla anterior
-        if (botonSendParams) action('no')
         if (setInternalInput) setInternalInput('')
         setViewWindow(false)
     }
@@ -72,6 +63,8 @@ export default function ConfirmScreen({ navigation, params }) {
         borderRadius: 30,
         // ligera sombra alrededor color negro
         padding: 20,
+        paddingTop: 30,
+        paddingHorizontal: 35,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
@@ -81,56 +74,55 @@ export default function ConfirmScreen({ navigation, params }) {
         alignSelf: 'center',
         // lo pongo en absolute y centrado
         position: 'absolute',
-        bottom: (typeable) ? "40%" : "50%",
-        zIndex: 1,
+        bottom: (mensajes?.length > 4) ? "20%" : "10%",
+        zIndex: 2,
+
     }
 
-    const handleInternalInput = (value) => {
-        // reviso si la longitud de value es menor a 1000, si es menor entonces seteo el valor de internalInput con value y si es mayor a 1000 entonces elimino el ultimo caracter de value y seteo el valor de internalInput con value
-        if (value.length <= 1000) {
-            setInternalInput(value);
-        } else {
-            setInternalInput(value.slice(0, -1));
-        }
-        setInputCounter(value.length);
-    }
-    
+
 
 
     return (
-        <View style={[container, visible]}>
-            <Text style={[styles.title, {marginBottom: (message.length) ? 0 : 10}]}>{title}</Text>
-            <Text style={[styles.message, {display: (message.length) ? 'flex' : 'none'}]}>{message}</Text>
-            <Text style={[styles.message, {display: (message2?.length) ? 'flex' : 'none', marginBottom: 10, marginTop: 0 }]}>{message2}</Text>
-            <Text style={[styles.message, {display: (message3?.length) ? 'flex' : 'none', marginBottom: 10, marginTop: 0 }]}>{message3}</Text>
-            <Text style={[styles.message, {display: (message4?.length) ? 'flex' : 'none', marginBottom: 10, marginTop: 0 }]}>{message4}</Text>
-            <View style={[styles.inputContainer, {display: (typeable) ? 'flex' : 'none'}]}>
-                <View style={styles.passwordInputContainer}>
-                    <TextInput
-                        style={styles.userInput}
-                        placeholder={textField?.length ? textField : " Motivos de la edición"}
-                        placeholderTextColor="#C3C3C3"
-                        multiline={true}
-                        onChangeText={(value) => handleInternalInput(value)}
-                        value={internalInput}
-                    />
-                    <Text style={styles.letterCounter}>{inputCounter+"/1000"}</Text>
-                </View>
-            </View>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={handleNoButton}>
-                    <Text style={[styles.buttonText, styles.cancel]}>{botonNo}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleYesButton}>
-                    <Text style={[styles.buttonText, accept]}>{botonYes}</Text>
+        <View style={[container, visible, {height: screenHeight * 0.6}]}>
+            <View style={{ width: "100%", display: "flex" }}>
+                <TouchableOpacity>
+                    <AntDesign name="closecircle" size={30} color="black" style={styles.closeBtn} onPress={() => { setViewWindow(false) }} />
                 </TouchableOpacity>
             </View>
+                <ScrollView>
+
+
+            <View style={{alignSelf: 'center'}}>
+
+                {mensajes?.map((msg, index) => {
+                    if (msg.tipo === "title")
+                        return (
+                            <View key={index} style={{flexDirection: 'row'}}>
+                                <Text style={[styles.title, { borderBottomColor: 'black', borderBottomWidth: 1, marginTop: 10, width: "100%", textAlign: "center", paddingBottom: 10, marginBottom: 10 }]}>{msg.text}</Text>
+                            </View>
+                        )
+                        else if (msg.tipo === "text")
+                        return (
+                            <Text key={index} style={[styles.message, {
+                                // hago que el texto este justificado
+                                textAlign: 'left',
+                            }]}>{msg.text}</Text>
+                        )
+                })}
+                            </View>
+
+                </ScrollView>
         </View>
     )
 }
 
 
 const styles = StyleSheet.create({
+    closeBtn: {
+        position: 'absolute',
+        top: -20,
+        right: -15,
+    },
     letterCounter: {
         color: '#C3C3C3',
         fontFamily: 'GothamRoundedMedium',
@@ -143,7 +135,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: "GothamRoundedMedium",
         textAlign: 'center',
-        marginVertical: 10
+        marginVertical: 5
     },
     form: {
 
@@ -168,12 +160,17 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 14,
+        // permito que el text haga wrap
+        flexWrap: 'wrap',
         // hago que la fuente sea gothan rounded
         fontFamily: 'GothamRoundedBold',
         // establezo el line-height en 24px
         lineHeight: 24,
         // centro el texto
         textAlign: 'left',
+        marginTop: 10,
+        textAlign: 'center',
+
         // aplico bold al texto
     },
     inputContainer: {
@@ -209,7 +206,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 1,
         marginTop: 5,
-        
+
     },
     userInput: {
         textAlignVertical: 'top',

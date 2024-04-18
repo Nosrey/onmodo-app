@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, Image, ScrollView, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import logo from '../assets/on-modo-grande.png';
 import ButtonBar from '../components/ButtonBar';
@@ -9,6 +9,9 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import Header from '../components/Header';
 import Buscador from '../components/Buscador';
+import { API_URL } from '../functions/globalFunctions';
+// traigo FontAwesome
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function Inicio({ navigation }) {
     const [fontsLoaded] = useFonts({
@@ -16,16 +19,29 @@ export default function Inicio({ navigation }) {
         "GothamRoundedBold": require('../assets/fonts/GothamRoundedBold_21016.ttf')
     });
     const logged = useSelector((state) => state.logged);
-
+    const business = useSelector(state => state.business);
+    const document = useSelector(state => state.documento);
     if (logged == false) {
         navigation.replace('Login');
     }
     // traigo igualmente token, id y rol
     const fullName = useSelector((state) => state.fullName);
     const rol = useSelector((state) => state.rol);
+    const listaRecordatorios = useSelector((state) => state.listaRecordatorios);
 
     // creo un estado para guardar el valor del input
     const [inputValue, setInputValue] = useState('');
+
+    function activarAlerta(lista) {
+        // recorro la lista de recordatorios obtenida y si algun elemento tiene el status "pendiente" retorno true
+        let valorFinal = false
+        for (let i = 0; i < lista.length; i++) {
+            if (lista[i]?.status == "pendiente" && lista[i]?.statusRecordatorio === 'En curso' && lista[i]?.realizado === false) {
+                valorFinal = true
+            }
+        }
+        return valorFinal
+    }
 
     // Definir las opciones del menú según el rol del usuario
     let cards = [];
@@ -34,8 +50,7 @@ export default function Inicio({ navigation }) {
         cards = [
             {
                 title: 'Formularios',
-                onPress: () => console.log('cambiando de pagina')
-
+                onPress: () => navigation.navigate('Formularios')
             },
             {
                 title: 'Formularios cargados',
@@ -43,18 +58,28 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Documentación',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => {
+                    // voy a este link en google drive si hay algo en document, si no no hago nada
+                    if (document) {
+                        console.log('abriendo link: ', document)
+                        Linking.openURL(document)
+                            .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
+                    }
+                }
             },
             {
-                title: 'Mi cuenta',
-                onPress: () => navigation.navigate('Profile')
+                title: 'Recordatorios',
+                onPress: () => navigation.navigate('Recordatorios'),
+                notificar: activarAlerta(listaRecordatorios)
             },
         ];
     } else if (rol == '2') {
         cards = [
             {
                 title: 'Formularios',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Formularios')
             },
             {
                 title: 'Formularios cargados',
@@ -62,34 +87,44 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Documentación',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => {
+                    // voy a este link en google drive si hay algo en document, si no no hago nada
+                    if (document) {
+                        console.log('abriendo link: ', document)
+                        Linking.openURL(document)
+                            .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
+                    }
+                }
             },
             {
                 title: 'Recordatorios',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Recordatorios'),
+                notificar: activarAlerta(listaRecordatorios)
             },
             {
                 title: 'Solicitudes de Edición',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('SolicitudesEdicion')
             },
             {
                 title: 'Legajos',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Legajos')
             },
             {
-                title: 'Cuentas',
-                onPress: () => console.log('cambiando de pagina')
+                title: 'Crear Cuenta',
+                onPress: () => navigation.navigate('CreateAccount')
             },
         ];
     } else if (rol == '3') {
         cards = [
             {
                 title: 'Estadísticas',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Estadisticas')
             },
             {
                 title: 'Formularios',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Formularios')
             },
             {
                 title: 'Formularios cargados',
@@ -97,42 +132,47 @@ export default function Inicio({ navigation }) {
             },
             {
                 title: 'Documentación',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => {
+                    // voy a este link en google drive si hay algo en document, si no no hago nada
+                    if (document) {
+                        console.log('abriendo link: ', document)
+                        Linking.openURL(document)
+                            .catch((err) => console.error('An error occurred', err));
+                    } else {
+                        console.log('no hay document')
+                    }
+                }
             },
             {
                 title: 'Solicitudes de Edición',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('SolicitudesEdicion')
             },
             {
                 title: 'Legajos',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Legajos')
             },
             {
-                title: 'Cuentas',
-                onPress: () => console.log('cambiando de pagina')
+                title: 'Crear Cuenta',
+                onPress: () => navigation.navigate('CreateAccount')
             },
         ];
     } else if (rol == '4') {
         cards = [
             {
                 title: 'Estadísticas',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Estadisticas')
             },
             {
                 title: 'Solicitudes de Edición',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('SolicitudesEdicion')
             },
             {
                 title: 'Legajos',
-                onPress: () => console.log('cambiando de pagina')
+                onPress: () => navigation.navigate('Legajos')
             },
             {
                 title: 'Crear Cuenta',
-                onPress: () => console.log('cambiando de pagina')
-            },
-            {
-                title: 'Mi cuenta',
-                onPress: () => navigation.navigate('Profile')
+                onPress: () => navigation.navigate('CreateAccount')
             },
         ];
     }
@@ -142,11 +182,30 @@ export default function Inicio({ navigation }) {
     const [cardsFound, setCardsFound] = useState(cards);
 
     useEffect(() => {
+        // cuando se renderice el componente, guardo en cardsFound todos los buttons
+        setCardsFound(cards);
+    }, [listaRecordatorios]);
+
+    useEffect(() => {
         async function prepare() {
             await SplashScreen.preventAutoHideAsync();
         }
         prepare();
     }, []);
+
+    // useEffect(() => {
+    //     let url = API_URL + "/api/newbusiness/" + business;
+    //     console.log('url', url)
+    //     fetch(url)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data) {
+    //                 console.log('data: ', data)
+    //                 setDocument(data.response.linkDocumentacion);
+    //             }
+    //         })
+    //         .catch(error => console.log(error));
+    // }, [])
 
     if (!fontsLoaded) return undefined;
     else SplashScreen.hideAsync();
@@ -166,24 +225,40 @@ export default function Inicio({ navigation }) {
     }
 
     let cajaTextoHeader = [
-        {title: "| Inicio", style: "title"},
-        {title: "Nivel " + rol, style: "title"}
+        { title: "| Inicio", style: "title" },
+        { title: "Nivel " + rol, style: "title" }
     ];
 
     return (
         <View style={styles.container}>
             <View>
-                <Header cajaText={cajaTextoHeader} />          
+                <Header cajaText={cajaTextoHeader} />
             </View>
 
             <ScrollView>
                 <View style={styles.containerBox}>
                     {/* creo estos buttons en base a los que tengo en el array cardsFound */}
                     {cardsFound.map((boton, i) => (
-                        <TouchableOpacity key={i} style={styles.box} onPress={boton.onPress}>
+                        <TouchableOpacity
+                            key={i}
+                            style={[
+                                styles.box,
+                                boton?.notificar ? { backgroundColor: "#7bc100", position: 'relative' } : null
+                            ]}
+                            onPress={boton.onPress}
+                        >
                             <Text style={styles.boxTitle}>
                                 {boton.title}
                             </Text>
+                            {boton?.notificar ?
+                                <FontAwesome
+                                    name="exclamation"
+                                    size={24}
+                                    color="white"
+                                    style={{ position: 'absolute', top: 0, right: 5, padding: 5 }}
+                                />
+                                : null
+                            }
                         </TouchableOpacity>
                     ))}
                 </View>

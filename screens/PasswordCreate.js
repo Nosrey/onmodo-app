@@ -1,14 +1,19 @@
 // creo un nuevo componente
 import React, { useState, useEffect } from 'react';
 // importo de react native el view, text, image, stylesheets, touchableOpacity
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard, Dimensions } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import logo from '../assets/on-modo-grande.png';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono de ojo
 import Header from '../components/Header';
+import { useSelector } from 'react-redux';
 
 export default function PasswordCreate({ navigation }) {
+    const logoImported = useSelector((state) => state.logo);
+
+    const screenWidth = Dimensions.get("window").width;
+
     const [showPassword, setShowPassword] = useState(false);
     const [showPassword2, setShowPassword2] = useState(false);
     const [passwordInput, setPasswordInput] = useState(''); // Estado para guardar el valor del input de contraseña
@@ -59,12 +64,12 @@ export default function PasswordCreate({ navigation }) {
     else SplashScreen.hideAsync();
 
 
-    function handlePasswordChange (value) {
+    function handlePasswordChange(value) {
         setPasswordInput(value);
         setLoginError(false);
     }
 
-    function handlePasswordChange2 (value) {
+    function handlePasswordChange2(value) {
         setPasswordInput2(value);
         setLoginError(false);
     }
@@ -75,8 +80,8 @@ export default function PasswordCreate({ navigation }) {
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Inicio' }],
-              });
-        } else  {
+            });
+        } else {
             setLoginError(true);
         }
     }
@@ -85,7 +90,7 @@ export default function PasswordCreate({ navigation }) {
     const buttonFooterStyle = {
         width: '100%',
         height: 50,
-        backgroundColor: (inputError) ? '#A0B875' : '#7BC100',
+        backgroundColor: '#7BC100',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
@@ -109,81 +114,50 @@ export default function PasswordCreate({ navigation }) {
     }
 
     let cajaText = [
-        {title: "Crear contraseña e ingresar", style: 'titleCreate'}
+        { title: "Crear contraseña e ingresar", style: 'titleCreate' }
     ]
 
     return (
         <View style={styles.container}>
 
-            <Header cajaText={cajaText} unElemento={true} />
+            <Image source={logoImported ? { uri: logoImported } : logo} style={[styles.logoHeader, { width: screenWidth * 1, height: 80, marginTop: 20 }]} />
 
-            {/* Formularios */}
-            <View style={styles.forms}>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Contraseña</Text>
-                    <View style={styles.passwordInputContainer}>
-                        <TextInput
-                            style={styles.passwordInput}
-                            placeholder="Contraseña"
-                            value={passwordInput}
-                            onChangeText={handlePasswordChange}
-                            placeholderTextColor="#959595"
-                            secureTextEntry={!showPassword}
-                        />
-                        <TouchableOpacity
-                            onPress={() => setShowPassword(!showPassword)}
-                            style={styles.passwordToggleIcon}
-                        >
-                            <Icon
-                                name={showPassword ? 'eye' : 'eye-slash'}
-                                size={20}
-                                color="#555"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Repetir contraseña</Text>
-                    <View style={styles.passwordInputContainer}>
-                        <TextInput
-                            style={styles.passwordInput}
-                            placeholder="Repetir contraseña"
-                            value={passwordInput2}
-                            onChangeText={handlePasswordChange2}
-                            placeholderTextColor="#959595"
-                            secureTextEntry={!showPassword2}
-                        />
-                        <TouchableOpacity
-                            onPress={() => setShowPassword2(!showPassword2)}
-                            style={styles.passwordToggleIcon}
-                        >
-                            <Icon
-                                name={showPassword2 ? 'eye' : 'eye-slash'}
-                                size={20}
-                                color="#555"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <Text style={passwordError}>Las contraseñas deben ser iguales</Text>
+            <View style={{ marginTop: 40 }}>
+                <Text style={{
+                    // pongo la fuente gotham rounded  (LA NO BOLD)
+                    fontFamily: "GothamRoundedMedium",
+                    // pongo el color de texto en #636371
+                    color: '#636371',
+                    fontSize: 26,
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                }}>Revisá tu correo</Text>
+                <Text style={{
+                    // pongo la fuente gotham rounded  (LA NO BOLD)
+                    fontFamily: "GothamRoundedBold",
+                    // pongo el color de texto en #636371
+                    fontSize: 16,
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                }}>Te hemos enviado un correo para restablecer la contraseña de tu cuenta</Text>
             </View>
 
-            {/* Boton para ingresar */}
-            <View style={footerContainer}>
-                <TouchableOpacity style={buttonFooterStyle} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>Ingresar</Text>
+            <View style={footerContainer} >
+                <TouchableOpacity style={buttonFooterStyle} onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.buttonText}>Regresar</Text>
                 </TouchableOpacity>
+
             </View>
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     logoHeader: {
-        resizeMode: 'center',
-        width: 160,
-        height: 40,
+        resizeMode: 'contain',
+        // width: 160,
+        // height: 40,
         // centro de manera horizontal la imagen
         alignSelf: 'center',
     },
@@ -256,7 +230,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18,
         fontFamily: "GothamRoundedMedium"
     },
     footerText: {
