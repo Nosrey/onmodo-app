@@ -50,6 +50,7 @@ const initialState = {
   formulariosLegajo: [],
   logo: '',
   documento: '',
+  idChief: ''
 }
 
 const counterSlice = createSlice({
@@ -59,6 +60,9 @@ const counterSlice = createSlice({
     // creo una accion que cambie el estado logged a true o false dependiendo del valor recibido
     setLogged(state, action) {
       state.logged = action.payload;
+    },
+    setIdChief(state, action) {
+      state.idChief = action.payload;
     },
     setLegajoProfile(state, action) {
       state.legajoProfile = action.payload;

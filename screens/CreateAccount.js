@@ -26,6 +26,8 @@ export default function CreateAccount({ navigation }) {
 
     const rol = useSelector(state => state.rol);
     const business = useSelector(state => state.business);
+    const idChief = useSelector(state => state.idChief);
+
     const [editable, setEditable] = useState(false); // Estado para habilitar/deshabilitar la edición de los inputs [true/false]
 
     const [loginError, setLoginError] = useState(false); // Estado para mostrar/ocultar el error de login [true/false]
@@ -163,7 +165,8 @@ export default function CreateAccount({ navigation }) {
                 business: business,
                 provincia: profileInputs.provincia,
                 localidad: profileInputs.localidad,
-                imgProfile: profileInputs.imagen
+                imgProfile: profileInputs.imagen,
+                idChief: idChief
             })
         }
     }
@@ -195,6 +198,7 @@ export default function CreateAccount({ navigation }) {
         provincia,
         localidad,
         imgProfile,
+        idChief
     }) => {
         try {
             const formData = new FormData();
@@ -211,6 +215,7 @@ export default function CreateAccount({ navigation }) {
             formData.append('business', business);
             formData.append('provincia', provincia);
             formData.append('localidad', localidad);
+            formData.append('idChief', idChief);
 
             const response = await fetch(`${API_URL}/api/register`, {
                 method: 'POST',
@@ -227,7 +232,7 @@ export default function CreateAccount({ navigation }) {
             const data = await response.json();
             console.log("formData", formData)
             console.log("data", data)
-            if (data.success) {
+            if (data?.success) {
                 setNotif({ view: true, message: "¡Cuenta creada exitosamente!", color: "verde" })
             } else {
                 setNotif({ view: true, message: data.errors[0], color: "naranja" })

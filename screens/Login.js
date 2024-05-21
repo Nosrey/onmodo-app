@@ -94,33 +94,44 @@ export default function Login({ navigation }) {
     // }
     // hago un fetch a la api ${API_URL}/api/login donde en el body envio con metodo post el legajo y la contraseña como strings asi { legajo: string, password:string}
     // si la respuesta es 200, navego a la pantalla Inicio
+    const device = {
+        id: "3242fwefwe4324",
+        deviceToken: "ewtfefwfwerer435dsfhjdsfghjesf",
+    };
+
     function handleLogin() {
         if (!inputError && !logged) {
             dispatch({ type: 'counter/setLogged', payload: true });
             setErrorMessage('')
 
-            fetch(`${API_URL}/api/login`, {
+            fetch(`${API_URL}/api/v1/user/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     // convierto el legajoInput en string
-                    legajo: legajoInput.toString(),
+                    email: legajoInput.toString(),
                     password: passwordInput.toString(),
+                    device: device,
                 })
             })
                 .then((response) => response.json())
                 .then((json) => {
                     if (json?.success == true) {
                         // hago un dispatch que vuelva logged en true
-
+    
                         // hago unos 3 dispatch que setean token, id y rol de json.response
-                        dispatch({ type: 'counter/setToken', payload: json.response.token });
-                        dispatch({ type: 'counter/setId', payload: json.response.id });
-                        dispatch({ type: 'counter/setRol', payload: json.response.rol });
+                        dispatch({ type: 'counter/setToken', payload: json.data.token });
+                        dispatch({ type: 'counter/setId', payload: json.data.user._id });
+                        dispatch({ type: 'counter/setRol', payload: json.data.user.rol });
+                        // setIdChief(state, action) {
+                        //     state.idChief = action.payload;
+                        //   },
+                        dispatch({ type: 'counter/setIdChief', payload: json.data.user.idChief });
+                        console.log('id: ', json.data.user._id)  
                         // ahora hago un fetch a ${API_URL}/api/business/${idUser} donde idUser es el id del usuario logueado que esta en json.response.id y tras eso hago dispatch para fullName, legajo, number, puesto, rol, provincia, localidad y contratoComedor
-                        fetch(`${API_URL}/api/business/${json.response.id}`, {
+                        fetch(`${API_URL}/api/business/${json.data.user._id}`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -362,6 +373,13 @@ export default function Login({ navigation }) {
                             });
                     } else {
                         setErrorMessage("La contraseña o el legajo es incorrecto");
+                        console.log('error: ', json)
+                        console.log('entre con esto', {
+                            // convierto el legajoInput en string
+                            email: legajoInput.toString(),
+                            password: passwordInput.toString(),
+                            device: device,
+                        })
                         setLoginError(true);
                         dispatch({ type: 'counter/setLogged', payload: false });
                     }
