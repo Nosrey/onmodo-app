@@ -201,46 +201,79 @@ export default function CreateAccount({ navigation }) {
         idChief
     }) => {
         try {
-            const formData = new FormData();
-            if (imgProfile) {
-                formData.append('imgProfile', imgProfile);
-            }
-            formData.append('email', email);
-            formData.append('fullName', fullName);
-            formData.append('legajo', legajo);
-            formData.append('number', number);
-            formData.append('puesto', puesto);
-            formData.append('contratoComedor', contratoComedor);
-            formData.append('rol', rol); // No need to parseInt here
-            formData.append('business', business);
-            formData.append('provincia', provincia);
-            formData.append('localidad', localidad);
-            formData.append('idChief', idChief);
+            // const formData = new FormData();
+            // if (imgProfile) {
+            //     formData.append('imgProfile', imgProfile);
+            // }
+            // formData.append('email', email);
+            // formData.append('fullName', fullName);
+            // formData.append('legajo', legajo);
+            // formData.append('number', number);
+            // formData.append('puesto', puesto);
+            // formData.append('contratoComedor', contratoComedor);
+            // formData.append('rol', rol); // No need to parseInt here
+            // formData.append('business', business);
+            // formData.append('provincia', provincia);
+            // formData.append('localidad', localidad);
+            // formData.append('idChief', idChief);
 
-            const response = await fetch(`${API_URL}/api/register`, {
-                method: 'POST',
-                body: formData, // Use 'body' instead of 'data' for FormData
+            let usuario = {
+                email: email,
+                fullName: fullName,
+                legajo: legajo,
+                number: number,
+                puesto: puesto,
+                contratoComedor: contratoComedor,
+                rol: rol,
+                business: business,
+                provincia: provincia,
+                localidad: localidad,
+                idChief: idChief,
+            }
+
+            if (imgProfile) {
+                usuario.imgProfile = imgProfile;
+            }
+
+            const formData = new FormData();
+
+            for (const key in usuario) {
+                formData.append(key, usuario[key]);
+            }
+
+            const response = await fetch(`${API_URL}/api/v1/user/signup`, {
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+                method: "POST",   
+                body: formData,
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP Error! Status: ${response.status}`);
+                // throw new Error(`HTTP Error! Status: ${response.status}`);
+                let final = await response.json();
+                console.log("final", final)
+                setNotif({ view: true, message: final.message, color: "naranja" })
             }
 
-            // LOG  formData {"_parts": [["email", "nosrey135@gmail.com"], ["fullName", "Nosrey"], ["legajo", "123"], ["number", "123"], ["puesto", "Bodeguero"], ["contratoComedor", "test"], ["rol", "2"], ["business", "test"], ["provincia", "Buenos Aires"], ["localidad", "25 de Mayo"]]}
-            // LOG  data {"errors": ["El usuario ya existe"], "response": null, "success": false}
-
             const data = await response.json();
-            console.log("formData", formData)
             console.log("data", data)
+            console.log("formData", formData)
+
             if (data?.success) {
                 setNotif({ view: true, message: "¡Cuenta creada exitosamente!", color: "verde" })
             } else {
-                setNotif({ view: true, message: data.errors[0], color: "naranja" })
+                console.log('error', data)
+                if (data?.errors?.length) {
+                    setNotif({ view: true, message: data?.errors[0], color: "naranja" })
+                } else {
+                    setNotif({ view: true, message: "¡Ups! Algo salió mal", color: "naranja" })
+                }
             }
             return data;
         } catch (error) {
-            console.error('Error:', error);
-            throw error;
+            // console.error('Error:', error);
+            // throw error;
         }
     };
 
