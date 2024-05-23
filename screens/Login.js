@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import Notification from '../components/Notification';
 import { API_URL } from '../functions/globalFunctions';
+import { Linking } from 'react-native';
 
 export default function Login({ navigation }) {
     const [notif, setNotif] = useState({ view: false, message: '', color: 'naranja' }); // notif es un booleano que indica si se muestra o no la notificacion
@@ -474,7 +475,12 @@ export default function Login({ navigation }) {
                 <TouchableOpacity style={buttonFooterStyle} onPress={handleLogin}>
                     <Text style={styles.buttonText}>Ingresar</Text>
                 </TouchableOpacity>
-                <Text style={styles.footerText} onPress={() => navigation.navigate('PasswordRecovery')}>Olvidé mi contraseña</Text>
+                <Text style={styles.footerText} onPress={
+                    () => {
+                        // hago que este boton redireccione al sitio web "https://www.onmodoapp.com/olvide-contrasena" en el navegador
+                        Linking.openURL('https://www.onmodoapp.com/olvide-contrasena');
+                    }
+                }>Olvidé mi contraseña</Text>
             </View>
         </View>
     );

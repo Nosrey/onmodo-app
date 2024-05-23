@@ -243,7 +243,7 @@ export default function CreateAccount({ navigation }) {
 
             const response = await fetch(`${API_URL}/api/v1/user/signup`, {
                 headers: {
-                    'Content-Type': 'application/json; charset=utf-8',
+                    'Content-Type': type === 'form' ? 'multipart/form-data' : 'application/json',
                 },
                 method: "POST",   
                 body: formData,
